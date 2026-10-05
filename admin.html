@@ -57,11 +57,13 @@ audio { margin-top: 5px; display: none; width: 100%; }
 <body> 
 
 <div class="loading-overlay" id="loadingOverlay" style="flex-direction: column;"> 
-<span id="loadText">📦 GitHub-ല്‍ നിന്ന് പഴയ ഡാറ്റകള്‍ ശേഖക്കുന്നു...</span> 
+<span id="loadText">📦 GitHub-ല്‍ നിന്ന് പഴയ ഡാറ്റകള്‍‍ ശേഖക്കുന്നു...</span> 
 </div> 
 
 <div class="admin-box" style="border-top: 4px solid #34495e;"> 
 <h2>🔑 GitHub കോൺഫിഗറേഷൻ</h2> 
+<label>GitHub Repository Name:</label> 
+<input type="text" id="ghRepoInput" placeholder="ഉദാ: class-2-duroos-part-2-chater-1">
 <label>GitHub Personal Access Token:</label> 
 <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" onchange="saveTokenToLocal()"> 
 </div> 
@@ -84,7 +86,7 @@ audio { margin-top: 5px; display: none; width: 100%; }
 
 <div class="admin-box"> 
 <h2>🏫 മдравസ & വിദ്യാർത്ഥി മാനേജ്‌മെന്റ്</h2> 
-<p id="syncStatus" style="color: #27ae60; font-weight: bold; text-align: center; margin: 0; font-size: 13px;">🔄 ഗിറ്റ്ဟബ്ബ് സിങ്ക് ലോഡ് ചെയ്യുന്നു...</p> 
+<p id="syncStatus" style="color: #27ae60; font-weight: bold; text-align: center; margin: 0; font-size: 13px;">🔄 ഗിറ്റ്ഹബ്ബ് സിങ്ക് ലോഡ് ചെയ്യുന്നു...</p> 
 <div class="section"> 
 <h4>1. മദ്രസകൾ നിയന്ത്രിക്കുക:</h4> 
 <input type="text" id="madrasaName" placeholder="മദ്രസയുടെ പേര് എഴുതുക"> 
@@ -158,7 +160,7 @@ audio { margin-top: 5px; display: none; width: 100%; }
 <span id="readingDrawStatus" style="font-size:11px; color:#2980b9; font-weight:bold;"></span> 
 </div> 
 <div id="zoneEditContainer" style="background: #f1f2f6; padding: 8px; border-radius: 4px; margin-bottom: 10px; max-height: 150px; overflow-y: auto; display: none;">
-  <b style="font-size: 12px; color: #2c3e50;">✏️ നിലവിലുള്ള വാക്കുകൾ തിരുത്തുക:</b>
+  <b style="font-size: 12px; color: #2c3e50;">✏️️ നിലവിലുള്ള വാക്കുകൾ തിരുത്തുക:</b>
   <div id="zoneEditList"></div>
 </div>
 <div style="background: #ebfcf2; padding: 10px; border-radius: 4px; margin: 5px 0; border: 1px solid #c3f3d7;"> 
@@ -242,14 +244,12 @@ audio { margin-top: 5px; display: none; width: 100%; }
  <h2>⚙️ വേർഡ് ആപ്പ് ലൈവ് മാനേജർ</h2>
  <p style="font-size:12px; color:#7f8c8d; text-align:center; margin-bottom:10px;">മലയാളം ടൈപ്പ് ചെയ്യുമ്പോൾ ഓട്ടോമാറ്റിക് ആയി അറബി മലയാളം രൂപം വരും.</p>
 
- <!-- ⚡ ഇവിടെയാണ് പുതിയ പാരഗ്രാഫ് ബൾക്ക് ബോക്സ് വരുന്നത് -->
  <div class="section" style="background: #ebfcf2; border-color: #c3f3d7;">
    <h4>📦 ഒരു ഫുൾ പാരഗ്രാഫ് നൽകി വാക്കുകൾ വേർതിരിക്കുക:</h4>
    <p style="font-size:11px; color:#555; margin:0 0 5px 0;">മലയാളം പാരഗ്രാഫ് മുഴുവനായി താഴെ പേസ്റ്റ് ചെയ്യുക (സിസ്റ്റം സ്വയം ഓരോ വാക്കാക്കി അറബി മലയാളം രൂപം നൽകും):</p>
    <textarea id="bulkWordInput" style="min-height: 100px; font-size: 13px;" placeholder="വുളൂഅ് ചെയ്ത് നിസ്കാരം നിർവ്വഹിക്കുന്നത് വിശ്വാസിയുടെ കടമയാണ്."></textarea>
    <button type="button" class="btn-blue" style="background:#2ecc71;" onclick="importBulkWords()">⚡ പാരഗ്രാഫിലെ വാക്കുകൾ ലിസ്റ്റിലേക്ക് ചേർക്കുക</button>
  </div>
- <!-- ⚡ ബൾക്ക് ബോക്സ് അവസാനം -->
 
  <div id="liveWordsContainer"></div>
 
@@ -324,7 +324,7 @@ audio { margin-top: 5px; display: none; width: 100%; }
 
 <script> 
 const GH_USER = "zain-zain22"; 
-const GH_REPO = "class-2-duroos-part-2-chater-1"; 
+let GH_REPO = "class-2-duroos-part-2-chater-1"; 
 const GH_BRANCH = "main"; 
 
 let masterSchoolData = {}; 
@@ -357,7 +357,7 @@ let currentHandwritingTarget = 'book';
 let liveHandwritingMemory = {}; 
 
 const initialVowels = { "അ":"اَ","ആ":"آ","ഇ":"اِ","ഈ":"اِی","ഉ":"اُ","ഊ":"اُو","ഋ":"ِرُ","എ":"ا٘","ഏ":"ا٘ے","ഐ":"اَیْ","ഒ":"اٗ","ഓ":"اٗو","ഔ":"اَوْ" };
-const baseConsonants = { "ൻ":"نْ","ൽ":"لْ","ർ":"رٛ","ൾ":"ۻۡ","ൺ":"ڹۡ","ൿ":"كۡ","ക്ക":"كّ","ഗ്ഗ":"گّ","ങ്ങ":"ۼّ","ച്ച":"ചّ","ജ്ജ":"جّ","ഞ്ഞ":"ڿّ","ട്ട":"ڊّ","ണ്ണ":"ڹّ","ത്ത":"تّ","ദ്ധ":"دّ","ന്ന":"نّ","പ്പ":"پّ","ബ്ബ":"بّ","മ്മ":"مّ","യ്യ":"یّ","ല്ല":"لّ","വ്വ":"وّ","ശ്ശ":"ۺّ","സ്സ":"سّ","ള്ള":"ۻّ","റ്റ":"ڔّ","ന്ത":"نْت","ണ്ട":"ڹْڊ","ങ്ക":"نْگ","ഞ്ച":"ڿْച","മ്പ":"نْب","ന്റ":"نْڔ","സ്ഥ":"سْت","нда":"نْد","ക്ഷ":"كْش","ക്ത":"كْت","സ്ക":"സۡك","ക":"ك","ഖ":"كھ","ഗ":"گ","ഘ":"گھ","ങ":"ۼ","ച":"ച","ഛ":"چھ","ജ":"ج","ഝ":"جھ","ഞ":"ڿ","ട":"ڊ","ഠ":"ڊه","ഡ":"ڗ","ഢ":"ڗھ","ണ":"ڹ","ത":"ت","ഥ":"تھ","ദ":"د","ധ":"دھ","ന":"ن","പ":"پ","ഫ":"ف","ബ":"ബ","ഭ":"بھ","മ":"م","യ":"ی","ര":"ڔ","ല":"ل","വ":"و","ശ":"ۺ","ഷ":"ش","സ":"സ","ഹ":"ه","ള":"ۻ","ഴ":"ژ","റ":"ر","ക്ര":"كْر","പ്ര":"پْر","ത്ര":"تْر","പ്ല":"پْل","സ്വ":"സْو","ത്വ":"തْവ" };
+const baseConsonants = { "ൻ":"نْ","ൽ":"لْ","ർ":"رٛ","ൾ":"ۻۡ","ൺ":"ڹۡ","ൿ":"كۡ","ക്ക":"كّ","ഗ്ഗ":"گّ","ങ്ങ":"ۼّ","ച്ച":"ചّ","ജ്ജ":"جّ","ഞ്ഞ":"ڿّ","ട്ട":"ڊّ","ണ്ണ":"ڹّ","ത്ത":"تّ","ദ്ധ":"دّ","ന്ന":"نّ","പ്പ":"پّ","ബ്ബ":"بّ","മ്മ":"مّ","യ്യ":"یّ","ല്ല":"لّ","വ്വ":"وّ","ശ്ശ":"ۺّ","സ്സ":"سّ","ള്ള":"ۻّ","റ്റ":"ڔّ","ന്ത":"نْت","ണ്ട":"ڹْڊ","ങ്ക":"نْگ","ഞ്ച":"ڿْച","മ്പ":"نْب","ന്റ":"نْڔ","സ്ഥ":"سْت","нда":"نْد","ക്ഷ":"كْش","ക്ത":"كْت","സ്ക":"സۡك","ക":"ك","ഖ":"كھ","ഗ":"گ","ഘ":"گھ","ങ":"ۼ","ച":"ച","ഛ":"چھ","ജ":"ج","ഝ":"جھ","ഞ":"ڿ","ട":"ڊ","ഠ":"ڊه","ഡ":"ڗ","ഢ":"ڗھ","ണ":"ڹ","ത":"ت","ഥ":"തھ","ദ":"د","ധ":"دھ","ന":"ن","പ":"پ","ഫ":"ف","ബ":"ബ","ഭ":"بھ","മ":"م","യ":"ی","ര":"ڔ","ല":"ل","വ":"و","ശ":"ۺ","ഷ":"ش","സ":"സ","ഹ":"ه","ള":"ۻ","ഴ":"ژ","റ":"ر","ക്ര":"كْر","പ്ര":"پْر","ത്ര":"തْر","പ്ല":"پْل","സ്വ":"സْو","ത്വ":"തْവ" };
 const vowelSigns = { "ാ":"َا","ി":"ِ","ീ":"ِی","ു":"ُ","ൂ":"ُو","െ":"٘","േ":"ي٘","ൈ":"َیْ","ൊ":"ٗ","ോ":"ٗو","ൗ":"َوْ","ൃ":"ِرُ","്":"ۡ","ം":"مٛ","ഃ":"َهْ" };
 const chillusSpecial = { "ം":"مْ" };
 const sortedConsonants = Object.keys(baseConsonants).sort((a,b)=>b.length-a.length);
@@ -385,14 +385,30 @@ document.getElementById('workPdfUpload').addEventListener('change',function(e){
     workPDFFile = e.target.files[0];
 });
 
-window.onload = function() { 
-    if(localStorage.getItem('gh_token')) { 
-        document.getElementById('ghToken').value = localStorage.getItem('gh_token'); 
-    } 
+// ⚡ പേജ് ലോഡ് ആകുമ്പോൾ തന്നെ Local Storage, Repo Name എന്നിവ സ്വയം ലോഡ് ചെയ്യുന്നു
+window.addEventListener('DOMContentLoaded', () => {
+    // 1. URL-ൽ നിന്ന് റെപ്പോസിറ്ററി പേര് കണ്ടെത്തുന്നു
+    let currentRepo = window.location.pathname.split('/')[1];
+    if (currentRepo && !currentRepo.includes('.html')) {
+        GH_REPO = currentRepo;
+        let repoInput = document.getElementById('ghRepoInput');
+        if (repoInput) repoInput.value = currentRepo;
+    } else {
+        let repoInput = document.getElementById('ghRepoInput');
+        if (repoInput) repoInput.value = GH_REPO;
+    }
+
+    // 2. Local Storage-ൽ നിന്ന് ടോക്കൺ ഫിൽ ചെയ്യുന്നു
+    let savedToken = localStorage.getItem('gh_token') || localStorage.getItem('github_token');
+    if (savedToken) {
+        let tokenInput = document.getElementById('ghToken');
+        if (tokenInput) tokenInput.value = savedToken;
+    }
+
     loadOldDataFromGitHub(); 
     initReadingDrawingEngine(); 
     initQuizDrawingEngine(); 
-} 
+});
 
 function switchTab(type) {
     document.getElementById('section-book').style.display = (type === 'book') ? 'block' : 'none';
@@ -430,6 +446,11 @@ async function saveWorkPDF(){
 
 async function loadOldDataFromGitHub() { 
     document.getElementById('loadingOverlay').style.display = 'flex'; 
+    let repoInput = document.getElementById('ghRepoInput');
+    if(repoInput && repoInput.value.trim()) {
+        GH_REPO = repoInput.value.trim();
+    }
+    
     try { 
         let res1 = await fetch('data/master_list.json?t=' + Date.now()); 
         if(res1.ok) masterSchoolData = await res1.json();
@@ -458,19 +479,12 @@ async function loadOldDataFromGitHub() {
         } 
     } catch(e) {} 
     try {
-    let res4 = await fetch('data/data.json?t=' + Date.now());
-    if(res4.ok) {
-        let oldWordData = await res4.json();
-        if(oldWordData && Array.isArray(oldWordData.words)) {
-            liveWordsMemory = oldWordData.words.map(w => ({ 
-                ...w, 
-                isNew: false, 
-                hidden: !!(w.hidden || w.isHidden) 
-            }));
+        let res4 = await fetch('data/data.json?t=' + Date.now());
+        if(res4.ok) {
+            let oldWordData = await res4.json();
+            if(oldWordData && Array.isArray(oldWordData.words)) liveWordsMemory = oldWordData.words.map(w => ({ ...w, isNew: false }));
         }
-    }
-} catch(e) {}
-
+    } catch(e) {}
     try {
         let res5 = await fetch('data/data_reading.json?t=' + Date.now());
         if(res5.ok) {
@@ -713,8 +727,8 @@ function undoLastReadingLine() {
 function initReadingDrawingEngine() { 
     let board = document.getElementById('pageDrawBoard');
     function getCoords(e) { const rect = board.getBoundingClientRect(); let clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0; let clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0; return { x: Math.round(((clientX - rect.left) / rect.width) * 1000), y: Math.round(((clientY - rect.top) / rect.height) * 1000) }; } 
-    function start(e) { isReadingDrawing = true; const c = getCoords(e); const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); for(let i=0; i<12; i++) { let p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("transform", `translate(${(i-6)*0.3}, ${-(i-6)})`); p.setAttribute("stroke", "#2980b9"); p.setAttribute("stroke-width", "2"); p.setAttribute("fill", "none"); p.setAttribute("stroke-linecap", "round"); p.setAttribute("d", `M ${c.x} ${c.y}`); g.appendChild(p); } board.appendChild(g); readingPaths.push([{x: c.x, y: c.y}]); } 
-    function move(e) { if(!isReadingDrawing) return; const c = getCoords(e); const g = board.lastElementChild; if(!g) return; g.querySelectorAll("path").forEach(p => p.setAttribute("d", p.getAttribute("d") + ` L ${c.x} ${c.y}`)); readingPaths[readingPaths.length - 1].push({x: c.x, y: c.y}); } 
+    function start(e) { isReadingDrawing = true; const c = getCoords(e); const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); for(let i=0; i<12; i++) { let p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("transform", `translate(${(i-6)*0.3},${-(i-6)})`); p.setAttribute("stroke", "#2980b9"); p.setAttribute("stroke-width", "2"); p.setAttribute("fill", "none"); p.setAttribute("stroke-linecap", "round"); p.setAttribute("d", `M ${c.x}${c.y}`); g.appendChild(p); } board.appendChild(g); readingPaths.push([{x: c.x, y: c.y}]); } 
+    function move(e) { if(!isReadingDrawing) return; const c = getCoords(e); const g = board.lastElementChild; if(!g) return; g.querySelectorAll("path").forEach(p => p.setAttribute("d", p.getAttribute("d") + ` L ${c.x}${c.y}`)); readingPaths[readingPaths.length - 1].push({x: c.x, y: c.y}); } 
     function end() { if(isReadingDrawing) { isReadingDrawing = false; document.getElementById('readingDrawStatus').innerText = `✏️ വരകൾ ചേർത്തു (${readingPaths.length})`; } } 
     board.addEventListener("mousedown", start); board.addEventListener("mousemove", move); window.addEventListener("mouseup", end); 
     board.addEventListener("touchstart", start, {passive:false}); board.addEventListener("touchmove", move, {passive:false}); window.addEventListener("touchend", end); 
@@ -725,8 +739,8 @@ function clearQuizDrawBoard() { document.getElementById('quizDrawBoard').innerHT
 function initQuizDrawingEngine() { 
     let qboard = document.getElementById('quizDrawBoard');
     function getCoords(e) { const rect = qboard.getBoundingClientRect(); let clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0; let clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0; return { x: Math.round(((clientX - rect.left) / rect.width) * 1000), y: Math.round(((clientY - rect.top) / rect.height) * 1000) }; } 
-    function start(e) { e.preventDefault(); isQuizDrawing = true; const c = getCoords(e); const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); for(let i=0; i<16; i++) { let p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("transform", `translate(${(i-8)*0.4}, ${-(i-8)})`); p.setAttribute("stroke", "#e74c3c"); p.setAttribute("stroke-width", "2"); p.setAttribute("fill", "none"); p.setAttribute("stroke-linecap", "round"); p.setAttribute("d", `M ${c.x} ${c.y}`); g.appendChild(p); } qboard.appendChild(g); quizPaths.push([{x: c.x, y: c.y}]); } 
-    function move(e) { if(!isQuizDrawing) return; e.preventDefault(); const c = getCoords(e); const g = qboard.lastElementChild; if(!g) return; g.querySelectorAll("path").forEach(p => p.setAttribute("d", p.getAttribute("d") + ` L ${c.x} ${c.y}`)); quizPaths[quizPaths.length - 1].push({x: c.x, y: c.y}); } 
+    function start(e) { e.preventDefault(); isQuizDrawing = true; const c = getCoords(e); const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); for(let i=0; i<16; i++) { let p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("transform", `translate(${(i-8)*0.4},${-(i-8)})`); p.setAttribute("stroke", "#e74c3c"); p.setAttribute("stroke-width", "2"); p.setAttribute("fill", "none"); p.setAttribute("stroke-linecap", "round"); p.setAttribute("d", `M ${c.x}${c.y}`); g.appendChild(p); } qboard.appendChild(g); quizPaths.push([{x: c.x, y: c.y}]); } 
+    function move(e) { if(!isQuizDrawing) return; e.preventDefault(); const c = getCoords(e); const g = qboard.lastElementChild; if(!g) return; g.querySelectorAll("path").forEach(p => p.setAttribute("d", p.getAttribute("d") + ` L ${c.x}${c.y}`)); quizPaths[quizPaths.length - 1].push({x: c.x, y: c.y}); } 
     function end() { isQuizDrawing = false; } 
     qboard.addEventListener("mousedown", start); qboard.addEventListener("mousemove", move); window.addEventListener("mouseup", end); 
     qboard.addEventListener("touchstart", start, {passive:false}); qboard.addEventListener("touchmove", move, {passive:false}); window.addEventListener("touchend", end); 
@@ -734,7 +748,7 @@ function initQuizDrawingEngine() {
 
 function redrawQuizPaths() { 
     let qboard = document.getElementById('quizDrawBoard'); qboard.innerHTML = ""; 
-    quizPaths.forEach(path => { const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); for(let i=0; i<16; i++) { let p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("transform", `translate(${(i-8)*0.4}, ${-(i-8)})`); p.setAttribute("stroke", "#e74c3c"); p.setAttribute("stroke-width", "2"); p.setAttribute("fill", "none"); p.setAttribute("stroke-linecap", "round"); let dStr = `M ${path[0].x} ${path[0].y}`; for(let pt=1; pt<path.length; pt++) { dStr += ` L ${path[pt].x} ${path[pt].y}`; } p.setAttribute("d", dStr); g.appendChild(p); } qboard.appendChild(g); }); 
+    quizPaths.forEach(path => { const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); for(let i=0; i<16; i++) { let p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("transform", `translate(${(i-8)*0.4},${-(i-8)})`); p.setAttribute("stroke", "#e74c3c"); p.setAttribute("stroke-width", "2"); p.setAttribute("fill", "none"); p.setAttribute("stroke-linecap", "round"); let dStr = `M ${path[0].x}${path[0].y}`; for(let pt=1; pt<path.length; pt++) { dStr += ` L ${path[pt].x}${path[pt].y}`; } p.setAttribute("d", dStr); g.appendChild(p); } qboard.appendChild(g); }); 
 } 
 
 function saveQuizDrawing() { 
@@ -778,7 +792,7 @@ function saveWordZone() {
         }); 
         currentZones.forEach(zone => { if (zone.text && zone.text.trim() === arabic) isTextAlreadyExists = true; }); 
     } 
-    if (isTextAlreadyExists) { arabic = ""; alert("⚠️ ഈ വാക്ക് നിലവിലുണ്ട്! ടെക്സ്റ്റ് ഒഴിവാക്കി ഓഡിയോ റെക്കോർഡ് ലിങ്ക് ചെയ്യുന്നു."); } 
+    if (isTextAlreadyExists) { arabic = ""; alert("⚠️️ ഈ വാക്ക് നിലവിലുണ്ട്! ടെക്സ്റ്റ് ഒഴിവാക്കി ഓഡിയോ റെക്കോർഡ് ലിങ്ക് ചെയ്യുന്നു."); } 
 
     let newZoneObj = { coords: { left: 0, top: 0, width: 15, height: 6 }, text: arabic, writingPaths: savedQuizPathsForZone ? savedQuizPathsForZone : null };
     if(currentAudioBlobs.length > 0) {
@@ -823,7 +837,7 @@ function renderExistingQuizList() {
         let previewText = quiz.qText ? ` - ${quiz.qText.substring(0, 25)}...` : '';
         let hasVoice = (quiz.blobs && quiz.blobs.q) || quiz.qSrc;
         let voiceBadge = hasVoice ? '<span style="color:#2ecc71;font-size:11px;">(🔊 ശബ്ദമുണ്ട്)</span>' : '<span style="color:#e74c3c;font-size:11px;">(🎙️ ശബ്ദമില്ല)</span>';
-        div.innerHTML = `<div><b>${idx + 1}</b>${previewText} ${voiceBadge}</div>
+        div.innerHTML = `<div><b>${idx + 1}</b>${previewText}${voiceBadge}</div>
         <div style="display:flex; gap:2px; flex-wrap:wrap;">
             <button class="btn-action" style="background:#3498db; padding:4px 6px;" onclick="loadQuizToEdit(${idx})">🎙️ Edit</button>
             <button class="btn-action" onclick="toggleQuizHidden(${idx})">${quiz.hidden ? '🔓 Unhide' : '👁️ Hide'}</button>
@@ -876,7 +890,6 @@ function importBulkWords() {
     let wordsArray = [];
     let uniqueWords = new Set(); 
 
-    // ⚡ തിരുത്തിയത്: ഇവിടെ 'live_mal_' വെച്ചാണ് നിലവിലുള്ള ഇൻപുട്ടുകൾ പരിശോധിക്കുന്നത്
     let existingInputs = document.querySelectorAll('#liveWordsContainer input[type="text"]');
     existingInputs.forEach(input => {
         if(input.id.startsWith('live_mal_')) { 
@@ -1009,11 +1022,9 @@ function renderLiveWordsList() {
         if (w.writingPaths) {
             liveHandwritingMemory[liveWordCount] = w.writingPaths;
         }
-        // w.hidden ഡാറ്റ കൂടി createLiveWordRowElement-ലേക്ക് അയക്കുന്നു
-        createLiveWordRowElement(liveWordCount, w.mal, w.arbiText, w.audio, false, !!w.hidden);
+        createLiveWordRowElement(liveWordCount, w.mal, w.arbiText, w.audio, false);
     });
 }
-
 
 function addNewLiveWordRow() { liveWordCount++; createLiveWordRowElement(liveWordCount, '', '', '', true); }
 
@@ -1176,6 +1187,10 @@ function deletePoint(index) {
 function blobToBase64(blob) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result.split(',')[1]); reader.onerror = reject; reader.readAsDataURL(blob); }); } 
 
 async function uploadToGitHubAPI(path, blobData, token) { 
+    let repoInput = document.getElementById('ghRepoInput');
+    if(repoInput && repoInput.value.trim()) {
+        GH_REPO = repoInput.value.trim();
+    }
     const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${path}`; const base64Content = await blobToBase64(blobData); let sha = null; 
     try { let checkRes = await fetch(url, { headers: { "Authorization": `token ${token}` } }); if(checkRes.ok) { let checkData = await checkRes.json(); sha = checkData.sha; } } catch(e) {} 
     let bodyObj = { message: `Admin Multi-Update: ${path}`, content: base64Content, branch: GH_BRANCH }; if(sha) bodyObj.sha = sha; 
@@ -1185,6 +1200,11 @@ async function uploadToGitHubAPI(path, blobData, token) {
 
 async function publishToGitHubDirectly() { 
     let token = document.getElementById('ghToken').value.trim(); if(!token) return alert("താങ്കളുടെ GitHub ടോക്കൺ നൽകുക!"); 
+    let repoInput = document.getElementById('ghRepoInput');
+    if(repoInput && repoInput.value.trim()) {
+        GH_REPO = repoInput.value.trim();
+    }
+
     const overlay = document.getElementById('loadingOverlay'); overlay.style.display = 'flex'; 
 
     let infoObj = { 
@@ -1308,4 +1328,4 @@ async function publishToGitHubDirectly() {
 </script>
 
 </body> 
-    </html>
+</html>
