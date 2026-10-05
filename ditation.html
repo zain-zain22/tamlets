@@ -1,0 +1,464 @@
+<!DOCTYPE html> 
+<html lang="ml"> 
+<head> 
+<meta charset="UTF-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+<title>സൗണ്ട് ബുക്ക് - സ്റ്റുഡന്റ് കേട്ടെഴുത്ത് പാനൽ</title> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style> 
+*, *::before, *::after { box-sizing: border-box; } 
+body { 
+    font-family: 'Segoe UI', system-ui, sans-serif; 
+    background: #111827; 
+    color: #f3f4f6; 
+    margin: 0; 
+    padding: 0; 
+    display: block; 
+    text-align: center; 
+} 
+.container { 
+    max-width: 800px; 
+    margin: 0 auto; 
+    padding: 20px; 
+    min-height: 100vh; 
+} 
+h1 { 
+    color: #38bdf8; 
+    font-size: 28px; 
+    margin-top: 10px; 
+    margin-bottom: 5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5); 
+} 
+.lesson-info-badge {
+    background: #1f2937;
+    color: #f59e0b;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 15px;
+    border: 1px solid #374151;
+}
+.setup-box { 
+    background: #1f2937; 
+    padding: 30px; 
+    border-radius: 12px; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4); 
+    margin-top: 20px; 
+    text-align: left; 
+    border: 1px solid #374151; 
+} 
+.setup-box h3 { 
+    text-align: center; 
+    color: #f3f4f6; 
+    margin-top: 0; 
+} 
+.input-label { 
+    font-weight: bold; 
+    color: #9ca3af; 
+    display: block; 
+    margin-bottom: 5px; 
+} 
+input[type="text"] { 
+    width: 100%; 
+    padding: 12px; 
+    background: #374151; 
+    border: 1px solid #4b5563; 
+    border-radius: 6px; 
+    color: white; 
+    font-size: 16px; 
+    margin-bottom: 15px; 
+} 
+button { 
+    background: #0284c7; 
+    color: white; 
+    border: none; 
+    padding: 14px 20px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    font-size: 16px; 
+    width: 100%; 
+    transition: background 0.2s; 
+} 
+button:hover { background: #0369a1; } 
+
+/* എക്സാം സ്ക്രീൻ സ്റ്റൈലുകൾ */
+.exam-card { 
+    background: #1f2937; 
+    border-radius: 16px; 
+    padding: 40px 20px; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
+    margin-top: 10px; 
+    border: 1px solid #374151; 
+} 
+.word-badge { 
+    background: #374151; 
+    color: #38bdf8; 
+    padding: 6px 16px; 
+    border-radius: 20px; 
+    font-size: 18px; 
+    font-weight: bold; 
+    display: inline-block; 
+    margin-bottom: 20px; 
+} 
+.instruction { 
+    font-size: 24px; 
+    color: #e5e7eb; 
+    margin-bottom: 30px; 
+} 
+
+/* വൃത്താകൃതിയിലുള്ള വലിയ ടൈമർ */
+.timer-container { 
+    position: relative; 
+    width: 180px; 
+    height: 180px; 
+    margin: 0 auto 30px auto; 
+} 
+.timer-svg { 
+    transform: rotate(-90deg); 
+    width: 180px; 
+    height: 180px; 
+} 
+.timer-svg circle { 
+    stroke-width: 10px; 
+    fill: transparent; 
+} 
+.timer-bg { stroke: #374151; } 
+.timer-progress { 
+    stroke: #ef4444; 
+    stroke-dasharray: 502; 
+    stroke-dashoffset: 0; 
+    stroke-linecap: round; 
+    transition: stroke-dashoffset 1s linear; 
+} 
+.timer-text { 
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    font-size: 55px; 
+    font-weight: bold; 
+    color: #ef4444; 
+} 
+
+/* ഉത്തരം വെളിപ്പെടുത്തുന്ന പാനൽ */
+.answer-panel { 
+    margin-top: 30px; 
+    border-top: 3px dashed #4b5563; 
+    padding-top: 30px; 
+    animation: zoomIn 0.4s ease-out; 
+} 
+.ans-label { 
+    font-size: 18px; 
+    color: #f59e0b; 
+    font-weight: bold; 
+    margin-bottom: 15px; 
+} 
+.ans-malayalam { 
+    font-size: 55px; 
+    font-weight: bold; 
+    color: #ffffff; 
+    margin-bottom: 15px; 
+} 
+.ans-arabic { 
+    font-size: 85px; 
+    font-weight: bold; 
+    color: #10b981; 
+    font-family: 'Amiri', 'Traditional Arabic', serif; 
+    direction: rtl; 
+    margin-bottom: 15px; 
+} 
+.hw-display-svg { 
+    width: 100%; 
+    max-width: 450px; 
+    height: 240px; 
+    border: 2px solid #4b5563; 
+    background: #111827; 
+    border-radius: 8px; 
+    margin: 15px auto; 
+    display: block; 
+} 
+
+.loading-overlay { 
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(17,24,39,0.9); 
+    color: white; 
+    justify-content: center; 
+    align-items: center; 
+    font-size: 22px; 
+    font-weight: bold; 
+    z-index: 9999; 
+} 
+.control-btns { 
+    display: flex; 
+    gap: 10px; 
+    max-width: 300px; 
+    margin: 20px auto 0 auto; 
+} 
+.btn-secondary { background: #4b5563; } 
+.btn-secondary:hover { background: #374151; }
+
+.toast-msg {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ef4444;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: none;
+    z-index: 10000;
+}
+
+@keyframes zoomIn { 
+    from { opacity: 0; transform: scale(0.95); } 
+    to { opacity: 1; transform: scale(1); } 
+} 
+</style> 
+</head> 
+<body> 
+
+<div class="loading-overlay" id="loadingOverlay"> 
+    <div><i class="fa-solid fa-spinner fa-spin" style="margin-bottom:10px; font-size:40px; color:#38bdf8;"></i><br><span id="loadText">📦 അഡ്മിൻ ഡാറ്റകൾ ശേഖരിക്കുന്നു...</span></div> 
+</div> 
+
+<div class="container"> 
+    <h1>🎤 സൗണ്ട് ബുക്ക് - കേട്ടെഴുത്ത് സ്റ്റുഡന്റ് റൂം</h1> 
+    <div class="lesson-info-badge" id="lessonInfoTag" style="display:none;">-</div>
+
+    <div class="setup-box" id="setupBox"> 
+        <h3>🔄 സെറ്റപ്പ് പാനൽ</h3> 
+        <label class="input-label">നിങ്ങളുടെ GitHub യൂസർനെയിം നൽകുക:</label> 
+        <input type="text" id="userInput" value="zain-zain22"> 
+        <label class="input-label">റപ്പോസിറ്ററി പേര് നൽകുക:</label> 
+        <input type="text" id="repoInput" value="class-2-duroos-part-2-chater-1"> 
+        <button onclick="fetchWordsFromAdmin()">🚀 വാക്കുകൾ ലോഡ് ചെയ്ത് പരീക്ഷ തുടങ്ങുക</button> 
+    </div> 
+
+    <div id="examBox" style="display: none;"> 
+        <div class="exam-card"> 
+            <div class="word-badge" id="wordIndexTitle">വാക്ക് 1 / 30</div> 
+            <div class="instruction" id="examStatusText">✍️ വോയ്സ് ശ്രദ്ധിച്ചു ബുക്കിലേക്ക് എഴുതുക...</div> 
+
+            <div class="timer-container" id="timerSection"> 
+                <svg class="timer-svg"> 
+                    <circle class="timer-bg" cx="90" cy="90" r="80"></circle> 
+                    <circle class="timer-progress" id="timerProgressCircle" cx="90" cy="90" r="80"></circle> 
+                </svg> 
+                <div class="timer-text" id="countdownText">60</div> 
+            </div> 
+
+            <div class="answer-panel" id="answerPanel" style="display: none;"> 
+                <div class="ans-label">📢 ശരിയായ ഉത്തരം:</div> 
+                <div class="ans-malayalam" id="ansMal">മലയാളം</div> 
+                <div class="ans-arabic" id="ansArbi">അറബി മലയാളം</div> 
+                <svg class="hw-display-svg" id="ansHwSvg" viewBox="0 0 1000 1000" preserveAspectRatio="none" style="display:none;"></svg> 
+            </div> 
+        </div> 
+
+        <div class="control-btns"> 
+            <button class="btn-secondary" onclick="replayCurrentAudio()">🔊 വീണ്ടും കേൾക്കുക</button> 
+            <button class="btn-secondary" style="background:#ef4444;" onclick="exitExamMode()">🛑 നിർത്തുക</button> 
+        </div> 
+    </div> 
+</div> 
+
+<div id="toast" class="toast-msg"></div>
+
+<script> 
+let wordsDatabase = []; 
+let currentIdx = 0; 
+let countdownValue = 60; 
+let countdownTimer = null; 
+let audioLoopTimer = null; 
+let dictationAudio = new Audio(); 
+
+function showToast(msg) {
+    let t = document.getElementById("toast");
+    t.textContent = msg;
+    t.style.display = "block";
+    setTimeout(() => { t.style.display = "none"; }, 3000);
+}
+
+async function fetchWordsFromAdmin() { 
+    const user = document.getElementById('userInput').value.trim(); 
+    const repo = document.getElementById('repoInput').value.trim(); 
+    if(!user || !repo) return alert("യൂസർനെയിമും റപ്പോസിറ്ററിയും കൃത്യമായി നൽകുക!"); 
+
+    document.getElementById('loadingOverlay').style.display = 'flex'; 
+    
+    // അഡ്മിൻ പാനൽ അപ്‌ലോഡ് ചെയ്യുന്ന data.json ഫയലിൽ നിന്ന് നേരിട്ട് ഡാറ്റ എടുക്കുന്നു
+    const url = `https://raw.githubusercontent.com/${user}/${repo}/main/data/data.json?t=${Date.now()}`; 
+
+    try { 
+        let response = await fetch(url); 
+        if(!response.ok) throw new Error("ഫയൽ കണ്ടെത്താൻ കഴിഞ്ഞില്ല. അഡ്മിൻ പാനലിൽ നിന്ന് പബ്ലിഷ് ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക."); 
+        
+        let data = await response.json(); 
+
+        if(data.globalInfo || data.quizInfo) {
+            let info = data.globalInfo || data.quizInfo;
+            let tagText = `📚 ${info.class || ''} | ${info.subject || ''} | ${info.lessonName || ''}`;
+            let tagElem = document.getElementById('lessonInfoTag');
+            tagElem.innerText = tagText;
+            tagElem.style.display = 'inline-block';
+        }
+
+        if(data && Array.isArray(data.words)) { 
+            // അഡ്മിൻ പാനലിൽ Hide ചെയ്യാത്ത (unhidden) വാക്കുകൾ മാത്രം എടുക്കുന്നു
+            let activeWords = data.words.filter(w => !w.hidden && !w.isHidden); 
+            wordsDatabase = activeWords; 
+            
+            // ഏറ്റവും അവസാനം അഡ്മിൻ പാനലിൽ ചേർത്ത 30 വാക്കുകൾ മാത്രം വേർതിരിക്കുന്നു
+            if(wordsDatabase.length > 30) { 
+                wordsDatabase = wordsDatabase.slice(-30); 
+            } 
+            
+            if(wordsDatabase.length === 0) { 
+                alert("വേർഡ് ആപ്പിൽ അൺഹൈഡ് ചെയ്ത വാക്കുകൾ ഒന്നും കണ്ടെത്തിയില്ല!"); 
+                document.getElementById('loadingOverlay').style.display = 'none'; 
+                return; 
+            } 
+
+            document.getElementById('setupBox').style.display = 'none'; 
+            document.getElementById('examBox').style.display = 'block'; 
+            document.getElementById('loadingOverlay').style.display = 'none'; 
+            
+            currentIdx = 0; 
+            loadNextDictationWord(); 
+        } 
+    } catch(err) { 
+        alert("ഡാറ്റ ലോഡ് ചെയ്യുന്നതിൽ പരാജയം: " + err.message); 
+        document.getElementById('loadingOverlay').style.display = 'none'; 
+    } 
+} 
+
+function loadNextDictationWord() { 
+    if(currentIdx >= wordsDatabase.length) { 
+        alert("🎉 കേട്ടെഴുത്ത് പരീക്ഷ വിജയകരമായി അവസാനിച്ചു!"); 
+        exitExamMode(); 
+        return; 
+    } 
+
+    let currentWord = wordsDatabase[currentIdx]; 
+    document.getElementById('wordIndexTitle').innerText = `വാക്ക് ${currentIdx + 1} / ${wordsDatabase.length}`; 
+    document.getElementById('examStatusText').innerText = "✍️ വോയ്സ് ശ്രദ്ധിച്ചു ബുക്കിലേക്ക് എഴുതുക..."; 
+    document.getElementById('answerPanel').style.display = 'none'; 
+    document.getElementById('ansHwSvg').style.display = 'none'; 
+    document.getElementById('timerSection').style.display = 'block'; 
+
+    countdownValue = 60; 
+    document.getElementById('countdownText').innerText = countdownValue; 
+    updateTimerCircle(60); 
+
+    // ശബ്ദം പ്ലേ ചെയ്യുന്നു 
+    playWordVoice(currentWord.audio); 
+
+    // 1 മിനിറ്റ് തീരുന്നത് വരെ ഓരോ 4.5 സെക്കൻഡിലും ഒരേ വാക്ക് ആവർത്തിച്ചു പ്ലേ ചെയ്യാനുള്ള ലൂപ്പ്
+    if(audioLoopTimer) clearInterval(audioLoopTimer); 
+    audioLoopTimer = setInterval(() => { 
+        playWordVoice(currentWord.audio); 
+    }, 4500); 
+
+    // 60 സെക്കൻഡ് കൗണ്ട്ഡൗൺ ആരംഭിക്കുന്നു 
+    if(countdownTimer) clearInterval(countdownTimer); 
+    countdownTimer = setInterval(() => { 
+        countdownValue--; 
+        document.getElementById('countdownText').innerText = countdownValue; 
+        updateTimerCircle(countdownValue); 
+
+        if(countdownValue <= 0) { 
+            clearInterval(countdownTimer); 
+            clearInterval(audioLoopTimer); 
+            revealWordAnswer(currentWord); 
+        } 
+    }, 1000); 
+} 
+
+function playWordVoice(audioName) { 
+    if(!audioName) {
+        showToast("ഈ വാക്കിന് ശബ്ദം നൽകിയിട്ടില്ല.");
+        return; 
+    }
+    const user = document.getElementById('userInput').value.trim(); 
+    const repo = document.getElementById('repoInput').value.trim(); 
+    
+    let cleanAudioName = audioName.trim();
+    let audioPath = cleanAudioName.startsWith('data/') ? cleanAudioName : `data/${cleanAudioName}`;
+
+    // ഗിറ്റ്ഹബ്ബിൽ സേവ് ചെയ്തിരിക്കുന്ന ശബ്ദത്തിന്റെ പാത്ത് നിർമ്മിക്കുന്നു
+    dictationAudio.src = `https://raw.githubusercontent.com/${user}/${repo}/main/${audioPath}?t=${Date.now()}`; 
+    dictationAudio.play().catch(e => {
+        console.log("ശബ്ദം പ്ലേ ചെയ്യാൻ കഴിഞ്ഞില്ല: ", e);
+        showToast("ശബ്ദം പ്ലേ ചെയ്യുന്നതിൽ തടസ്സം!");
+    }); 
+} 
+
+function replayCurrentAudio() { 
+    if(wordsDatabase[currentIdx]) { 
+        playWordVoice(wordsDatabase[currentIdx].audio); 
+    } 
+} 
+
+function updateTimerCircle(value) { 
+    const circle = document.getElementById('timerProgressCircle'); 
+    const circumference = 502; // 2 * pi * r (2 * 3.14 * 80) 
+    const offset = circumference - (value / 60) * circumference; 
+    circle.style.strokeDashoffset = offset; 
+} 
+
+function revealWordAnswer(word) { 
+    document.getElementById('timerSection').style.display = 'none'; 
+    document.getElementById('examStatusText').innerText = "📢 സമയം അവസാനിച്ചു! ശരിയായ ഉത്തരം പരിശോധിക്കുക:"; 
+    document.getElementById('answerPanel').style.display = 'block'; 
+    
+    document.getElementById('ansMal').innerText = word.mal || ''; 
+    document.getElementById('ansArbi').innerText = word.arbiText || word.arbi || ''; 
+
+    // ഹാൻഡ്‌‌റൈറ്റിംഗ് ലഭ്യമാണെങ്കിൽ വരച്ചു കാണിക്കുന്നു 
+    if(word.writingPaths && word.writingPaths.length > 0) { 
+        let svg = document.getElementById('ansHwSvg'); 
+        svg.style.display = 'block'; 
+        svg.innerHTML = ""; 
+        
+        word.writingPaths.forEach(path => { 
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); 
+            for(let i=0; i<16; i++) { 
+                let p = document.createElementNS("http://www.w3.org/2000/svg", "path"); 
+                p.setAttribute("transform", `translate(${(i-8)*0.4}, ${-(i-8)})`); 
+                p.setAttribute("stroke", "#ef4444"); 
+                p.setAttribute("stroke-width", "2.5"); 
+                p.setAttribute("fill", "none"); 
+                p.setAttribute("stroke-linecap", "round"); 
+                let dStr = `M ${path[0].x} ${path[0].y}`; 
+                for(let pt=1; pt<path.length; pt++) { dStr += ` L ${path[pt].x} ${path[pt].y}`; } 
+                p.setAttribute("d", dStr); 
+                g.appendChild(p); 
+            } 
+            svg.appendChild(g); 
+        }); 
+    } 
+
+    // 7 സെക്കൻഡ് നേരം പ്രൊജക്ടറിൽ ഉത്തരം കാണിച്ച ശേഷം യാന്ത്രികമായി അടുത്ത വാക്കിലേക്ക് പോകുന്നു
+    setTimeout(() => { 
+        currentIdx++; 
+        loadNextDictationWord(); 
+    }, 7000); 
+} 
+
+function exitExamMode() { 
+    if(countdownTimer) clearInterval(countdownTimer); 
+    if(audioLoopTimer) clearInterval(audioLoopTimer); 
+    dictationAudio.pause(); 
+    document.getElementById('setupBox').style.display = 'block'; 
+    document.getElementById('examBox').style.display = 'none'; 
+} 
+</script> 
+</body> 
+</html>
