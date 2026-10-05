@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>വേർഡ് ആപ്പ് - പ്രോ ലൈവ് റൂം</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --arabic-font-size: 65px;   
+    --box-left-move: 0px;       
+    --box-top-move: 2px;        
+}
+
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: #eef2f3; margin: 0; padding: 10px; text-align: center; user-select: none; height: 100vh; overflow: hidden; }
+
+.container { 
+    max-width: 98%; 
+    margin: 0 auto; 
+    background: white; 
+    padding: 12px; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+    border-top: 5px solid #2ecc71; 
+    height: 95vh; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    position: relative; 
+}
+
+h2 { color: #2c3e50; margin: 0; font-size: 20px; }
+.header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+
+.four-lines-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin: 8px 0;
+    width: 100%;
+}
+
+.four-line-box {
+    flex: 1;
+    height: 160px; 
+    background: #fff;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    background-image: 
+        linear-gradient(#e74c3c 1px, transparent 1px), 
+        linear-gradient(#3498db 1px, transparent 1px), 
+        linear-gradient(#3498db 1px, transparent 1px), 
+        linear-gradient(#e74c3c 1px, transparent 1px);
+    background-size: 100% 160px;
+    background-position: 0 40px, 0 70px, 0 100px, 0 130px;
+    background-repeat: no-repeat;
+}
+
+.writing-board-section {
+    margin-top: 5px;
+    border-top: 2px dashed #bdc3c7;
+    padding-top: 5px;
+}
+.writing-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #e67e22;
+    text-align: left;
+    margin-bottom: 3px;
+}
+.full-width-board {
+    width: 100%;
+    height: 300px; 
+    background: #fff;
+    border: 2px solid #e67e22;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hw-canvas-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.arbi-text {
+    font-size: var(--arabic-font-size);
+    font-family: 'Arabic Typesetting', 'Traditional Arabic', 'Amiri', sans-serif;
+    color: #2c3e50;
+    direction: rtl;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap;
+    transform: translate(var(--box-left-move), var(--box-top-move)); 
+}
+
+.result-badge { position: absolute; top: 10px; right: 10px; font-size: 35px; z-index: 10; display: none; }
+.result-badge-tick { color: #2ecc71; }
+.timer-container { width: 100%; background: #ddd; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
+.timer-bar { height: 100%; background: #e74c3c; width: 100%; transition: width 0.1s linear; }
+
+.alignment-controller {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: rgba(44, 62, 80, 0.95);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    z-index: 10000;
+    width: 180px;
+    text-align: left;
+    font-size: 11px;
+}
+.drag-header {
+    padding: 3px;
+    cursor: move;
+    background-color: #2980b9;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+.alignment-controller label { color: #bdc3c7; margin-top: 4px; font-size: 10px; display: flex; justify-content: space-between;}
+.alignment-controller input, .alignment-controller select { width: 100%; margin: 2px 0; }
+.alignment-controller select { background: #34495e; color: white; border: 1px solid #7f8c8d; padding: 3px; border-radius: 4px;}
+
+.btn-pause {
+    background: #e67e22;
+    color: white;
+    border: none;
+    padding: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+.btn-pause.paused { background: #2ecc71; }
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    body { padding: 4px; }
+    .container { height: 97vh; padding: 6px; }
+    h2 { font-size: 16px; }
+    .header-area h3 { font-size: 13px; margin: 0; }
+    
+    .four-line-box { 
+        height: 105px; 
+        background-size: 100% 105px;
+        background-position: 0 25px, 0 45px, 0 65px, 0 85px;
+    }
+    .full-width-board { height: 105px; }
+    .writing-board-section { margin-top: 2px; padding-top: 2px; }
+    .writing-title { font-size: 12px; margin-bottom: 1px; }
+}
+
+.overlay-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44, 62, 80, 0.95); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; padding: 20px; }
+
+.btn-restart { background: #3498db; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 0 #2980b9; }
+.btn-restart:active { transform: translateY(4px); box-shadow: none; }
+.btn-green { background: #2ecc71; color: white; border: none; padding: 10px 20px; font-size: 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
+select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; width: 100%; margin-top: 4px; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<div class="alignment-controller" id="liveTool" style="display:none;">
+    <div class="drag-header" id="dragHandle"><i class="fa-solid fa-arrows-to-dot"></i> ഇവിടെ പിടിച്ചു നീക്കുക</div>
+    
+    <label>ഫോണ്ട് മാറ്റുക:</label>
+    <select id="fontSelect" onchange="adjustText()">
+        <option value="'Arabic Typesetting'">Arabic Typesetting</option>
+        <option value="'Traditional Arabic'">Traditional Arabic</option>
+        <option value="'Lateef'">Lateef (സുന്ദരമായ ഫോണ്ട്)</option>
+        <option value="'Scheherazade New'">Scheherazade New</option>
+        <option value="'Simplified Arabic'">Simplified Arabic</option>
+        <option value="'Amiri'">Amiri Font</option>
+        <option value="sans-serif">Normal Sans-Serif</option>
+    </select>
+
+    <label>വലിപ്പം: <span id="valSize">65px</span></label>
+    <input type="range" id="sliderSize" min="20" max="200" value="65" oninput="adjustText()">
+    
+    <label>ഉയരം: <span id="valTop">2px</span></label>
+    <input type="range" id="sliderTop" min="-40" max="40" value="2" oninput="adjustText()">
+    
+    <label>ഇടത്/വലത്: <span id="valLeft">0px</span></label>
+    <input type="range" id="sliderLeft" min="-80" max="80" value="0" oninput="adjustText()">
+
+    <button id="pauseBtn" class="btn-pause" onclick="togglePause()"><i class="fa-solid fa-pause"></i> Pause</button>
+</div>
+
+<div id="startOverlay" class="overlay-screen">
+    <h1><i class="fa-solid fa-display fa-2x" style="color:#2ecc71; margin-bottom:10px; display:block;"></i> വേർഡ് ആപ്പ് സ്മാർട്ട് ലൈവ് 🪄</h1>
+    <div style="width:100%; max-width:350px;">
+        <label style="color:white;">🏫 മദ്രസ തിരഞ്ഞെടുക്കുക:</label>
+        <select id="madrasaSelect" onchange="updateStudentDropdown()"></select>
+        
+        <label style="color:white;">👤 കുട്ടിയുടെ പേര്:</label>
+        <select id="studentSelect"></select>
+        
+        <button class="btn btn-green" onclick="startGame()">🚀 ക്ലാസ്സ് ആരംഭിക്കുക</button>
+    </div>
+</div>
+
+<div class="container" id="gameContent" style="display:none;">
+    <div class="header-area">
+        <h3 id="studentHeading" style="color:#7f8c8d; font-size: 14px;">👤 കുട്ടി: </h3>
+        <h2>ശ്രദ്ധിച്ചു കേൾക്കുക, എഴുതുന്നത് നോക്കുക! 🎧🖋️</h2>
+        <span style="color:#aaa; font-size:11px;" id="modeIndicator">Smart Mode</span>
+    </div>
+
+    <div class="timer-container" id="timerContainer">
+        <div class="timer-bar" id="timerBar"></div>
+    </div>
+
+    <div class="four-lines-container">
+        <div class="four-line-box" id="boxLeft">
+            <div class="arbi-text" id="textLeft"></div>
+            <div class="result-badge" id="tickLeft"><i class="fa-solid fa-circle-check result-badge-tick"></i></div>
+        </div>
+
+        <div class="four-line-box" id="boxRight">
+            <div class="arbi-text" id="textRight"></div>
+            <div class="result-badge" id="tickRight"><i class="fa-solid fa-circle-check result-badge-tick"></i></div>
+        </div>
+    </div>
+
+    <div class="writing-board-section" id="writingSection" style="display:none;">
+        <div class="writing-title"><i class="fa-solid fa-pen-fancy"></i> എഴുതുന്ന രൂപം ശ്രദ്ധിക്കുക:</div>
+        <div class="full-width-board">
+            <svg class="hw-canvas-svg" id="svgWritingBoard" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 700" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+    </div>
+</div>
+
+<script>
+const GH_USER = "zain-zain22"; 
+const GH_REPO = "class-2-duroos-part-2-chater-1"; 
+const GH_BRANCH = "main";
+const BASE_URL = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/${GH_BRANCH}/`;
+
+let allWordsList = []; 
+let currentQuestionIndex = 0; 
+let leftWord = null;
+let rightWord = null;
+let targetWord = null;
+let currentAudio = null;
+let timerInterval = null;
+let maxDuration = 60; 
+let timeLeft = 60;   
+let isPaused = false; 
+let audioContextUnlocked = false; 
+let visibilityData = { madrasas: {}, students: {} };
+
+window.onload = function() {
+    loadDataFromJSON();
+    makeElementDraggable(document.getElementById("liveTool"));
+}
+
+function adjustText() {
+    let size = document.getElementById('sliderSize').value;
+    let top = document.getElementById('sliderTop').value;
+    let left = document.getElementById('sliderLeft').value;
+    let chosenFont = document.getElementById('fontSelect').value;
+    
+    document.getElementById('valSize').innerText = size + 'px';
+    document.getElementById('valTop').innerText = top + 'px';
+    document.getElementById('valLeft').innerText = left + 'px';
+    
+    let texts = document.querySelectorAll('.arbi-text');
+    texts.forEach(txt => {
+        txt.style.fontSize = size + 'px';
+        txt.style.fontFamily = chosenFont + ", 'Amiri', sans-serif"; 
+        txt.style.transform = `translate(${left}px, ${top}px)`;
+    });
+}
+
+function makeElementDraggable(elmnt) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    const handle = document.getElementById("dragHandle");
+    
+    if (handle) {
+        handle.onmousedown = dragMouseDown;
+        handle.ontouchstart = dragMouseDown;
+    } else {
+        elmnt.onmousedown = dragMouseDown;
+        elmnt.ontouchstart = dragMouseDown;
+    }
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        let clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+        let clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+        
+        pos3 = clientX;
+        pos4 = clientY;
+        
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+        
+        document.ontouchend = closeDragElement;
+        document.ontouchmove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        let clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+        let clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+        
+        pos1 = pos3 - clientX;
+        pos2 = pos4 - clientY;
+        pos3 = clientX;
+        pos4 = clientY;
+        
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        elmnt.style.right = "auto"; 
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+        document.ontouchend = null;
+        document.ontouchmove = null;
+    }
+}
+
+async function loadDataFromJSON() {
+    try {
+        let timeStamp = Date.now();
+        
+        // 0. visibility.json (Hide/Unhide വിവരങ്ങൾ ഫെച്ച് ചെയ്യുന്നു)
+        try {
+            let visRes = await fetch(BASE_URL + 'data/visibility.json?t=' + timeStamp);
+            if(!visRes.ok) visRes = await fetch('data/visibility.json?t=' + timeStamp);
+            if(visRes.ok) visibilityData = await visRes.json();
+        } catch(e) {
+            visibilityData = { madrasas: {}, students: {} };
+        }
+
+        // 1. മദ്രസയും കുട്ടികളുടെ വിവരങ്ങളും ഫെച്ച് ചെയ്യുന്നു (Hidden ഉള്ളവ ഒഴിവാക്കുന്നു)
+        try {
+            let mRes = await fetch(BASE_URL + 'data/master_list.json?t=' + timeStamp);
+            if(!mRes.ok) mRes = await fetch('data/master_list.json?t=' + timeStamp);
+            
+            if(mRes.ok) {
+                let masterData = await mRes.json();
+                let mSelect = document.getElementById('madrasaSelect');
+                mSelect.innerHTML = '';
+                
+                let schoolList = [];
+                Object.keys(masterData).forEach(mName => {
+                    // അഡ്മിൻ പാനലിൽ ഹൈഡ് ചെയ്തിട്ടില്ലാത്ത മദ്രസ മാത്രം ചേർക്കുന്നു
+                    if (!visibilityData.madrasas || !visibilityData.madrasas[mName]) {
+                        schoolList.push({ name: mName, students: masterData[mName] });
+                        let opt = document.createElement('option');
+                        opt.value = mName; opt.innerText = mName;
+                        mSelect.appendChild(opt);
+                    }
+                });
+                window.schoolConfig = schoolList;
+                updateStudentDropdown();
+            }
+        } catch(err) {
+            console.warn("master_list.json ഫെച്ച് ചെയ്യാനായില്ല:", err);
+        }
+
+        // 2. വേർഡ് ഡാറ്റ ഫെച്ച് ചെയ്ത് അൺഹൈഡ് ആയ വാക്കുകൾ മാത്രം എടുക്കുന്നു
+        let response = await fetch(BASE_URL + 'data/data.json?t=' + timeStamp);
+        if(!response.ok) {
+            response = await fetch('data/data.json?t=' + timeStamp);
+        }
+        let rawData = await response.json();
+        
+        if(rawData.words && Array.isArray(rawData.words)) {
+            // hidden: true അല്ലാത്ത വാക്കുകൾ മാത്രം ഫിൽട്ടർ ചെയ്യുന്നു
+            let unhiddenWords = rawData.words.filter(w => !w.hidden && !w.isHidden);
+            allWordsList = unhiddenWords.length > 30 ? unhiddenWords.slice(-30) : unhiddenWords;
+            currentQuestionIndex = 0; 
+            console.log("ഗെയിമിനായി ലോഡ് ചെയ്ത ആകെ വാക്കുകൾ:", allWordsList.length);
+        }
+    } catch (e) {
+        console.error(e);
+        alert("ഡാറ്റ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല! ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക.");
+    }
+}
+
+function updateStudentDropdown() {
+    let currentMadrasa = document.getElementById('madrasaSelect').value;
+    let sSelect = document.getElementById('studentSelect');
+    sSelect.innerHTML = '';
+    
+    if(window.schoolConfig) {
+        let found = window.schoolConfig.find(m => m.name === currentMadrasa);
+        if(found && found.students) {
+            let hiddenStudents = (visibilityData.students && visibilityData.students[currentMadrasa]) ? visibilityData.students[currentMadrasa] : {};
+            
+            found.students.forEach(student => {
+                // ഹൈഡ് ചെയ്യാത്ത കുട്ടികളെ മാത്രം സ്ക്രീനിൽ കാണിക്കുന്നു
+                if (!hiddenStudents[student]) {
+                    let opt = document.createElement('option');
+                    opt.value = student; opt.innerText = student;
+                    sSelect.appendChild(opt);
+                }
+            });
+        }
+    }
+}
+
+function unlockAudio() {
+    if (!audioContextUnlocked) {
+        let context = new (window.AudioContext || window.webkitAudioContext)();
+        if (context.state === 'suspended') {
+            context.resume();
+        }
+        audioContextUnlocked = true;
+    }
+}
+
+function startGame() {
+    unlockAudio(); 
+    let student = document.getElementById('studentSelect').value;
+    if(!student) return alert("പേര് തിരഞ്ഞെടുക്കുക!");
+    if(allWordsList.length < 1) return alert("വാക്കുകൾ ലഭ്യമല്ല!");
+    
+    document.getElementById('studentHeading').innerText = `👤 കുട്ടി: ${student}`;
+    document.getElementById('startOverlay').style.display = 'none';
+    document.getElementById('gameContent').style.display = 'block';
+    document.getElementById('liveTool').style.display = 'block';
+    
+    generateQuestion();
+}
+
+function generateQuestion() {
+    if(currentQuestionIndex >= allWordsList.length) {
+        if(currentAudio) currentAudio.pause();
+        clearInterval(timerInterval);
+        document.getElementById('liveTool').style.display = 'none';
+        document.getElementById('gameContent').innerHTML = `
+            <div style="margin-top: 18vh;">
+                <h2 style="color:#2ecc71; font-size:30px; margin-bottom:15px;">🎉 എല്ലാ വാക്കുകളും കഴിഞ്ഞു! 🎉</h2>
+                <button class="btn-restart" onclick="location.reload();"><i class="fa-solid fa-rotate-right"></i> വീണ്ടും കളിക്കുക</button>
+            </div>
+        `;
+        return;
+    }
+
+    isPaused = false;
+    let pBtn = document.getElementById('pauseBtn');
+    pBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+    pBtn.classList.remove('paused');
+
+    document.getElementById('tickLeft').style.display = 'none';
+    document.getElementById('tickRight').style.display = 'none';
+    document.getElementById('writingSection').style.display = 'none';
+    document.getElementById('svgWritingBoard').innerHTML = '';
+
+    targetWord = allWordsList[currentQuestionIndex];
+
+    let alternativeWords = allWordsList.filter(w => (w.arbiText || w.arbi) !== (targetWord.arbiText || targetWord.arbi));
+    let randomAlternative = alternativeWords.length > 0 ? alternativeWords[Math.floor(Math.random() * alternativeWords.length)] : targetWord;
+
+    if(Math.random() > 0.5) {
+        leftWord = targetWord;
+        rightWord = randomAlternative;
+    } else {
+        leftWord = randomAlternative;
+        rightWord = targetWord;
+    }
+
+    document.getElementById('textLeft').innerText = leftWord.arbiText || leftWord.arbi || '';
+    document.getElementById('textRight').innerText = rightWord.arbiText || rightWord.arbi || '';
+
+    adjustText(); 
+    playTargetAudioLoop();
+    
+    timeLeft = maxDuration; 
+    startTimer();
+}
+
+function playTargetAudioLoop() {
+    if(!targetWord || !targetWord.audio) return;
+    if(currentAudio) currentAudio.pause();
+    
+    let audioPath = targetWord.audio;
+    if (!audioPath.startsWith('http')) {
+        if (audioPath.startsWith('data/')) {
+            audioPath = BASE_URL + audioPath;
+        } else {
+            audioPath = BASE_URL + 'data/' + audioPath;
+        }
+    }
+    
+    currentAudio = new Audio(audioPath + '?t=' + Date.now());
+    currentAudio.loop = true; 
+    
+    let playPromise = currentAudio.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(error => {
+            console.log("ക്രോം ഓഡിയോ തടഞ്ഞു, സ്ക്രീൻ ക്ലിക്കിനായി കാക്കുന്നു...", error);
+            document.addEventListener('click', function unlockAndPlay() {
+                if(!isPaused) currentAudio.play();
+                document.removeEventListener('click', unlockAndPlay);
+            }, { once: true });
+        });
+    }
+}
+
+function startTimer() {
+    clearInterval(timerInterval);
+    let bar = document.getElementById('timerBar');
+    
+    timerInterval = setInterval(() => {
+        if(!isPaused) {
+            timeLeft -= 0.1;
+            let percentage = (timeLeft / maxDuration) * 100;
+            bar.style.width = percentage + '%';
+            
+            if(timeLeft <= 0) {
+                clearInterval(timerInterval);
+                handleTimeoutAndReveal();
+            }
+        }
+    }, 100);
+}
+
+function togglePause() {
+    let pBtn = document.getElementById('pauseBtn');
+    if(!currentAudio) return;
+
+    if(!isPaused) {
+        isPaused = true;
+        currentAudio.pause(); 
+        pBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play';
+        pBtn.classList.add('paused');
+    } else {
+        isPaused = false;
+        currentAudio.play(); 
+        pBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+        pBtn.classList.remove('paused');
+    }
+}
+
+function handleTimeoutAndReveal() {
+    if(currentAudio) {
+        currentAudio.loop = false;
+        currentAudio.pause();
+    }
+
+    let correctSide = (targetWord === leftWord) ? 'Left' : 'Right';
+    document.getElementById('tick' + correctSide).style.display = 'block';
+    document.getElementById('writingSection').style.display = 'block';
+
+    currentQuestionIndex++;
+
+    if(targetWord.writingPaths && targetWord.writingPaths.length > 0) {
+        animateHandwritingWithPen('svgWritingBoard', targetWord.writingPaths);
+    } else {
+        setTimeout(generateQuestion, 3000);
+    }
+}
+
+function animateHandwritingWithPen(svgId, pathsData) {
+    let board = document.getElementById(svgId);
+    board.innerHTML = ""; 
+    
+    let penImg = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    penImg.setAttributeNS("http://www.w3.org/1999/xlink", "href", "hand.png"); 
+    penImg.setAttribute("width", "300");
+    penImg.setAttribute("height", "300");
+    penImg.setAttribute("style", "position: absolute; z-index: 100; pointer-events: none; transition: transform 0.05s linear;");
+    penImg.style.display = "none";
+    
+    let pIdx = 0;
+    
+    function drawNextPath() {
+        if(isPaused) {
+            setTimeout(drawNextPath, 100);
+            return;
+        }
+
+        if(pIdx >= pathsData.length) {
+            penImg.style.display = "none";
+            setTimeout(generateQuestion, 3000);
+            return;
+        }
+        
+        let currentPathPoints = pathsData[pIdx];
+        if(!currentPathPoints || currentPathPoints.length === 0) {
+            pIdx++; drawNextPath(); return;
+        }
+        
+        let g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        let svgPathsArray = [];
+        
+        for(let i=0; i<16; i++) {
+            let p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            p.setAttribute("transform", `translate(${(i-8)*0.4}, ${-(i-8)})`);
+            p.setAttribute("stroke", "#e74c3c"); 
+            p.setAttribute("stroke-width", "3");
+            p.setAttribute("fill", "none");
+            p.setAttribute("stroke-linecap", "round");
+            g.appendChild(p);
+            svgPathsArray.push(p);
+        }
+        board.appendChild(g);
+        board.appendChild(penImg);
+        penImg.style.display = "block";
+        
+        let ptIdx = 0;
+        let dStr = `M ${currentPathPoints[0].x} ${currentPathPoints[0].y}`;
+        
+        function tracePoints() {
+            if(isPaused) {
+                setTimeout(tracePoints, 100);
+                return;
+            }
+
+            if(ptIdx >= currentPathPoints.length) {
+                pIdx++;
+                setTimeout(drawNextPath, 150);
+                return;
+            }
+            
+            let pt = currentPathPoints[ptIdx];
+            if(ptIdx === 0) dStr = `M ${pt.x} ${pt.y}`;
+            else dStr += ` L ${pt.x} ${pt.y}`;
+            
+            svgPathsArray.forEach(p => p.setAttribute("d", dStr));
+            
+            penImg.setAttribute("x", pt.x - 45); 
+            penImg.setAttribute("y", pt.y - 70); 
+
+            ptIdx++;
+            requestAnimationFrame(tracePoints);
+        }
+        tracePoints();
+    }
+    drawNextPath();
+}
+</script>
+</body>
+</html>
