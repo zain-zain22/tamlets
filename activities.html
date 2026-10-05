@@ -256,8 +256,12 @@ select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14
 </div>
 
 <script>
-const GH_USER = "zain-zain22"; 
-const GH_REPO = "class-2-duroos-part-2-chater-1"; 
+// ഡൈനാമിക് ആയി GitHub Username, Repository Name എന്നിവ കണ്ടെത്തുന്നു (ലോക്കൽ ടെസ്റ്റിംഗിനായി ഫോൾബാക്ക് സംവിധാനം)
+const pathSegments = window.location.pathname.split('/').filter(Boolean);
+const GH_USER = window.location.hostname.includes('github.io') 
+    ? window.location.hostname.split('.')[0] 
+    : "zain-zain22"; 
+const GH_REPO = pathSegments.length > 0 ? pathSegments[0] : "class-2-duroos-part-2-chater-1"; 
 const GH_BRANCH = "main";
 const BASE_URL = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/${GH_BRANCH}/`;
 
