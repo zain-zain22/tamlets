@@ -235,9 +235,9 @@ button:hover { background: #0369a1; }
     <div class="setup-box" id="setupBox"> 
         <h3>🔄 സെറ്റപ്പ് പാനൽ</h3> 
         <label class="input-label">നിങ്ങളുടെ GitHub യൂസർനെയിം നൽകുക:</label> 
-        <input type="text" id="userInput" value="zain-zain22"> 
+        <input type="text" id="userInput" value=""> 
         <label class="input-label">റപ്പോസിറ്ററി പേര് നൽകുക:</label> 
-        <input type="text" id="repoInput" value="class-2-duroos-part-2-chater-1"> 
+        <input type="text" id="repoInput" value=""> 
         <button onclick="fetchWordsFromAdmin()">🚀 വാക്കുകൾ ലോഡ് ചെയ്ത് പരീക്ഷ തുടങ്ങുക</button> 
     </div> 
 
@@ -279,6 +279,18 @@ let countdownTimer = null;
 let audioLoopTimer = null; 
 let dictationAudio = new Audio(); 
 
+// URL-ൽ നിന്ന് Auto Detect ചെയ്യാനുള്ള ലോജിക്
+window.addEventListener('DOMContentLoaded', () => {
+    const pathSegments = window.location.pathname.split('/').filter(Boolean);
+    const defaultUser = window.location.hostname.includes('github.io') 
+        ? window.location.hostname.split('.')[0] 
+        : "zain-zain22"; 
+    const defaultRepo = pathSegments.length > 0 ? pathSegments[0] : "class-2-duroos-part-2-chater-1"; 
+
+    document.getElementById('userInput').value = defaultUser;
+    document.getElementById('repoInput').value = defaultRepo;
+});
+
 function showToast(msg) {
     let t = document.getElementById("toast");
     t.textContent = msg;
@@ -293,11 +305,15 @@ async function fetchWordsFromAdmin() {
 
     document.getElementById('loadingOverlay').style.display = 'flex'; 
     
-    // അഡ്മിൻ പാനൽ അപ്‌ലോഡ് ചെയ്യുന്ന data.json ഫയലിൽ നിന്ന് നേരിട്ട് ഡാറ്റ എടുക്കുന്നു
-    const url = `https://raw.githubusercontent.com/${user}/${repo}/main/data/data.json?t=${Date.now()}`; 
+    // ഫ്രണ്ട്‌എൻഡിലും റോ പാത്തിലും മാറി ഫെച്ച് ചെയ്യാനായി പാത്തുകൾ സജ്ജമാക്കുന്നു
+    const rawUrl = `https://raw.githubusercontent.com/${user}/${repo}/main/data/data.json?t=${Date.now()}`; 
+    const localUrl = `data/data.json?t=${Date.now()}`;
 
     try { 
-        let response = await fetch(url); 
+        let response = await fetch(rawUrl); 
+        if(!response.ok) {
+            response = await fetch(localUrl);
+        }
         if(!response.ok) throw new Error("ഫയൽ കണ്ടെത്താൻ കഴിഞ്ഞില്ല. അഡ്മിൻ പാനലിൽ നിന്ന് പബ്ലിഷ് ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക."); 
         
         let data = await response.json(); 
