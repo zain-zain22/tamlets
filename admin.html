@@ -323,8 +323,13 @@ audio { margin-top: 5px; display: none; width: 100%; }
 </div> 
 
 <script> 
-const GH_USER = "zain-zain22"; 
-let GH_REPO = "class-2-duroos-part-2-chater-1"; 
+// ⚡ URL-ൽ നിന്ന് യൂസർനേമും റെപ്പോ നാമവും ഓട്ടോമാറ്റിക് ആയി എടുക്കുന്ന രീതി:
+const pathParts = window.location.pathname.split('/').filter(p => p.length > 0);
+const hostParts = window.location.hostname.split('.');
+
+// GitHub Pages URL 구조 format: https://<username>.github.io/<repo-name>/
+const GH_USER = hostParts[0] || "zain-zain22"; 
+const GH_REPO = pathParts[0] || "class-2-duroos-part-2-chater-1"; 
 const GH_BRANCH = "main"; 
 
 let masterSchoolData = {}; 
