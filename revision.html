@@ -93,8 +93,24 @@
     <audio id="audioPlayer" style="display:none;"></audio>
 
     <script>
-        const GH_USER = "zain-zain22"; 
-        const GH_REPO = "class-2-duroos-part-2-chater-1"; 
+        // Default Credentials (ലോക്കൽ ഫയൽ തുറക്കുമ്പോൾ ഉപയോഗിക്കാൻ)
+        let GH_USER = "zain-zain22"; 
+        let GH_REPO = "class-2-duroos-part-2-chater-1"; 
+
+        // URL-ൽ നിന്ന് Auto-Detect ചെയ്യാനുള്ള ഫംഗ്ഷൻ
+        function autoDetectRepoDetails() {
+            const hostname = window.location.hostname; // e.g., zain-zain22.github.io
+            const pathname = window.location.pathname; // e.g., /class-2-duroos-part-2-chater-1/index.html
+
+            if (hostname.includes('.github.io')) {
+                GH_USER = hostname.split('.github.io')[0];
+                
+                const pathParts = pathname.split('/').filter(p => p.length > 0);
+                if (pathParts.length > 0) {
+                    GH_REPO = pathParts[0];
+                }
+            }
+        }
 
         let bookData = { pages: [] };
         let masterList = {};
@@ -108,6 +124,7 @@
         let isWordAudioFinished = true;
 
         window.onload = function() {
+            autoDetectRepoDetails(); // ഓട്ടോ ഡിറ്റക്ഷൻ പ്രവൃത്തിപ്പിക്കുന്നു
             loadDataFromBackend();
         };
 
@@ -232,19 +249,13 @@
             
             if(visiblePages.length === 0) return alert("പേജുകൾ ലഭ്യമല്ല!");
 
-            let allLessons = [];
-            visiblePages.forEach(p => {
-                if (p.lesson && !allLessons.includes(p.lesson)) {
-                    allLessons.push(p.lesson);
-                }
-            });
-
-            if (allLessons.length > 5) {
-                let latest5Lessons = allLessons.slice(-5);
-                visiblePages = visiblePages.filter(p => latest5Lessons.includes(p.lesson));
+            // അവസാനത്തെ 10 പേജുകൾ മാത്രം എടുക്കുന്നു
+            if (visiblePages.length > 10) {
+                visiblePages = visiblePages.slice(-10);
             }
 
-            revisionPagesList = visiblePages.reverse(); 
+            // ക്രമം മാറാതെ യഥാർത്ഥ ഓർഡറിൽ ലിസ്റ്റ് സെറ്റ് ചെയ്യുന്നു
+            revisionPagesList = visiblePages; 
             
             if(revisionPagesList.length === 0) return alert("പേജുകൾ ലഭ്യമല്ല!");
             currentRevIdx = 0;
