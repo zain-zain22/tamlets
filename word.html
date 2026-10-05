@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>സൂപ്പർ വേർഡ് ചലഞ്ച്</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #1e3a8a; --success: #10b981; --danger: #ef4444; --bg: #f0f4f8; --gold: #ffd700; }
+        body { background-color: var(--bg); font-family: 'Segoe UI', sans-serif; padding: 15px; margin: 0; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .game-container { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: none; text-align: center; }
+        .master-speaker-btn { background: #3b82f6; color: white; width: 70px; height: 70px; border-radius: 50%; border: none; font-size: 24px; cursor: pointer; margin-bottom: 10px; transition: 0.2s; }
+        .master-speaker-btn:active { transform: scale(0.95); }
+        .letter-block { display: inline-block; padding: 12px 20px; margin: 5px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 34px; font-family: 'Amiri', serif; background: #fff; font-weight: bold; transition: 0.2s; user-select: none; }
+        .letter-block:active { transform: scale(0.9); }
+        .wrong { background: #fee2e2; border-color: red; }
+        .disabled { opacity: 0.2; pointer-events: none; background: #e2e8f0; }
+        .arabic-text-output { font-size: 36px; color: #047857; min-height: 55px; margin: 20px 0; font-family: 'Amiri', serif; direction: rtl; letter-spacing: 2px; }
+        .selection-box { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        select { width: 100%; padding: 12px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; outline: none; }
+        
+        .score-board { display: flex; justify-content: space-between; background: #eff6ff; padding: 10px 15px; border-radius: 10px; margin-bottom: 15px; font-size: 14px; font-weight: bold; color: #1e40af; border: 1px solid #bfdbfe; }
+
+        /* ഹാൻഡ്‌‌റൈറ്റിംഗ് പോപ്പ്-അപ്പ് ബോക്സ് */
+        .hw-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
+        .hw-modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 420px; text-align: center; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        
+        .hw-canvas-container { border: 3px solid #2ecc71; background: #fafafa; width: 100%; margin: 15px 0; position: relative; height: 260px; border-radius: 8px; overflow: hidden; }
+        #hwShowBoard { width: 100%; height: 100%; display: block; position: absolute; top: 0; left: 0; }
+        
+        #movingHand { 
+            position: absolute; 
+            width: 85px;
+            height: auto; 
+            pointer-events: none; 
+            z-index: 10; 
+            display: none; 
+            transform: translate(-23px, -30px); 
+            transition: transform 0.05s linear; 
+        }
+
+        /* സർട്ടിഫിക്കറ്റ് ഡിസൈൻ */
+        .win-container { display: none; background: #0a192f; border-radius: 16px; padding: 25px; border: 3px solid var(--gold); text-align: center; color: white; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .certificate { border: 4px double var(--gold); padding: 20px; border-radius: 15px; background: #001122; margin-top: 15px; }
+        .cert-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(255,215,0,0.2); font-size: 14px; color: #fff; }
+        .start-btn { background: var(--gold); color: black; font-size: 16px; border: none; padding: 14px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 50px; margin-top: 15px; transition: 0.3s; box-sizing: border-box; display: block; text-decoration: none; text-align: center; }
+        .start-btn:hover { transform: scale(1.02); }
+        .toast-msg { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px; display: none; z-index: 10000; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header style="text-align:center; padding:15px; background:var(--primary); color:white; border-radius:12px; margin-bottom:15px;">
+        <h1 style="margin:0; font-size:22px;"><i class="fa-solid fa-brain"></i> വേർഡ് ചലഞ്ച്</h1>
+    </header>
+
+    <div class="selection-box" id="setupBox">
+        <label style="font-weight:bold; color:#333;">മദ്രസ തിരഞ്ഞെടുക്കുക:</label>
+        <select id="madrassaSelect" onchange="updateStudentsDropdown()"><option value="">-- തിരഞ്ഞെടുക്കുക --</option></select>
+        <label style="margin-top:10px; display:block; font-weight:bold; color:#333;">നിങ്ങളുടെ പേര് തിരഞ്ഞെടുക്കുക:</label>
+        <select id="studentSelect" onchange="startGame()"><option value="">-- പേര് തിരഞ്ഞെടുക്കുക --</option></select>
+    </div>
+
+    <div class="game-container" id="gameZone">
+        <div class="score-board">
+            <span id="levelProgress">വാക്ക്: 0 / 0</span>
+            <span><i class="fa-solid fa-star" style="color:var(--gold);"></i> പോയിന്റ്: <span id="liveScore">1000</span></span>
+        </div>
+        <button class="master-speaker-btn" id="speakerBtn" onclick="playCurrentWordAudio()"><i class="fa-solid fa-volume-high"></i></button>
+        <div id="malWordDisplay" style="font-size:22px; font-weight:bold; margin:15px 0; color:var(--primary);">---</div>
+        <div class="arabic-text-output" id="arabicOutput"></div>
+        <div class="letters-pool" id="lettersPool"></div>
+    </div>
+
+    <div id="hwModal" class="hw-modal">
+        <div class="hw-modal-content">
+            <h3 style="color:#2ecc71; margin: 0 0 5px 0;"><i class="fa-solid fa-circle-check"></i> നിങ്ങൾ വിജയിച്ചു!</h3>
+            <p style="font-size:13px; color:#555; margin:0;">അറബിക് അക്ഷരങ്ങൾ എഴുതുന്നത് ശ്രദ്ധിക്കൂ:</p>
+            <div class="hw-canvas-container" id="canvasArea">
+                <svg id="hwShowBoard" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"></svg>
+                <img id="movingHand" src="hand.png" alt="Hand Drawing">
+            </div>
+            <button class="start-btn" style="background:#2ecc71; color:white; margin:0;" onclick="closeHwModalAndContinue()">അടുത്ത വാക്ക് <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <div class="win-container" id="winZone">
+        <h2 style="color:var(--gold); margin-top:0;"><i class="fa-solid fa-trophy"></i> ചലഞ്ച് പൂർത്തിയായി!</h2>
+        <p style="color:#ccc; font-size:14px;">എല്ലാ വാക്കുകളും നിങ്ങൾ വിജയകരമായി പൂർത്തിയാക്കിയിരിക്കുന്നു.</p>
+        
+        <div class="certificate">
+            <h3 style="text-align:center; color: var(--gold); margin-top:0; letter-spacing: 1px;">വേർഡ് ചലഞ്ച് സർട്ടിഫിക്കറ്റ്</h3>
+            <div id="certSchoolName" style="text-align:center; font-size:15px; color:var(--gold); margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">-</div>
+            <div class="cert-row"><span>പേര്:</span> <b id="final-name" style="color:var(--gold)">-</b></div>
+            <div class="cert-row"><span>ആകെ ലഭിച്ച പോയിന്റ്:</span> <b id="final-points" style="color:var(--success)">1000</b></div>
+            <div class="cert-row"><span>വരുത്തിയ ആകെ തെറ്റുകൾ:</span> <b id="final-attempts" style="color: #ef4444;">0 തവണ</b></div>
+            <div class="cert-row"><span>പൂർത്തിയാക്കിയത്:</span> <b id="final-real-time">-</b></div>
+            <div id="certClassStatus" style="text-align:center; font-size:13px; margin-top:15px; line-height:1.5; color:var(--gold); font-weight:bold;">-</div>
+
+            <canvas id="wordCertCanvas" width="800" height="580" style="display:none;"></canvas>
+
+            <button class="start-btn" style="background:#10b981; color:white; font-size:15px;" onclick="downloadWordCertificate()">
+                <i class="fa-solid fa-download"></i> സർട്ടിഫിക്കറ്റ് ഗാലറിയിലേക്ക് ഡൗൺലോഡ് ചെയ്യുക
+            </button>
+        </div>
+
+        <button class="start-btn" style="background:#3b82f6; color:white;" onclick="resetGameSession()">🔄 വീണ്ടും കളിക്കുക</button>
+        
+        <a href="practice4.html" class="start-btn" style="background:#10b981; color:white; margin-top:10px;">
+            📝 ക്വിസ് പ്രാക്ടീസ് ചെയ്യുക
+        </a>
+    </div>
+</div>
+
+<div id="toast" class="toast-msg"></div>
+
+<script>
+    let appData = { madrassasMap: {}, words: [] }; 
+    let visibilityData = { madrasas: {}, students: {} };
+    let generalQuizInfo = {}; 
+    let activeWords = []; 
+    let currentWordIndex = 0;
+    let currentTypedLetters = [];
+    let targetLettersSequence = [];
+    let totalWrongCount = 0; 
+    let playerName = "";
+    let selectedMadrasaName = "";
+    
+    let currentPoints = 1000;
+    let scoreTimer = null;
+    let hwIntervalsMemory = [];
+
+    function showToast(msg) {
+        let t = document.getElementById("toast");
+        t.textContent = msg;
+        t.style.display = "block";
+        setTimeout(() => { t.style.display = "none"; }, 3000);
+    }
+
+    function checkDailyReset() {
+        let today = new Date().toDateString();
+        let lastPlayedDate = localStorage.getItem("last_played_date");
+        if (lastPlayedDate !== today) {
+            localStorage.setItem("last_played_date", today);
+            let keys = Object.keys(localStorage);
+            keys.forEach(key => {
+                if(key.startsWith("saved_")) {
+                    localStorage.removeItem(key);
+                }
+            });
+        }
+    }
+
+    async function loadDataFromJSON() {
+        try {
+            checkDailyReset();
+
+            // 1. visibility.json പരിശോധിക്കുന്നു
+            try {
+                let visRes = await fetch('data/visibility.json?t=' + Date.now());
+                if(visRes.ok) visibilityData = await visRes.json();
+            } catch(e) {
+                visibilityData = { madrasas: {}, students: {} };
+            }
+
+            // 2. data.json / quiz_data.json
+            const [wordRes, quizRes] = await Promise.all([
+                fetch('data/data.json?t=' + Date.now()).then(r => r.ok ? r.json() : fetch('data.json?t=' + Date.now()).then(r => r.json())).catch(() => ({ words: [] })),
+                fetch('data/quiz_data.json?t=' + Date.now()).then(r => r.ok ? r.json() : { quizInfo: {} }).catch(() => ({ quizInfo: {} }))
+            ]);
+
+            let rawWords = (wordRes && Array.isArray(wordRes.words)) ? wordRes.words : [];
+            generalQuizInfo = quizRes.quizInfo || wordRes.quizInfo || {};
+
+            // Hide/Unhide അനുസരിച്ച് അൺഹൈഡ് ചെയ്ത വാക്കുകൾ മാത്രം എടുക്കുന്നു
+            activeWords = rawWords.filter(w => !w.hidden && !w.isHidden);
+
+            // 3. master_list.json ലോഡ് ചെയ്യുന്നു
+            try {
+                let masterRes = await fetch('data/master_list.json?t=' + Date.now());
+                if (!masterRes.ok) masterRes = await fetch('master_list.json?t=' + Date.now());
+                if (masterRes.ok) {
+                    appData.madrassasMap = await masterRes.json();
+                }
+            } catch (e) {
+                console.log("Master list load error:", e);
+            }
+
+            // 4. മദ്രസ ഡ്രോപ്പ്ഡൗൺ തയ്യാറാക്കുന്നു (Hidden മദ്രസകൾ ഒഴിവാക്കുന്നു)
+            let select = document.getElementById("madrassaSelect");
+            select.innerHTML = '<option value="">-- തിരഞ്ഞെടുക്കുക --</option>';
+
+            let allMadrasas = Object.keys(appData.madrassasMap || {});
+            let visibleMadrasas = allMadrasas.filter(m => !visibilityData.madrasas || !visibilityData.madrasas[m]);
+
+            if (visibleMadrasas.length > 0) {
+                visibleMadrasas.sort().forEach((mName) => {
+                    let opt = document.createElement("option");
+                    opt.value = mName;
+                    opt.textContent = mName;
+                    select.appendChild(opt);
+                });
+            } else {
+                showToast("മദ്രസ വിവരങ്ങൾ ലഭ്യമായിട്ടില്ല.");
+            }
+        } catch (err) {
+            console.error("Data Load Error:", err);
+            showToast("ഡാറ്റ ഫയലുകൾ ലോഡ് ചെയ്യാൻ സാധിച്ചില്ല!");
+        }
+    }
+
+    function updateStudentsDropdown() {
+        let mName = document.getElementById("madrassaSelect").value;
+        let sSelect = document.getElementById("studentSelect");
+        sSelect.innerHTML = '<option value="">-- പേര് തിരഞ്ഞെടുക്കുക --</option>';
+        
+        if (mName !== "") {
+            selectedMadrasaName = mName;
+            let studentList = appData.madrassasMap[mName] || [];
+
+            // Hidden വിദ്യാർത്ഥികളെ ഒഴിവാക്കുന്നു
+            let hiddenStudentsForMadrasa = (visibilityData.students && visibilityData.students[mName]) ? visibilityData.students[mName] : {};
+            let visibleStudents = studentList.filter(s => !hiddenStudentsForMadrasa[s]);
+
+            if (Array.isArray(visibleStudents)) {
+                visibleStudents.sort().forEach(s => {
+                    let opt = document.createElement("option"); 
+                    opt.value = s; 
+                    opt.textContent = s;
+                    sSelect.appendChild(opt);
+                });
+            }
+        }
+    }
+
+    function startGame() {
+        playerName = document.getElementById("studentSelect").value;
+        if(playerName) {
+            let userWrongKey = "saved_wrong_count_" + playerName;
+            let userPointsKey = "saved_points_" + playerName;
+
+            currentWordIndex = 0; 
+
+            if(localStorage.getItem(userWrongKey)) {
+                totalWrongCount = parseInt(localStorage.getItem(userWrongKey));
+                currentPoints = parseInt(localStorage.getItem(userPointsKey));
+            } else {
+                totalWrongCount = 0;
+                currentPoints = 1000;
+                
+                localStorage.setItem(userWrongKey, totalWrongCount);
+                localStorage.setItem(userPointsKey, currentPoints);
+            }
+
+            document.getElementById("setupBox").style.display = "none";
+            document.getElementById("gameZone").style.display = "block";
+            document.getElementById("liveScore").textContent = currentPoints;
+            
+            startPointTimer();
+            loadWordLevel();
+        }
+    }
+
+    function startPointTimer() {
+        clearInterval(scoreTimer);
+        scoreTimer = setInterval(() => {
+            if(currentPoints > 0) {
+                currentPoints--;
+                document.getElementById("liveScore").textContent = currentPoints;
+                localStorage.setItem("saved_points_" + playerName, currentPoints); 
+            }
+        }, 1000);
+    }
+
+    function splitArabicWord(word) { return word.match(/[\u0600-\u06ff][\u064b-\u065f]*/g) || []; }
+
+    function loadWordLevel() {
+        if(!activeWords || activeWords.length === 0) {
+            alert("വാക്കുകൾ ലഭ്യമായിട്ടില്ല!");
+            return;
+        }
+
+        document.getElementById("levelProgress").textContent = `വാക്ക്: ${currentWordIndex + 1} / ${activeWords.length}`;
+
+        let obj = activeWords[currentWordIndex];
+        document.getElementById("malWordDisplay").textContent = obj.mal;
+        document.getElementById("arabicOutput").textContent = "";
+        currentTypedLetters = [];
+        targetLettersSequence = splitArabicWord(obj.arbiText || obj.arbi || "");
+        
+        playCurrentWordAudio();
+
+        let pool = document.getElementById("lettersPool");
+        pool.innerHTML = "";
+        
+        targetLettersSequence.slice().sort(() => Math.random() - 0.5).forEach((l) => {
+            let b = document.createElement("div"); b.className = "letter-block"; b.textContent = l;
+            b.onclick = () => {
+                if (l === targetLettersSequence[currentTypedLetters.length]) {
+                    currentTypedLetters.push(l);
+                    document.getElementById("arabicOutput").textContent = currentTypedLetters.join("");
+                    b.classList.add("disabled");
+                    
+                    if (currentTypedLetters.length === targetLettersSequence.length) {
+                        setTimeout(() => {
+                            if (obj.writingPaths && Array.isArray(obj.writingPaths) && obj.writingPaths.length > 0) {
+                                startHandwritingAnimation(obj.writingPaths);
+                            } else {
+                                closeHwModalAndContinue();
+                            }
+                        }, 400);
+                    }
+                } else {
+                    totalWrongCount++;
+                    localStorage.setItem("saved_wrong_count_" + playerName, totalWrongCount);
+
+                    currentPoints = Math.max(0, currentPoints - 10);
+                    localStorage.setItem("saved_points_" + playerName, currentPoints);
+                    document.getElementById("liveScore").textContent = currentPoints;
+
+                    b.classList.add("wrong");
+                    
+                    setTimeout(() => { 
+                        alert("തെറ്റായിപ്പോയി! ലോഗിൻ പേജിലേക്ക് മടങ്ങുന്നു. അടുത്ത തവണ ഒന്നാമത്തെ ചോദ്യം മുതൽ വരും.");
+                        clearInterval(scoreTimer);
+                        location.reload(); 
+                    }, 200);
+                }
+            };
+            pool.appendChild(b);
+        });
+    }
+
+    function moveHandToSvgPoint(svgX, svgY, svgElem, containerElem, handElem) {
+        let pt = svgElem.createSVGPoint();
+        pt.x = svgX; pt.y = svgY;
+        
+        let globalMatrix = svgElem.getScreenCTM();
+        if (!globalMatrix) return;
+        
+        let screenPt = pt.matrixTransform(globalMatrix);
+        let containerRect = containerElem.getBoundingClientRect();
+
+        let localX = screenPt.x - containerRect.left;
+        let localY = screenPt.y - containerRect.top;
+
+        handElem.style.left = localX + 'px';
+        handElem.style.top = localY + 'px';
+    }
+
+    function startHandwritingAnimation(allPaths) {
+        let board = document.getElementById("hwShowBoard");
+        let hand = document.getElementById("movingHand");
+        let container = document.getElementById("canvasArea");
+        
+        board.innerHTML = ""; 
+        hand.style.display = "block";
+        document.getElementById("hwModal").style.display = "flex";
+
+        hwIntervalsMemory.forEach(clearInterval);
+        hwIntervalsMemory = [];
+
+        let minX = 1000, minY = 1000, maxX = 0, maxY = 0;
+        let hasPoints = false;
+        allPaths.forEach(path => {
+            path.forEach(pt => {
+                if(pt.x < minX) minX = pt.x;
+                if(pt.y < minY) minY = pt.y;
+                if(pt.x > maxX) maxX = pt.x;
+                if(pt.y > maxY) maxY = pt.y;
+                hasPoints = true;
+            });
+        });
+
+        if (hasPoints) {
+            let padding = 80;
+            let width = (maxX - minX) + (padding * 2);
+            let height = (maxY - minY) + (padding * 2);
+            board.setAttribute("viewBox", `${minX - padding} ${minY - padding} ${width} ${height}`);
+        } else {
+            board.setAttribute("viewBox", "0 0 1000 1000");
+        }
+
+        let currentPathIndex = 0;
+        let globalDelay = 100;
+
+        function animateSingleStroke(pathPoints) {
+            if(!pathPoints || pathPoints.length === 0) return;
+            
+            let g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            let pathsList = [];
+            
+            for(let i = 0; i < 12; i++) {
+                let p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                p.setAttribute("transform", `translate(${(i - 6) * 0.1}, ${-(i - 6) * 0.6})`);
+                p.setAttribute("stroke", "#e74c3c"); 
+                p.setAttribute("stroke-width", "2");
+                p.setAttribute("fill", "none"); 
+                p.setAttribute("stroke-linecap", "round");
+                p.setAttribute("d", `M ${pathPoints[0].x} ${pathPoints[0].y}`);
+                g.appendChild(p); 
+                pathsList.push(p);
+            }
+            board.appendChild(g);
+
+            let ptIdx = 1;
+            let speed = Math.max(20, Math.min(60, Math.floor(3000 / pathPoints.length)));
+            
+            let strokeTimer = setTimeout(() => {
+                moveHandToSvgPoint(pathPoints[0].x, pathPoints[0].y, board, container, hand);
+                
+                let interval = setInterval(() => {
+                    if(ptIdx >= pathPoints.length) {
+                        clearInterval(interval);
+                        currentPathIndex++;
+                        if(currentPathIndex < allPaths.length) {
+                            animateSingleStroke(allPaths[currentPathIndex]);
+                        } else {
+                            setTimeout(() => { hand.style.display = "none"; }, 300);
+                        }
+                        return;
+                    }
+                    
+                    let currPt = pathPoints[ptIdx];
+                    let dString = ` L ${currPt.x} ${currPt.y}`;
+                    pathsList.forEach(p => p.setAttribute("d", p.getAttribute("d") + dString));
+                    
+                    moveHandToSvgPoint(currPt.x, currPt.y, board, container, hand);
+                    ptIdx++;
+                }, speed);
+                
+                hwIntervalsMemory.push(interval);
+            }, globalDelay);
+        }
+
+        animateSingleStroke(allPaths[0]);
+    }
+
+    function closeHwModalAndContinue() {
+        document.getElementById("hwModal").style.display = "none";
+        currentWordIndex++;
+        
+        if(currentWordIndex < activeWords.length) {
+            loadWordLevel();
+        } else {
+            clearInterval(scoreTimer); 
+            showFinalChallengeResult();
+        }
+    }
+
+    function playCurrentWordAudio() {
+        let wordObj = activeWords[currentWordIndex];
+        if(!wordObj || !wordObj.audio) {
+            showToast("ശബ്ദം ലഭ്യമാക്കിയിട്ടില്ല.");
+            return;
+        }
+
+        let audioSrc = wordObj.audio.trim();
+        let fullPath = audioSrc.startsWith('data/') ? audioSrc : 'data/' + audioSrc;
+
+        let audio = new Audio(fullPath);
+        audio.play().catch(err => {
+            console.error("Audio playback error:", err);
+            showToast("ശബ്ദം പ്ലേ ചെയ്യാൻ സാധിച്ചില്ല!");
+        });
+    }
+
+    function showFinalChallengeResult() {
+        document.getElementById("gameZone").style.display = "none";
+        document.getElementById("winZone").style.display = "block";
+
+        document.getElementById('certSchoolName').innerText = selectedMadrasaName; 
+        document.getElementById('final-name').innerText = playerName; 
+        document.getElementById('final-points').innerText = currentPoints + " പോയിന്റ്";
+        document.getElementById('final-attempts').innerText = totalWrongCount + " തവണ"; 
+
+        let now = new Date(); 
+        let timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); 
+        let dateStr = now.toLocaleDateString('en-GB'); 
+        document.getElementById('final-real-time').innerText = `${timeStr} | ${dateStr}`; 
+
+        let info = generalQuizInfo;
+        let className = info.class ? info.class : "-"; 
+        let subjectName = info.subject ? info.subject : "-"; 
+        let partName = info.part ? info.part : "-";
+        let lessonNo = info.chapter || info.lesson || "-";
+        let lessonName = info.lessonName ? info.lessonName : "-"; 
+
+        document.getElementById('certClassStatus').innerText = `ക്ലാസ്: ${className} | പാർട്ട്: ${partName} | വിഷയം: ${subjectName} \n പാഠം: ${lessonNo} - ${lessonName}`; 
+    }
+
+    function resetGameSession() {
+        localStorage.removeItem("saved_wrong_count_" + playerName);
+        localStorage.removeItem("saved_points_" + playerName);
+        location.reload();
+    }
+
+    function downloadWordCertificate() {
+        const canvas = document.getElementById('wordCertCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let info = generalQuizInfo;
+        let className = info.class ? info.class : "-";
+        let subjectName = info.subject ? info.subject : "-";
+        let partName = info.part ? info.part : "-";
+        let lessonNo = info.chapter || info.lesson || "-";
+        let lessonName = info.lessonName ? info.lessonName : "-";
+
+        let grad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 50, canvas.width/2, canvas.height/2, canvas.width/1.2);
+        grad.addColorStop(0, '#1e3a8a');
+        grad.addColorStop(1, '#0f172a');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = "#ffd700";
+        ctx.lineWidth = 8;
+        ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+        
+        ctx.strokeStyle = "rgba(255, 215, 0, 0.3)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(27, 27, canvas.width - 54, canvas.height - 54);
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        ctx.fillStyle = "#ffd700";
+        ctx.font = "bold 34px 'Segoe UI', sans-serif";
+        ctx.fillText("🧠 സൂപ്പർ വേർഡ് ചലഞ്ച് 🧠", canvas.width / 2, 65);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 24px 'Segoe UI', sans-serif";
+        ctx.fillText("വിജയ സർട്ടിഫിക്കറ്റ്", canvas.width / 2, 115);
+
+        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        ctx.font = "italic 16px 'Segoe UI', sans-serif";
+        ctx.fillText("അറബിക് പദവിന്യാസ ചലഞ്ച് മികച്ച രീതിയിൽ പൂർത്തിയാക്കിയ", canvas.width / 2, 165);
+
+        ctx.fillStyle = "#ffd700";
+        ctx.font = "bold 32px 'Segoe UI', sans-serif";
+        ctx.fillText(playerName, canvas.width / 2, 215);
+
+        ctx.fillStyle = "rgba(255,255,255,0.6)";
+        ctx.font = "16px 'Segoe UI', sans-serif";
+        ctx.fillText(`മദ്രസ: ${selectedMadrasaName}`, canvas.width / 2, 255);
+
+        ctx.fillStyle = "rgba(255, 215, 0, 0.05)";
+        ctx.fillRect(60, 290, canvas.width - 120, 190);
+        ctx.strokeStyle = "rgba(255, 215, 0, 0.2)";
+        ctx.strokeRect(60, 290, canvas.width - 120, 190);
+
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#ffd700";
+        ctx.font = "bold 16px 'Segoe UI', sans-serif";
+        
+        let startX = 90;
+        let startY = 325;
+        let spacing = 35;
+
+        ctx.fillText(`📚 ക്ലാസ്സ്: ${className}`, startX, startY);
+        ctx.fillText(`🗂️ പാർട്ട്: ${partName}`, startX, startY + spacing);
+        ctx.fillText(`📖 വിഷയം: ${subjectName}`, startX, startY + (spacing * 2));
+        ctx.fillText(`✒️ പാഠം: ${lessonNo} - ${lessonName}`, startX, startY + (spacing * 3));
+
+        let rightX = startX + 360;
+        ctx.fillStyle = "#10b981";
+        ctx.font = "bold 18px 'Segoe UI', sans-serif";
+        ctx.fillText(`⭐ ആകെ പോയിന്റ്: ${currentPoints}`, rightX, startY + 15);
+        
+        ctx.fillStyle = "#ef4444";
+        ctx.font = "bold 16px 'Segoe UI', sans-serif";
+        ctx.fillText(`❌ ആകെ തെറ്റുകൾ: ${totalWrongCount} തവണ`, rightX, startY + 15 + spacing);
+        
+        ctx.fillStyle = "#ffd700";
+        ctx.font = "bold 20px 'Segoe UI', sans-serif";
+        ctx.fillText("🏆 പദവിന്യാസ വിജയി!", rightX, startY + 15 + (spacing * 2));
+
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 16px 'Segoe UI', sans-serif";
+        ctx.fillText("✨ അക്ഷരക്കൂട്ടുകൾ കൃത്യമായി കണ്ടെത്തിയ മിടുക്കന് അഭിനന്ദനങ്ങൾ! ✨", canvas.width / 2, 515);
+
+        ctx.textAlign = "left";
+        ctx.fillStyle = "rgba(255,255,255,0.4)";
+        ctx.font = "12px 'Segoe UI', sans-serif";
+        let fullDateText = document.getElementById('final-real-time').innerText;
+        ctx.fillText(`തീയതി: ${fullDateText}`, 45, 555);
+
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#ffd700";
+        ctx.font = "bold 14px 'Segoe UI', sans-serif";
+        ctx.fillText("വേർഡ് ചലഞ്ച് ടീം", canvas.width - 45, 555);
+
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.download = `Word_Challenge_Certificate_${playerName}.png`;
+        link.href = image;
+        link.click();
+    }
+
+    window.onload = loadDataFromJSON;
+</script>
+</body>
+</html>
