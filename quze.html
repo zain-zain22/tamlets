@@ -123,8 +123,12 @@
     <audio id="globalAudioPlayer"></audio>
 
     <script>
-    const GH_USER = "zain-zain22"; 
-    const GH_REPO = "class-2-duroos-part-2-chater-1"; 
+    // URL-ൽ നിന്ന് Auto Detect ചെയ്യാനുള്ള ലോജിക്
+    const pathSegments = window.location.pathname.split('/').filter(Boolean);
+    const GH_USER = window.location.hostname.includes('github.io') 
+        ? window.location.hostname.split('.')[0] 
+        : "zain-zain22"; 
+    const GH_REPO = pathSegments.length > 0 ? pathSegments[0] : "class-2-duroos-part-2-chater-1"; 
 
     let masterSchoolData = {}; 
     let visibilityData = { madrasas: {}, students: {} };
@@ -150,6 +154,7 @@
             // 1. visibility.json ഫെച്ച് ചെയ്യുന്നു
             try {
                 let visRes = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/visibility.json?t=${timeStamp}`);
+                if(!visRes.ok) visRes = await fetch(`data/visibility.json?t=${timeStamp}`);
                 if(visRes.ok) visibilityData = await visRes.json();
             } catch(e) {
                 visibilityData = { madrasas: {}, students: {} };
@@ -157,10 +162,12 @@
 
             // 2. master_list.json ഫെച്ച് ചെയ്യുന്നു
             let res1 = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/master_list.json?t=${timeStamp}`); 
+            if(!res1.ok) res1 = await fetch(`data/master_list.json?t=${timeStamp}`);
             if(res1.ok) masterSchoolData = await res1.json(); 
 
             // 3. quiz_data.json ഫെച്ച് ചെയ്യുന്നു
             let res2 = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/quiz_data.json?t=${timeStamp}`); 
+            if(!res2.ok) res2 = await fetch(`data/quiz_data.json?t=${timeStamp}`);
             if(res2.ok) quizData = await res2.json(); 
 
             setupTitleAndLabels();
