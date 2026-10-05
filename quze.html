@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>സൗണ്ട് ബുക്ക് - ക്വിസ് സ്റ്റുഡന്റ് പാനൽ</title>
+    <style>
+        :root { --kbc-bg: radial-gradient(circle, #001f3f 0%, #000000 100%); --gold: #ffd700; --white: #ffffff; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', "Noto Sans Malayalam", sans-serif; background: var(--kbc-bg); margin: 0; padding: 10px; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--white); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        #game-box { background: rgba(0, 43, 82, 0.9); padding: 25px; width: 95%; max-width: 500px; min-height: 550px; border-radius: 25px; border: 3px solid var(--gold); box-shadow: 0 0 40px rgba(0,0,0,0.8); position: relative; display: flex; flex-direction: column; }
+        h2 { color: var(--gold); font-size: 1.4rem; text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 15px; margin: 10px 0 25px; line-height: 1.4; }
+        
+        /* പാഠഭാഗ വിവരങ്ങൾ കാണിക്കുന്ന ടേബിൾ */
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 13px; }
+        .info-table td { padding: 8px; border: 1px solid rgba(255, 215, 0, 0.3); background: rgba(255, 215, 0, 0.05); color: var(--gold); text-align: center; border-radius: 4px; }
+        
+        #question-box { font-size: 1.25rem; min-height: 100px; text-align: center; line-height: 1.6; background: rgba(255, 215, 0, 0.05); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 215, 0, 0.3); margin-bottom: 15px; position: relative; }
+        
+        /* വോയിസ് റീപ്ലേ ബട്ടൺ */
+        .btn-replay { background: #9b59b6; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; margin-bottom: 15px; width: auto; align-self: center; display: inline-block; }
+        
+        .option-wrapper { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; width: 100%; opacity: 0; transform: translateY(10px); transition: 0.3s; }
+        .option-wrapper.show { opacity: 1; transform: translateY(0); }
+        
+        .btn { display: block; width: 100%; padding: 15px; border: 1px solid var(--gold); border-radius: 50px; font-size: 16px; cursor: pointer; font-weight: bold; transition: 0.3s; background: linear-gradient(180deg, #004488 0%, #001122 100%); color: white; text-align: right; padding-right: 25px; box-sizing: border-box; outline: none; flex-grow: 1; }
+        .btn:hover:not(:disabled) { background: var(--gold); color: black; transform: scale(1.02); }
+        
+        /* ഓപ്ഷനുകൾ ഓരോന്നിനും അടുത്തുള്ള സ്പീക്കർ ഐക്കൺ */
+        .option-speaker { width: 50px; background: #e74c3c; color: white; border: 1px solid var(--gold); border-radius: 50px; padding: 12px 0; text-align: center; font-size: 16px; cursor: pointer; font-weight: bold; }
+        
+        .correct { background: #2ecc71 !important; color: white !important; border-color: #27ae60 !important; text-align: center; padding-right: 15px; } 
+        .wrong { background: #e74c3c !important; color: white !important; border-color: #c0392b !important; text-align: center; padding-right: 15px; } 
+        
+        .start-btn { background: var(--gold); color: black; font-size: 18px; border: none; text-align: center; padding-right: 15px; margin-top: 10px; border-radius: 50px; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; }
+        #info-bar { display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--gold); font-size: 14px; font-weight: bold; }
+        .hidden { display: none !important; }
+        
+        select { width: 100%; padding: 16px; border-radius: 30px; border: 2px solid var(--gold); background: #001122; color: white; text-align: center; font-size: 18px; outline: none; appearance: none; cursor: pointer; text-align-last: center; margin-bottom: 15px; }
+        .certificate { border: 4px double var(--gold); padding: 20px; border-radius: 15px; background: #001122; }
+        .cert-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed rgba(255,215,0,0.2); font-size: 14px; }
+        .point-box { background: var(--gold); color: black; padding: 15px; border-radius: 10px; margin: 15px 0; text-align: center; font-size: 22px; font-weight: 900; }
+        
+        .loading-overlay { display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); color: var(--gold); justify-content: center; align-items: center; font-size: 20px; font-weight: bold; z-index: 9999; flex-direction: column; }
+    </style>
+</head>
+<body>
+
+    <div class="loading-overlay" id="loadingOverlay"> 
+        <span>📦 ക്വിസ് വിവരങ്ങൾ ശേഖരിക്കുന്നു...</span> 
+    </div>
+
+    <div id="game-box">
+        <div id="start-screen">
+            <h2 id="loginTitle">🎓 സ്റ്റുഡന്റ് ലോഗിൻ</h2>
+            <div>
+                <label style="display:block; text-align:center; margin-bottom:10px; color:#aaa;">മദ്രസ തിരഞ്ഞെടുക്കുക:</label>
+                <select id="madrasaSelect" onchange="updateStudentDropdown()"></select>
+
+                <label style="display:block; text-align:center; margin-bottom:10px; color:#aaa;">നിങ്ങളുടെ പേര് തിരഞ്ഞെടുക്കുക:</label>
+                <select id="studentSelect" onchange="checkExistingStudentProgress()">
+                    <option value="">-- പേര് തിരഞ്ഞെടുക്കുക --</option>
+                </select>
+            </div>
+            
+            <div id="studentAttemptInfo" style="font-size: 13px; color: var(--gold); font-weight: bold; margin: 5px 0 15px 0; text-align: center; min-height: 20px;"></div>
+
+            <button class="start-btn" onclick="startGame()">ക്വിസ് തുടങ്ങാം 🚀</button>
+            <div style="text-align:center; font-size:10px; color:#aaa; margin-top:25px;">Faris Zaini Mannarkkad | 9895993822</div>
+        </div>
+
+        <div id="quiz-screen" class="hidden" style="display: flex; flex-direction: column;">
+            <div id="info-bar">
+                <span>ചോദ്യം: <span id="q-no"></span>/<span id="total-q"></span></span>
+                <span id="livePointsDisplay" style="background: rgba(255,215,0,0.1); padding: 2px 8px; border-radius: 4px;">പോയിന്റ്: 5000</span>
+            </div>
+            
+            <table class="info-table"> 
+                <tr> 
+                    <td id="infoClass"><b>ക്ലാസ്:</b> -</td> 
+                    <td id="infoSubject"><b>വിഷയം:</b> -</td> 
+                </tr> 
+                <tr> 
+                    <td id="infoChapter"><b>ചാപ്റ്റർ:</b> -</td> 
+                    <td id="infoLesson"><b>പാഠം:</b> -</td> 
+                </tr> 
+            </table>
+
+            <div id="question-box"></div>
+            <button class="btn-replay" id="replayQBtn" onclick="playAudio('q')">🔊 ചോദ്യം വീണ്ടും കേൾക്കുക</button> 
+            
+            <div id="options"></div>
+            
+            <button class="start-btn hidden" id="nextBtn" style="margin-top:15px; background: #2ecc71; color: white;" onclick="nextQuestion()">അടുത്ത ചോദ്യം ➡️</button>
+        </div>
+
+        <div id="win-screen" class="hidden">
+            <h2 style="border:none; margin-bottom:10px;">🎉 അഭിനന്ദനങ്ങൾ!</h2>
+            <div class="certificate">
+                <h3 style="text-align:center; color: var(--gold); margin-top:0;">വിജയ സർട്ടിഫിക്കറ്റ്</h3>
+                <div id="certSchoolName" style="text-align:center; font-size:15px; color:var(--gold); margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">-</div>
+                <div class="cert-row"><span>പേര്:</span> <b id="final-name" style="color:var(--gold)">-</b></div>
+                <div class="cert-row"><span>തെറ്റുകൾ:</span> <b id="final-attempts">-</b></div>
+                <div class="cert-row"><span>എടുത്ത സമയം:</span> <b><span id="final-duration">-</span> s</b></div>
+                <div class="cert-row"><span>പൂർത്തിയാക്കിയത്:</span> <b id="final-real-time">-</b></div>
+                <div class="point-box">പോയിന്റ്: <span id="final-points">0</span></div>
+                <div id="certClassStatus" style="text-align:center; font-size:13px; margin-top:10px; line-height:1.5;">-</div>
+                
+                <canvas id="quizCertCanvas" width="800" height="580" style="display:none;"></canvas>
+
+                <button class="start-btn" style="background:#2ecc71; color:white; margin-top:15px; font-size:15px;" onclick="downloadQuizCertificate()">
+                    📥 സർട്ടിഫിക്കറ്റ് ഗാലറിയിലേക്ക് ഡൗൺലോഡ് ചെയ്യുക
+                </button>
+
+                <div style="text-align:center; font-size:12px; color:var(--gold); margin-top:15px; font-weight:bold;">ഏറ്റവും കൂടുതൽ പോയിന്റ് ലഭിച്ചവർക്കാണ് ഫസ്റ്റ്.</div>
+                <div style="text-align:center; font-size:12px; color:#fff; margin-top:5px;">ഡൗൺലോഡ് ചെയ്ത ചിത്രം വാട്സാപ്പിൽ ഉസ്താദിന് അയച്ചു കൊടുക്കുക.</div>
+            </div>
+            <button class="start-btn" style="margin-top:20px" onclick="resetAndGoToLogin()">വീണ്ടും കളിക്കുക 🔄</button>
+        </div>
+    </div>
+
+    <audio id="globalAudioPlayer"></audio>
+
+    <script>
+    const GH_USER = "zain-zain22"; 
+    const GH_REPO = "class-2-duroos-part-2-chater-1"; 
+
+    let masterSchoolData = {}; 
+    let visibilityData = { madrasas: {}, students: {} };
+    let quizData = {}; 
+    let questions = []; 
+    let currentIndex = 0; 
+    let optionClicked = false; 
+    let typeWriterTimeout = null; 
+
+    let basePoints = 5000; 
+    let currentPoints = 5000; 
+    let startTime = 0; 
+    let playerName = "";
+
+    window.onload = function() { 
+        loadDataFromServer(); 
+    } 
+
+    async function loadDataFromServer() { 
+        try { 
+            let timeStamp = Date.now();
+
+            // 1. visibility.json ഫെച്ച് ചെയ്യുന്നു
+            try {
+                let visRes = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/visibility.json?t=${timeStamp}`);
+                if(visRes.ok) visibilityData = await visRes.json();
+            } catch(e) {
+                visibilityData = { madrasas: {}, students: {} };
+            }
+
+            // 2. master_list.json ഫെച്ച് ചെയ്യുന്നു
+            let res1 = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/master_list.json?t=${timeStamp}`); 
+            if(res1.ok) masterSchoolData = await res1.json(); 
+
+            // 3. quiz_data.json ഫെച്ച് ചെയ്യുന്നു
+            let res2 = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/quiz_data.json?t=${timeStamp}`); 
+            if(res2.ok) quizData = await res2.json(); 
+
+            setupTitleAndLabels();
+            setupLoginDropdowns(); 
+            document.getElementById('loadingOverlay').style.display = 'none'; 
+        } catch (e) { 
+            document.getElementById('loadingOverlay').style.display = 'none';
+            alert("ഡാറ്റ ലോഡ് ചെയ്യാൻ സാധിച്ചില്ല!"); 
+            console.error(e); 
+        } 
+    } 
+
+    function setupTitleAndLabels() {
+        if (quizData.quizInfo) {
+            let info = quizData.quizInfo;
+            document.getElementById('loginTitle').innerHTML = `ക്ലാസ് ${info.class || '-'} | ${info.subject || '-'}<br><span style="font-size:1.1rem; color:#fff;">${info.lessonName || '-'}</span>`;
+        }
+    }
+
+    function setupLoginDropdowns() { 
+        const mSelect = document.getElementById('madrasaSelect'); 
+        mSelect.innerHTML = '<option value="">-- തിരഞ്ഞെടുക്കുക --</option>'; 
+        
+        Object.keys(masterSchoolData).sort().forEach(m => { 
+            // അഡ്മിൻ Hide ചെയ്യാത്ത മദ്രസകൾ മാത്രം കാണിക്കുന്നു
+            if (!visibilityData.madrasas || !visibilityData.madrasas[m]) {
+                let opt = document.createElement('option'); 
+                opt.value = m; opt.innerText = m; mSelect.appendChild(opt); 
+            }
+        }); 
+        updateStudentDropdown(); 
+    } 
+
+    function updateStudentDropdown() { 
+        const mVal = document.getElementById('madrasaSelect').value; 
+        const sSelect = document.getElementById('studentSelect'); 
+        sSelect.innerHTML = '<option value="">-- പേര് തിരഞ്ഞെടുക്കുക --</option>'; 
+        
+        if(!mVal || !masterSchoolData[mVal]) { 
+            document.getElementById('studentAttemptInfo').innerText = '';
+            return; 
+        } 
+
+        let hiddenStudents = (visibilityData.students && visibilityData.students[mVal]) ? visibilityData.students[mVal] : {};
+
+        masterSchoolData[mVal].sort().forEach(s => { 
+            // അഡ്മിൻ Hide ചെയ്യാത്ത കുട്ടികളെ മാത്രം കാണിക്കുന്നു
+            if (!hiddenStudents[s]) {
+                let opt = document.createElement('option'); 
+                opt.value = s; opt.innerText = s; sSelect.appendChild(opt); 
+            }
+        }); 
+        checkExistingStudentProgress();
+    } 
+
+    function checkExistingStudentProgress() {
+        const student = document.getElementById('studentSelect').value;
+        if(!student || student.includes('--')) {
+            document.getElementById('studentAttemptInfo').innerText = '';
+            return;
+        }
+        
+        let todayStr = new Date().toLocaleDateString('en-GB'); 
+        let storageKey = "stats_" + student + "_തസ്കിയ_L2";
+        let stats = JSON.parse(localStorage.getItem(storageKey)) || { count: 0, date: todayStr };
+        
+        if (stats.date !== todayStr) {
+            stats = { count: 0, date: todayStr };
+            localStorage.setItem(storageKey, JSON.stringify(stats));
+        }
+        
+        let currentAttempts = stats.count; 
+        let penalty = currentAttempts * 50; 
+        let startScore = Math.max(500, 5000 - penalty); 
+        document.getElementById('studentAttemptInfo').innerText = `ഇന്നത്തെ തെറ്റുകൾ: ${currentAttempts} (തുടക്ക പോയിന്റ്: ${startScore})`;
+    }
+
+    function typeWriter(text, elementId, callback) { 
+        if (typeWriterTimeout) clearTimeout(typeWriterTimeout); 
+        let i = 0; const el = document.getElementById(elementId); el.innerHTML = ""; 
+        function type() { 
+            if (i < text.length) { 
+                el.innerHTML += text.charAt(i); 
+                i++; 
+                typeWriterTimeout = setTimeout(type, 25); 
+            } 
+            else if(callback) callback(); 
+        } 
+        type(); 
+    }
+
+    function playAudio(type, directSrc = null, callback = null) { 
+        let q = questions[currentIndex]; 
+        let player = document.getElementById('globalAudioPlayer'); 
+        let src = ""; 
+
+        if (directSrc) {
+            src = directSrc;
+        } else {
+            if(type === 'q') src = q.qSrc; 
+            else if(type === 'correct') src = q.correctSrc; 
+            else if(type === 'wrong1') src = q.wrong1Src; 
+            else if(type === 'wrong2') src = q.wrong2Src; 
+        }
+
+        if(src && src.trim() !== "") { 
+            let cleanSrc = src.trim();
+            let audioPath = cleanSrc.startsWith('data/') ? cleanSrc : `data/${cleanSrc}`;
+            let fullAudioUrl = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/${audioPath}?t=${Date.now()}`; 
+            
+            player.src = fullAudioUrl; 
+            player.onended = () => { if(callback) callback(); };
+            player.onerror = () => { 
+                console.log("Audio failed to load: " + src);
+                if(callback) callback();
+            };
+            player.play().catch(e => {
+                console.log("Audio play blocked");
+                if(callback) callback();
+            }); 
+        } else {
+            if(callback) callback();
+        }
+    } 
+
+    function startGame() { 
+        let madrasa = document.getElementById('madrasaSelect').value; 
+        playerName = document.getElementById('studentSelect').value; 
+
+        if(!madrasa || !playerName || playerName.includes('--')) { 
+            return alert("ദയവായി മദ്രസയും പേരും തിരഞ്ഞെടുക്കുക!"); 
+        } 
+
+        if(!quizData || !quizData.questions || quizData.questions.length === 0) { 
+            return alert("ഈ പാഠത്തിൽ ചോദ്യങ്ങൾ ഒന്നും ലഭ്യമല്ല!"); 
+        } 
+
+        // Hide ചെയ്യാത്ത (unhidden) ചോദ്യങ്ങൾ മാത്രം എടുക്കുന്നു
+        let activeQuestions = quizData.questions.filter(q => !q.hidden && !q.isHidden);
+
+        if(activeQuestions.length === 0) {
+            return alert("ഈ പാഠത്തിൽ അൺഹൈഡ് ചെയ്ത ചോദ്യങ്ങൾ ഒന്നും ലഭ്യമല്ല!");
+        }
+
+        let todayStr = new Date().toLocaleDateString('en-GB');
+        let storageKey = "stats_" + playerName + "_തസ്കിയ_L2";
+        let stats = JSON.parse(localStorage.getItem(storageKey)) || { count: 0, date: todayStr };
+        
+        if (stats.date !== todayStr) {
+            stats = { count: 0, date: todayStr };
+        }
+
+        questions = [...activeQuestions]; 
+        questions.sort(() => Math.random() - 0.5); 
+        currentIndex = 0; 
+
+        let attemptPenalty = stats.count * 50; 
+        basePoints = Math.max(500, 5000 - attemptPenalty); 
+        currentPoints = basePoints;
+
+        if(quizData.quizInfo) { 
+            document.getElementById('infoClass').innerHTML = `<b>ക്ലാസ്:</b> ${quizData.quizInfo.class || '-'}`; 
+            document.getElementById('infoSubject').innerHTML = `<b>വിഷയം:</b> ${quizData.quizInfo.subject || '-'}`; 
+            document.getElementById('infoChapter').innerHTML = `<b>ചാപ്റ്റർ:</b> ${quizData.quizInfo.chapter || '-'}`; 
+            document.getElementById('infoLesson').innerHTML = `<b>പാഠം:</b> ${quizData.quizInfo.lessonName || '-'}`; 
+        } 
+
+        document.getElementById('start-screen').classList.add('hidden'); 
+        document.getElementById('quiz-screen').classList.remove('hidden'); 
+        document.getElementById('total-q').innerText = questions.length; 
+        
+        document.getElementById('livePointsDisplay').innerText = `പോയിന്റ്: ${currentPoints}`;
+
+        startTime = Date.now(); 
+        showQuestion(); 
+    } 
+
+    function showQuestion() { 
+        optionClicked = false; 
+        document.getElementById('nextBtn').classList.add('hidden'); 
+        document.getElementById('q-no').innerText = currentIndex + 1; 
+
+        let q = questions[currentIndex]; 
+        document.getElementById('options').innerHTML = '';
+
+        typeWriter(q.qText, "question-box", () => { 
+            playAudio('q', null, () => { 
+                renderOptionsSequentially(); 
+            }); 
+        }); 
+    }
+
+    function renderOptionsSequentially() {
+        let q = questions[currentIndex];
+        const container = document.getElementById('options'); 
+        container.innerHTML = ''; 
+
+        let optionsList = [ 
+            { text: q.correctText, type: 'correct', src: q.correctSrc }, 
+            { text: q.wrong1Text, type: 'wrong1', src: q.wrong1Src }, 
+            { text: q.wrong2Text, type: 'wrong2', src: q.wrong2Src } 
+        ]; 
+        optionsList.sort(() => Math.random() - 0.5); 
+
+        let i = 0;
+        function nextOpt() {
+            if (i < optionsList.length && !optionClicked) {
+                let opt = optionsList[i];
+                
+                let wrapper = document.createElement('div'); 
+                wrapper.className = 'option-wrapper'; 
+
+                let btn = document.createElement('button'); 
+                btn.className = 'btn'; 
+                btn.setAttribute('data-type', opt.type); 
+                btn.innerHTML = "<span>" + (i + 1) + ". </span>" + opt.text; 
+                btn.onclick = function() { checkAnswer(btn, opt.type); }; 
+
+                let spk = document.createElement('button'); 
+                spk.className = 'option-speaker'; 
+                spk.innerHTML = '🔊'; 
+                spk.onclick = function() { 
+                    playAudio(opt.type); 
+                }; 
+
+                wrapper.appendChild(btn); 
+                wrapper.appendChild(spk); 
+                container.appendChild(wrapper); 
+
+                setTimeout(() => { 
+                    wrapper.classList.add('show'); 
+                    playAudio(opt.type, opt.src, () => {
+                        i++;
+                        setTimeout(nextOpt, 150);
+                    });
+                }, 100);
+            }
+        }
+        nextOpt();
+    }
+
+    function checkAnswer(selectedBtn, type) { 
+        if(optionClicked) return; 
+        optionClicked = true; 
+
+        document.getElementById('globalAudioPlayer').pause(); 
+
+        const allBtns = document.querySelectorAll('.btn'); 
+        const allSpks = document.querySelectorAll('.option-speaker'); 
+        allBtns.forEach(btn => btn.disabled = true); 
+        allSpks.forEach(spk => spk.disabled = true); 
+
+        if(type === 'correct') { 
+            selectedBtn.classList.add('correct'); 
+            selectedBtn.innerHTML = `✅ ${selectedBtn.innerHTML}`; 
+            document.getElementById('nextBtn').classList.remove('hidden'); 
+        } else { 
+            selectedBtn.classList.add('wrong'); 
+            selectedBtn.innerHTML = `❌ ${selectedBtn.innerHTML}`; 
+
+            let todayStr = new Date().toLocaleDateString('en-GB');
+            let storageKey = "stats_" + playerName + "_തസ്കിയ_L2";
+            let stats = JSON.parse(localStorage.getItem(storageKey)) || { count: 0, date: todayStr };
+            
+            if(stats.date !== todayStr) {
+                stats = { count: 1, date: todayStr };
+            } else {
+                stats.count = stats.count + 1;
+            }
+            localStorage.setItem(storageKey, JSON.stringify(stats));
+
+            allBtns.forEach(btn => {
+                if(btn.getAttribute('data-type') === 'correct') {
+                    btn.classList.add('correct');
+                    if(!btn.innerHTML.includes('✅')) btn.innerHTML = `✅ ${btn.innerHTML}`;
+                }
+            });
+
+            setTimeout(function() {
+                playAudio('correct', null, () => {
+                    alert("ഉത്തരം തെറ്റാണ്! ശരിയായ ഉത്തരം കേട്ടല്ലോ? ഇനി ആദ്യം മുതൽ ഒന്നുകൂടി ശ്രമിക്കൂ."); 
+                    location.reload(); 
+                });
+            }, 500); 
+        } 
+    } 
+
+    function nextQuestion() { 
+        currentIndex++; 
+        if(currentIndex < questions.length) { 
+            showQuestion(); 
+        } else { 
+            showResult(); 
+        } 
+    } 
+
+    function showResult() { 
+        document.getElementById('quiz-screen').classList.add('hidden'); 
+        document.getElementById('win-screen').classList.remove('hidden'); 
+
+        let madrasa = document.getElementById('madrasaSelect').value; 
+        let totalTimeSeconds = Math.floor((Date.now() - startTime) / 1000); 
+        
+        let todayStr = new Date().toLocaleDateString('en-GB');
+        let storageKey = "stats_" + playerName + "_തസ്കിയ_L2";
+        let stats = JSON.parse(localStorage.getItem(storageKey)) || { count: 0, date: todayStr };
+
+        document.getElementById('certSchoolName').innerText = madrasa; 
+        document.getElementById('final-name').innerText = playerName; 
+        document.getElementById('final-attempts').innerText = stats.count + " തവണ"; 
+        document.getElementById('final-duration').innerText = totalTimeSeconds; 
+
+        let now = new Date(); 
+        let timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); 
+        let dateStr = now.toLocaleDateString('en-GB'); 
+        document.getElementById('final-real-time').innerText = `${timeStr} | ${dateStr}`; 
+
+        document.getElementById('final-points').innerText = currentPoints; 
+
+        let className = (quizData.quizInfo && quizData.quizInfo.class) ? quizData.quizInfo.class : ""; 
+        let subjectName = (quizData.quizInfo && quizData.quizInfo.subject) ? quizData.quizInfo.subject : ""; 
+        document.getElementById('certClassStatus').innerText = `ക്ലാസ് ${className} | ${subjectName} വിജയിച്ചു.`; 
+    } 
+
+    function downloadQuizCertificate() {
+        const canvas = document.getElementById('quizCertCanvas');
+        const ctx = canvas.getContext('2d');
+        const info = quizData.quizInfo || {};
+        let madrasa = document.getElementById('madrasaSelect').value;
+
+        let grad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 50, canvas.width/2, canvas.height/2, canvas.width/1.2);
+        grad.addColorStop(0, '#002b52');
+        grad.addColorStop(1, '#000814');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = "#ffd700";
+        ctx.lineWidth = 8;
+        ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+        
+        ctx.strokeStyle = "rgba(255, 215, 0, 0.4)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(27, 27, canvas.width - 54, canvas.height - 54);
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        ctx.fillStyle = "#ffd700";
+        ctx.font = "bold 34px 'Segoe UI', sans-serif";
+        ctx.fillText("🎓 ഡിജിറ്റൽ സൗണ്ട് ബുക്ക് ക്വിസ് 🎓", canvas.width / 2, 75);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 24px 'Segoe UI', sans-serif";
+        ctx.fillText("വിജയ സർട്ടിഫിക്കറ്റ്", canvas.width / 2, 130);
+
+        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        ctx.font = "italic 16px 'Segoe UI', sans-serif";
+        ctx.fillText("എല്ലാ ചോദ്യങ്ങൾക്കും കൃത്യമായി ഉത്തരം നൽകി ക്വിസ് പൂർത്തിയാക്കിയ", canvas.width / 2, 185);
+
+        ctx.fillStyle = "#ffd700";
+        ctx.font = "bold 32px 'Segoe UI', sans-serif";
+        ctx.fillText(playerName, canvas.width / 2, 235);
+
+        ctx.fillStyle = "rgba(255,255,255,0.6)";
+        ctx.font = "15px 'Segoe UI', sans-serif";
+        ctx.fillText(`മദ്രസ: ${madrasa}`, canvas.width / 2, 275);
+
+        ctx.fillStyle = "rgba(255, 215, 0, 0.05)";
+        ctx.fillRect(80, 310, canvas.width - 160, 155);
+        ctx.strokeStyle = "rgba(255, 215, 0, 0.2)";
+        ctx.strokeRect(80, 310, canvas.width - 160, 155);
+
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#ffd700";
+        ctx.font = "bold 16px 'Segoe UI', sans-serif";
+        
+        let startX = 110;
+        let startY = 340;
+        let spacing = 32;
+
+        ctx.fillText(`📚 ക്ലാസ്സ്: ${info.class || '--'}`, startX, startY);
+        ctx.fillText(`📖 വിഷയം: ${info.subject || '--'}`, startX, startY + spacing);
+        ctx.fillText(`✒️ പാഠം: ${info.lessonName || '--'}`, startX, startY + (spacing * 2));
+        ctx.fillText(`⏱️ എടുത്ത സമയം: ${document.getElementById('final-duration').innerText} സെക്കൻഡ്`, startX, startY + (spacing * 3));
+
+        let rightX = startX + 340;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(`❌ ഇന്നത്തെ തെറ്റുകൾ: ${document.getElementById('final-attempts').innerText}`, rightX, startY);
+        
+        ctx.fillStyle = "#2ecc71";
+        ctx.font = "bold 20px 'Segoe UI', sans-serif";
+        ctx.fillText(`🏆 പോയിന്റ്: ${currentPoints}`, rightX, startY + 45);
+
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 16px 'Segoe UI', sans-serif";
+        ctx.fillText("✨ നിങ്ങളുടെ ഉജ്ജ്വല വിജയത്തിന് അഭിനന്ദനങ്ങൾ! ✨", canvas.width / 2, 505);
+
+        ctx.textAlign = "left";
+        ctx.fillStyle = "rgba(255,255,255,0.4)";
+        ctx.font = "12px 'Segoe UI', sans-serif";
+        let fullDateText = document.getElementById('final-real-time').innerText;
+        ctx.fillText(`തീയതി & സമയം: ${fullDateText}`, 45, 550);
+
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#ffd700";
+        ctx.font = "bold 14px 'Segoe UI', sans-serif";
+        ctx.fillText("സൗണ്ട് ബുക്ക് ക്വിസ് ടീം", canvas.width - 45, 550);
+
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.download = `Quiz_Certificate_${playerName}_${Date.now()}.png`;
+        link.href = image;
+        link.click();
+    }
+
+    function resetAndGoToLogin() {
+        location.reload();
+    }
+    </script> 
+</body>
+</html>
