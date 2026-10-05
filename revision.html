@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>സൗണ്ട് ബുക്ക് - കുട്ടികളുടെ പാനൽ</title>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; margin: 0; padding: 0; user-select: none; }
+        .screen { display: none; width: 100%; min-height: 100vh; padding: 15px; position: relative; }
+        .active-screen { display: flex; flex-direction: column; align-items: center; }
+        
+        /* മെനു സ്റ്റൈലുകൾ */
+        h1 { color: #2c3e50; font-size: 24px; margin-bottom: 5px; text-align: center; }
+        h3 { color: #7f8c8d; margin-top: 0; font-size: 16px; }
+        .menu-box { background: white; width: 100%; max-width: 400px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; margin-top: 15px; }
+        select { width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 2px solid #bdc3c7; margin-bottom: 15px; background: #fff; outline: none; }
+        
+        button { background: #3498db; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin: 8px 0; box-shadow: 0 3px 6px rgba(0,0,0,0.1); transition: 0.2s; }
+        button:active { transform: scale(0.98); }
+        .btn-green { background: #2ecc71; }
+        .btn-purple { background: #9b59b6; }
+        .btn-lock { background: #95a5a6 !important; opacity: 0.7; cursor: not-allowed; }
+        
+        /* ബുക്ക് റീഡിങ് സ്റ്റൈലുകൾ */
+        .book-container { position: relative; width: 100%; max-width: 600px; background: #000; border: 3px solid #2c3e50; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .book-container img { width: 100%; height: auto; display: block; }
+        
+        /* ആനിമേഷൻ SVG ലെയർ */
+        #playbackEngine { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+        
+        .controls-bar { width: 100%; max-width: 600px; display: flex; gap: 10px; margin-top: 10px; }
+        .btn-half { flex: 1; padding: 12px; font-size: 15px; }
+        
+        .zones-disabled { pointer-events: none; opacity: 0.6; }
+        
+        /* ലോഡിംഗ് ലെയർ */
+        .loading-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; font-size: 18px; font-weight: bold; color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+    <div id="loadingLayer" class="loading-layer">
+        <span>🔄 പാഠപുസ്തക വിവരങ്ങൾ ശേഖരിക്കുന്നു...</span>
+    </div>
+
+    <div id="loginScreen" class="screen active-screen">
+        <div class="menu-box" style="border-top: 5px solid #3498db;">
+            <h1>📖 ഡിജിറ്റൽ സൗണ്ട് ബുക്ക്</h1>
+            <h3>വിദ്യാർത്ഥികളുടെ പാനൽ</h3>
+            <hr style="border: 1px dashed #eee; margin: 15px 0;">
+            
+            <label style="display:block; text-align:left; font-weight:bold; margin-bottom:5px; color:#34495e;">🏫 മദ്രസ തിരഞ്ഞെടുക്കുക:</label>
+            <select id="madrasaSelect" onchange="onMadrasaChanged()"></select>
+            
+            <label style="display:block; text-align:left; font-weight:bold; margin-bottom:5px; color:#34495e;">👤 കുട്ടിയുടെ പേര്:</label>
+            <select id="studentSelect"></select>
+            
+            <button class="btn-green" onclick="enterToMainMenu()">തുടങ്ങുക 🚀</button>
+        </div>
+    </div>
+
+    <div id="mainMenuScreen" class="screen">
+        <div class="menu-box" style="border-top: 5px solid #2ecc71; max-width: 450px;">
+            <h2 id="welcomeText" style="color:#2c3e50; margin-top:0;">ഹലോ</h2>
+            <p style="color:#7f8c8d; font-size:14px;">ഇന്നത്തെ പാഠങ്ങൾ പഠിക്കാൻ താഴെയുള്ള ബട്ടണുകൾ ഉപയോഗിക്കുക.</p>
+            <hr style="border: 1px dashed #eee; margin: 15px 0;">
+            
+            <button id="btnMenuRevision" class="btn-purple" onclick="startRevisionMode()">📖 ഇന്നത്തെ റിവിഷൻ പ്ലേ ചെയ്യുക</button>
+            <button id="btnMenuQuiz" class="btn-lock" onclick="goToQuizLink()" disabled>🎮 ക്വിസ്സ് ഗെയിം (Lock 🔒)</button>
+            
+            <button style="background:#7f8c8d; margin-top:20px; font-size:14px; padding:10px;" onclick="showScreen('loginScreen')">🔙 പ്രൊഫൈൽ മാറ്റുക</button>
+        </div>
+    </div>
+
+    <div id="revisionScreen" class="screen">
+        <h2 style="margin: 5px 0; color:#2c3e50;">📖 റീഡിങ് ടൈം</h2>
+        <div style="font-size:13px; color:#7f8c8d; margin-bottom:5px;" id="revisionProgressText">പേജ്: 0 / 0</div>
+        
+        <div class="book-container">
+            <img id="revisionBookImg" src="" alt="Book Page">
+            <svg id="playbackEngine" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" preserveAspectRatio="none"></svg>
+        </div>
+        
+        <div class="controls-bar">
+            <button id="nextWordBtn" class="btn-green" onclick="stepToNextWord()">അടുത്ത വാക്ക് ➡️</button>
+        </div>
+        <div class="controls-bar">
+            <button class="btn-half" style="background:#7f8c8d;" onclick="quitRevision()">❌ നിർത്തുക</button>
+        </div>
+    </div>
+
+    <audio id="audioPlayer" style="display:none;"></audio>
+
+    <script>
+        const GH_USER = "zain-zain22"; 
+        const GH_REPO = "class-2-duroos-part-2-chater-1"; 
+
+        let bookData = { pages: [] };
+        let masterList = {};
+        let visibilityData = { madrasas: {}, students: {} };
+        let currentStudent = "";
+        let currentMadrasa = "";
+        
+        let revisionPagesList = []; 
+        let currentRevIdx = 0;       
+        let currentZoneIdx = -1;     
+        let isWordAudioFinished = true;
+
+        window.onload = function() {
+            loadDataFromBackend();
+        };
+
+        async function loadDataFromBackend() {
+            let cacheBuster = Date.now(); 
+            try {
+                // 1. visibility.json ഫെച്ച് ചെയ്യുന്നു
+                try {
+                    let rVis = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/visibility.json?t=${cacheBuster}`);
+                    if(rVis.ok) visibilityData = await rVis.json();
+                } catch(e) {
+                    visibilityData = { madrasas: {}, students: {} };
+                }
+
+                // 2. master_list.json ഫെച്ച് ചെയ്യുന്നു
+                let r1 = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/master_list.json?t=${cacheBuster}`);
+                if(r1.ok) {
+                    masterList = await r1.json();
+                } else {
+                    console.error("master_list.json ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല");
+                }
+                
+                // 3. data_book.json ഫെച്ച് ചെയ്യുന്നു
+                let r2 = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/data_book.json?t=${cacheBuster}`);
+                if(r2.ok) {
+                    bookData = await r2.json();
+                } else {
+                    console.error("data_book.json ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല");
+                }
+                
+                initProfileSelectors();
+            } catch(e) {
+                console.error("Error loading JSON:", e);
+            } finally {
+                document.getElementById('loadingLayer').style.display = 'none';
+            }
+        }
+
+        function initProfileSelectors() {
+            let mSel = document.getElementById('madrasaSelect');
+            mSel.innerHTML = "";
+            
+            let activeMadrasas = Object.keys(masterList).filter(m => !visibilityData.madrasas || !visibilityData.madrasas[m]);
+
+            if (activeMadrasas.length === 0) {
+                let opt = document.createElement('option');
+                opt.innerText = "ഡാറ്റ ലഭ്യമല്ല";
+                mSel.appendChild(opt);
+                return;
+            }
+
+            activeMadrasas.sort().forEach(m => {
+                let opt = document.createElement('option');
+                opt.value = m; opt.innerText = m; mSel.appendChild(opt);
+            });
+            onMadrasaChanged();
+        }
+
+        function onMadrasaChanged() {
+            let m = document.getElementById('madrasaSelect').value;
+            let sSel = document.getElementById('studentSelect');
+            sSel.innerHTML = "";
+            if(!m || !masterList[m]) return;
+
+            let hiddenStudents = (visibilityData.students && visibilityData.students[m]) ? visibilityData.students[m] : {};
+
+            masterList[m].sort().forEach(s => {
+                if(!hiddenStudents[s]) {
+                    let opt = document.createElement('option');
+                    opt.value = s; opt.innerText = s; sSel.appendChild(opt);
+                }
+            });
+        }
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById(id).classList.add('active-screen');
+        }
+
+        function getTodayLockKey(studentName) {
+            let today = new Date().toISOString().split('T')[0];
+            return `lock_${studentName}_${today}`;
+        }
+
+        function updateMenuButtons() {
+            let isUnlocked = localStorage.getItem(getTodayLockKey(currentStudent));
+            let quizBtn = document.getElementById('btnMenuQuiz');
+            if(!quizBtn) return;
+
+            if(isUnlocked === "true") {
+                quizBtn.disabled = false;
+                quizBtn.className = "btn-green";
+                quizBtn.innerText = "🎮 ക്വിസ്സ് ഗെയിം കളിക്കുക 🚀";
+            } else {
+                quizBtn.disabled = true;
+                quizBtn.className = "btn-lock";
+                quizBtn.innerText = "🎮 ക്വിസ്സ് ഗെയിം (Lock 🔒)";
+            }
+        }
+
+        function enterToMainMenu() {
+            currentMadrasa = document.getElementById('madrasaSelect').value;
+            currentStudent = document.getElementById('studentSelect').value;
+            if(!currentMadrasa || !currentStudent || currentMadrasa === "ഡാറ്റ ലഭ്യമല്ല") return alert("വിവരങ്ങൾ തിരഞ്ഞെടുക്കുക!");
+            
+            document.getElementById('welcomeText').innerText = `👤 ${currentStudent}`;
+            
+            let quizBtn = document.getElementById('btnMenuQuiz');
+            if(quizBtn) {
+                quizBtn.disabled = true;
+                quizBtn.className = "btn-lock";
+                quizBtn.innerText = "🎮 ക്വിസ്സ് ഗെയിം (Lock 🔒)";
+            }
+
+            updateMenuButtons();
+            showScreen('mainMenuScreen');
+        }
+
+        function startRevisionMode() {
+            // Hide ചെയ്യാത്ത പേജുകൾ മാത്രം എടുക്കുന്നു
+            let visiblePages = bookData.pages ? bookData.pages.filter(p => !p.hidden && !p.isHidden) : [];
+            
+            if(visiblePages.length === 0) return alert("പേജുകൾ ലഭ്യമല്ല!");
+
+            let allLessons = [];
+            visiblePages.forEach(p => {
+                if (p.lesson && !allLessons.includes(p.lesson)) {
+                    allLessons.push(p.lesson);
+                }
+            });
+
+            if (allLessons.length > 5) {
+                let latest5Lessons = allLessons.slice(-5);
+                visiblePages = visiblePages.filter(p => latest5Lessons.includes(p.lesson));
+            }
+
+            revisionPagesList = visiblePages.reverse(); 
+            
+            if(revisionPagesList.length === 0) return alert("പേജുകൾ ലഭ്യമല്ല!");
+            currentRevIdx = 0;
+            loadRevisionPage();
+            showScreen('revisionScreen');
+        }
+
+        function loadRevisionPage() {
+            let page = revisionPagesList[currentRevIdx];
+            document.getElementById('revisionProgressText').innerText = `പേജ്: ${currentRevIdx + 1} / ${revisionPagesList.length}`;
+            
+            let imgPath = page.image ? page.image.trim() : '';
+            if(!imgPath.startsWith('http') && !imgPath.startsWith('data/')) imgPath = 'data/' + imgPath;
+            
+            document.getElementById('revisionBookImg').src = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/${imgPath}?t=${Date.now()}`;
+            
+            currentZoneIdx = -1; 
+            isWordAudioFinished = true;
+            document.getElementById('playbackEngine').innerHTML = ""; 
+            disableNextWordButton(false);
+        }
+
+        function disableNextWordButton(status) {
+            let btn = document.getElementById('nextWordBtn');
+            if(!btn) return;
+            if(status) {
+                btn.disabled = true;
+                btn.classList.add('btn-lock');
+                btn.innerText = "⏳ ഓഡിയോ പ്ലേ ചെയ്യുന്നു...";
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('btn-lock');
+                btn.innerText = "അടുത്ത വാക്ക് ➡️";
+            }
+        }
+
+        function stepToNextWord() {
+            if(!isWordAudioFinished) return;
+            
+            document.getElementById('playbackEngine').innerHTML = "";
+
+            let page = revisionPagesList[currentRevIdx];
+            currentZoneIdx++;
+            
+            if(currentZoneIdx >= page.zones.length) {
+                stepToNextPage();
+                return;
+            }
+            
+            let zone = page.zones[currentZoneIdx];
+            isWordAudioFinished = false;
+            disableNextWordButton(true);
+            
+            let player = document.getElementById('audioPlayer');
+            let aPath = zone.audioSrc ? zone.audioSrc.trim() : '';
+            if(!aPath.startsWith('http') && !aPath.startsWith('data/')) aPath = 'data/' + aPath;
+
+            player.src = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/${aPath}?t=${Date.now()}`;
+            player.play().catch(() => {
+                isWordAudioFinished = true;
+                disableNextWordButton(false);
+            });
+            
+            if(page.readingPaths && page.readingPaths[currentZoneIdx]) {
+                animateReadingPath(page.readingPaths[currentZoneIdx]);
+            }
+        }
+
+        document.getElementById('audioPlayer').addEventListener('ended', () => {
+            isWordAudioFinished = true;
+            disableNextWordButton(false);
+        });
+
+        function animateReadingPath(pathPoints) {
+            if(!pathPoints || pathPoints.length === 0) return;
+            let svg = document.getElementById('playbackEngine');
+            let g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            let paths = [];
+            for(let i=0; i<12; i++) {
+                let p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                p.setAttribute("transform", `translate(${(i-6)*0.3}, ${-(i-6)})`);
+                p.setAttribute("stroke", "#2980b9");
+                p.setAttribute("stroke-width", "2");
+                p.setAttribute("fill", "none");
+                p.setAttribute("stroke-linecap", "round");
+                p.setAttribute("d", `M ${pathPoints[0].x} ${pathPoints[0].y}`);
+                g.appendChild(p);
+                paths.push(p);
+            }
+            svg.appendChild(g);
+
+            let handImg = document.createElementNS("http://www.w3.org/2000/svg", "image");
+            handImg.setAttributeNS("http://www.w3.org/1999/xlink", "href", "hand.png");
+            handImg.setAttribute("width", "140");
+            handImg.setAttribute("height", "140");
+            handImg.setAttribute("x", pathPoints[0].x - 33); 
+            handImg.setAttribute("y", pathPoints[0].y - 50); 
+            svg.appendChild(handImg);
+
+            let ptIdx = 1;
+            let speed = Math.max(5, Math.min(25, Math.floor(1500 / pathPoints.length)));
+
+            let interval = setInterval(() => {
+                if(ptIdx >= pathPoints.length) {
+                    clearInterval(interval);
+                    if(handImg && handImg.parentNode) handImg.parentNode.removeChild(handImg);
+                    return;
+                }
+                let currPt = pathPoints[ptIdx];
+                let dString = ` L ${currPt.x} ${currPt.y}`;
+                paths.forEach(p => p.setAttribute("d", p.getAttribute("d") + dString));
+                handImg.setAttribute("x", currPt.x - 33); 
+                handImg.setAttribute("y", currPt.y - 50); 
+                ptIdx++;
+            }, speed);
+        }
+
+        function stepToNextPage() {
+            if(currentRevIdx < revisionPagesList.length - 1) {
+                currentRevIdx++;
+                alert("🎯 ഈ പേജ് കഴിഞ്ഞു! അടുത്ത പേജിലേക്ക് പോകാം.");
+                loadRevisionPage();
+            } else {
+                localStorage.setItem(getTodayLockKey(currentStudent), "true");
+                
+                alert("🎉 വലിയൊരു കൈയടി! ഇന്നത്തെ റിവിഷൻ പൂർത്തിയായിരിക്കുന്നു. ഇനി നിനക്ക് ക്വിസ്സ് ഗെയിം കളിക്കാം 🎮");
+                
+                let btn = document.getElementById('nextWordBtn');
+                if(btn) {
+                    btn.disabled = false;
+                    btn.className = "btn-purple";
+                    btn.innerText = "🎮 ഇനി ക്വിസ്സ് ഗെയിം കളിക്കാം 🚀";
+                    btn.onclick = function() {
+                        goToQuizLink();
+                    };
+                }
+                
+                updateMenuButtons();
+            }
+        }
+
+        function goToQuizLink() {
+            window.location.href = "quze.html";
+        }
+
+        function quitRevision() {
+            document.getElementById('audioPlayer').pause();
+            showScreen('mainMenuScreen');
+        }
+    </script>
+</body>
+</html>
