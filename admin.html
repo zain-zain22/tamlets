@@ -1320,17 +1320,15 @@ async function publishToGitHubDirectly() {
         let pointsBlob = new Blob([JSON.stringify({ version: Date.now(), points: pointsJsonArray }, null, 2)], {type: "application/json"});
         await uploadToGitHubAPI("data/data_points.json", pointsBlob, token);
 
-        document.getElementById('totalStatusText').innerText = "🎉 എല്ലാം വിജയകരമായി GitHub-ലേക്ക് സേവ് ചെയ്തിരിക്കുന്നു!";
-        alert("🚀 അഭിനന്ദനങ്ങൾ! എല്ലാ ഡാറ്റയും (പാഠപുസ്തകം, ക്വിസ്സ്, വേർഡ് ആപ്പ്, റീഡിങ്, പോയിന്റുകൾ) ഒരൊറ്റ ക്ലിക്കിൽ ഗിറ്റ്ഹബ്ബിലേക്ക് അപ്‌ലോഡ് ആയിട്ടുണ്ട്.");
-        loadOldDataFromGitHub();
-    } catch(err) {
-        alert("⚠️ അപ്‌ലോഡിങ് പരാജയപ്പെട്ടു: " + err.message);
-        document.getElementById('totalStatusText').innerText = "❌ പരാജയപ്പെട്ടു!";
+                document.getElementById('totalStatusText').innerText = "🎉 എല്ലാം വിജയകരമായി GitHub-ലേക്ക് സേവ് ചെയ്തിരിക്കുന്നു!";
+        alert("🚀 അഭിനന്ദനങ്ങൾ! എല്ലാ ഡാറ്റയും വിജയകരമായി GitHub-ലേക്ക് അപ്ഡേറ്റ് ചെയ്തു.");
+    } catch (e) {
+        console.error(e);
+        alert("❌ അപ്‌ലോഡ് പരാജയപ്പെട്ടു: " + e.message);
     } finally {
         overlay.style.display = 'none';
     }
 }
 </script>
-
-</body> 
+</body>
 </html>
