@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>സൗണ്ട് ബുക്ക് - സ്റ്റുഡന്റ് റീഡിങ് പാനൽ</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #eef2f3; margin: 0; padding: 15px; text-align: center; }
+  .box { background: white; max-width: 600px; margin: 10px auto; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: left; }
+  h2, h3 { color: #2c3e50; text-align: center; margin-top: 0; }
+  label { font-weight: bold; font-size: 14px; color: #34495e; display: block; margin-top: 10px; }
+  select, button { width: 100%; padding: 12px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; font-size: 15px; }
+  
+  .speech-output { background: #eef9f5; border: 1px solid #2ecc71; padding: 12px; border-radius: 8px; margin-top: 15px; min-height: 60px; font-size: 16px; color: #27ae60; }
+  
+  .mic-btn { background: #e74c3c; color: white; border: none; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; transition: 0.3s; }
+  .mic-btn.recording { background: #2ecc71; animation: pulse 1s infinite; }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+  
+  .result-card { display: none; background: #fff3e0; border: 1px solid #ffe0b2; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; }
+  .score-badge { font-size: 28px; font-weight: bold; color: #d35400; margin: 10px 0; }
+  .cert-btn { background: #27ae60; color: white; border: none; font-weight: bold; display: none; margin-top: 10px; }
+
+  /* Certificate Styling */
+  #certModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; padding: 10px; }
+  .cert-content { background: #fff; padding: 30px; border: 10px solid #f39c12; border-radius: 10px; width: 100%; max-width: 550px; text-align: center; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+  .cert-title { font-size: 26px; color: #2c3e50; font-weight: bold; margin-bottom: 5px; }
+  .cert-subtitle { font-size: 14px; color: #7f8c8d; }
+  .cert-name { font-size: 24px; color: #8e44ad; font-weight: bold; text-decoration: underline; margin: 15px 0; }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h2>📖 കുട്ടികളുടെ വായനാ വേദി</h2>
+  
+  <!-- 1. വിദ്യാർത്ഥിയുടെ വിവരങ്ങൾ സെലക്ട് ചെയ്യൽ -->
+  <label>🏫 മദ്രസ തിരഞ്ഞെടുക്കുക:</label>
+  <select id="madrasaSelect" onchange="onMadrasaChange()">
+    <option value="">-- മദ്രസ തിരഞ്ഞെടുക്കുക --</option>
+  </select>
+
+  <label>👤 കുട്ടിയുടെ പേര്:</label>
+  <select id="studentSelect">
+    <option value="">-- ആദ്യം മദ്രസ തിരഞ്ഞെടുക്കുക --</option>
+  </select>
+
+  <label>📚 വായനാ പാഠം തിരഞ്ഞെടുക്കുക:</label>
+  <select id="lessonSelect" onchange="onLessonChange()">
+    <option value="">-- പാഠം തിരഞ്ഞെടുക്കുക --</option>
+  </select>
+
+  <!-- 2. റീഡിങ് റെക്കോർഡിംഗ് -->
+  <button class="mic-btn" id="micBtn" onclick="toggleSpeechRecognition()">
+    <i class="fa-solid fa-microphone"></i> <span id="micText">പുസ്തകം നോക്കി വായിക്കാൻ മൈക്ക് അമർത്തുക</span>
+  </button>
+
+  <label>🎙️ നിങ്ങൾ വായിച്ചത്:</label>
+  <div class="speech-output" id="spokenTextDisplay">മൈക്ക് ഓൺ ചെയ്ത ശേഷം പുസ്തകം നോക്കി വായിച്ചു തുടങ്ങൂ...</div>
+
+  <!-- 3. റിസൾട്ടും പോയിന്റും -->
+  <div class="result-card" id="resultCard">
+    <h3>📊 നിങ്ങളുടെ ഫലം</h3>
+    <div>കൃത്യത (Accuracy): <b id="accuracyVal">0%</b></div>
+    <div>നേടിയ പോയിന്റ്: <b id="pointsVal">0</b> / 100</div>
+    <div class="score-badge" id="ratingText">-</div>
+    <button class="cert-btn" id="certBtn" onclick="openCertificate()">📜 സർട്ടിഫിക്കറ്റ് നേടൂ</button>
+  </div>
+</div>
+
+<!-- സർട്ടിഫിക്കറ്റ് മോഡൽ -->
+<div id="certModal">
+  <div class="cert-content">
+    <span style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 20px; font-weight: bold;" onclick="closeCertificate()">×</span>
+    <div class="cert-title">🎓 വായനാ പ്രശംസാ പത്രം</div>
+    <div class="cert-subtitle">READING EXCELLENCE CERTIFICATE</div>
+    <hr style="border: 1px solid #f39c12; margin: 15px 0;">
+    <p>ഈ സർട്ടിഫിക്കറ്റ് അർഹനാകുന്നത്:</p>
+    <div class="cert-name" id="certStudentName">കുട്ടിയുടെ പേര്</div>
+    <p><b id="certMadrasaName">മദ്രസയുടെ പേര്</b> എക്സലന്റ് രീതിയിൽ <br><b id="certLessonName">പാഠഭാഗം</b> വായിച്ചു പൂർത്തിയാക്കിയിരിക്കുന്നു.</p>
+    <div style="margin-top: 20px; background: #fdf2fa; padding: 10px; border-radius: 5px;">
+      <b>സ്കോർ: <span id="certScore">0%</span></b> | <b>ഗ്രേഡ്: <span id="certGrade">A+</span></b>
+    </div>
+    <button style="background: #3498db; color: white; margin-top: 20px;" onclick="window.print()">🖨️ പ്രിന്റ് / ഡൗൺലോഡ് ചെയ്യുക</button>
+  </div>
+</div>
+
+<script>
+let masterSchoolData = {};
+let readingLessons = [];
+let currentTargetText = "";
+let recognition;
+let isRecording = false;
+let finalTranscript = "";
+
+// പേജ് ലോഡ് ചെയ്യുമ്പോൾ ഡാറ്റ ഫെച്ച് ചെയ്യുന്നു
+window.addEventListener('DOMContentLoaded', async () => {
+    await fetchMasterData();
+    await fetchReadingData();
+    initSpeechEngine();
+});
+
+// മദ്രസ & കുട്ടികളുടെ വിവരങ്ങൾ എടുക്കുന്നു
+async function fetchMasterData() {
+    try {
+        let res = await fetch('data/master_list.json?t=' + Date.now());
+        if(res.ok) {
+            masterSchoolData = await res.json();
+            let mSelect = document.getElementById('madrasaSelect');
+            Object.keys(masterSchoolData).sort().forEach(m => {
+                let opt = document.createElement('option');
+                opt.value = m; opt.innerText = m;
+                mSelect.appendChild(opt);
+            });
+        }
+    } catch(e) { alert("മദ്രസ ലിസ്റ്റ് ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല."); }
+}
+
+// റീഡിങ് പാഠങ്ങൾ എടുക്കുന്നു
+async function fetchReadingData() {
+    try {
+        let res = await fetch('data/data_reading.json?t=' + Date.now());
+        if(res.ok) {
+            let data = await res.json();
+            readingLessons = data.lessons || [];
+            let lSelect = document.getElementById('lessonSelect');
+            readingLessons.forEach((l, idx) => {
+                if(!l.hidden) {
+                    let opt = document.createElement('option');
+                    opt.value = idx; opt.innerText = l.title;
+                    lSelect.appendChild(opt);
+                }
+            });
+        }
+    } catch(e) { alert("റീഡിങ് പാഠങ്ങൾ ലഭ്യമല്ല."); }
+}
+
+function onMadrasaChange() {
+    let m = document.getElementById('madrasaSelect').value;
+    let sSelect = document.getElementById('studentSelect');
+    sSelect.innerHTML = '<option value="">-- കുട്ടിയെ തിരഞ്ഞെടുക്കുക --</option>';
+    if(m && masterSchoolData[m]) {
+        masterSchoolData[m].sort().forEach(s => {
+            let opt = document.createElement('option');
+            opt.value = s; opt.innerText = s;
+            sSelect.appendChild(opt);
+        });
+    }
+}
+
+function onLessonChange() {
+    let idx = document.getElementById('lessonSelect').value;
+    if(idx !== "") {
+        currentTargetText = readingLessons[idx].text; // പശ്ചാത്തലത്തിൽ വലിപ്പം കുറച്ച് മാച്ച് ചെയ്യാൻ ടെക്സ്റ്റ് സൂക്ഷിക്കുന്നു
+    } else {
+        currentTargetText = "";
+    }
+}
+
+// Web Speech API (Malayalam Voice Recognition)
+function initSpeechEngine() {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'ml-IN';
+
+        recognition.onresult = function(event) {
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript + ' ';
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+            document.getElementById('spokenTextDisplay').innerText = finalTranscript + interimTranscript;
+        };
+
+        recognition.onerror = function(event) {
+            console.error("Speech Recognition Error", event.error);
+        };
+    } else {
+        alert("നിങ്ങളുടെ ബ്രൗസറിൽ മൈക്രോഫോൺ വോയ്സ് റെക്കഗ്നിഷൻ സൗകര്യം ലഭ്യമല്ല. Chrome ഉപയോഗിക്കുക.");
+    }
+}
+
+function toggleSpeechRecognition() {
+    let student = document.getElementById('studentSelect').value;
+    let lessonIdx = document.getElementById('lessonSelect').value;
+
+    if(!student) return alert("ദയവായി കുട്ടിയുടെ പേര് സെലക്ട് ചെയ്യുക!");
+    if(lessonIdx === "") return alert("ദയവായി വായിക്കേണ്ട പാഠം സെലക്ട് ചെയ്യുക!");
+
+    let btn = document.getElementById('micBtn');
+    let btnText = document.getElementById('micText');
+
+    if(!isRecording) {
+        finalTranscript = "";
+        document.getElementById('spokenTextDisplay').innerText = "പുസ്തകം നോക്കി ശ്രദ്ധയോടെ വായിക്കുക...";
+        document.getElementById('resultCard').style.display = "none";
+        
+        let selectedLang = readingLessons[lessonIdx].lang || 'ml-IN';
+        recognition.lang = selectedLang;
+
+        recognition.start();
+        isRecording = true;
+        btn.classList.add('recording');
+        btnText.innerText = "🛑 വായന നിർത്താൻ ഇവിടെ അമർത്തുക";
+    } else {
+        recognition.stop();
+        isRecording = false;
+        btn.classList.remove('recording');
+        btnText.innerText = "🎤 വായന പുനരാരംഭിക്കാൻ അമർത്തുക";
+        
+        setTimeout(calculateResult, 1000);
+    }
+}
+
+// 🎯 ശതമാനവും പോയിന്റും കണക്കാക്കുന്ന അൽഗോരിതം
+function calculateResult() {
+    let targetWords = cleanText(currentTargetText).split(/\s+/);
+    let spokenWords = cleanText(finalTranscript).split(/\s+/);
+
+    if(spokenWords.length === 0 || finalTranscript.trim() === "") {
+        alert("ശബ്ദം വ്യക്തമായി ലഭിച്ചില്ല. വീണ്ടും ശ്രമിക്കുക!");
+        return;
+    }
+
+    let matchedCount = 0;
+    targetWords.forEach(word => {
+        if(spokenWords.includes(word)) {
+            matchedCount++;
+        }
+    });
+
+    let accuracy = Math.round((matchedCount / targetWords.length) * 100);
+    if(accuracy > 100) accuracy = 100;
+    
+    let points = accuracy;
+
+    document.getElementById('resultCard').style.display = "block";
+    document.getElementById('accuracyVal').innerText = accuracy + "%";
+    document.getElementById('pointsVal').innerText = points;
+
+    let certBtn = document.getElementById('certBtn');
+    let ratingText = document.getElementById('ratingText');
+
+    if(accuracy >= 80) {
+        ratingText.innerText = "🌟 മികച്ച വായന! (Excellent)";
+        ratingText.style.color = "#27ae60";
+        certBtn.style.display = "block";
+    } else if(accuracy >= 50) {
+        ratingText.innerText = "👍 നല്ല ശ്രമം! (Good)";
+        ratingText.style.color = "#e67e22";
+        certBtn.style.display = "block";
+    } else {
+        ratingText.innerText = "⚠️ വീണ്ടും പരിശീലിക്കുക! (Needs Improvement)";
+        ratingText.style.color = "#e74c3c";
+        certBtn.style.display = "none";
+    }
+}
+
+function cleanText(str) {
+    return str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'']/g, "").trim().toLowerCase();
+}
+
+// 📜 സർട്ടിഫിക്കറ്റ് തുറക്കൽ
+function openCertificate() {
+    let student = document.getElementById('studentSelect').value;
+    let madrasa = document.getElementById('madrasaSelect').value;
+    let lessonName = readingLessons[document.getElementById('lessonSelect').value].title;
+    let score = document.getElementById('accuracyVal').innerText;
+
+    document.getElementById('certStudentName').innerText = student;
+    document.getElementById('certMadrasaName').innerText = madrasa;
+    document.getElementById('certLessonName').innerText = lessonName;
+    document.getElementById('certScore').innerText = score;
+    
+    let accNum = parseInt(score);
+    document.getElementById('certGrade').innerText = accNum >= 90 ? 'A+' : (accNum >= 80 ? 'A' : 'B');
+
+    document.getElementById('certModal').style.display = "flex";
+}
+
+function closeCertificate() {
+    document.getElementById('certModal').style.display = "none";
+}
+</script>
+
+</body>
+</html>
