@@ -117,23 +117,6 @@
 <div id="toast" class="toast-msg"></div>
 
 <script>
-    // GitHub വാല്യുസ് ഓട്ടോമാറ്റിക്കായി കണ്ടെത്താനുള്ള ഗ്ലോബൽ വേരിയബിളുകൾ
-    let GH_USER = "zain-zain22";
-    let GH_REPO = "FestZain";
-
-    function autoDetectRepoDetails() {
-        const hostname = window.location.hostname;
-        const pathname = window.location.pathname;
-
-        if (hostname.includes('.github.io')) {
-            GH_USER = hostname.split('.github.io')[0];
-            const pathParts = pathname.split('/').filter(p => p.length > 0);
-            if (pathParts.length > 0) {
-                GH_REPO = pathParts[0];
-            }
-        }
-    }
-
     let appData = { madrassasMap: {}, words: [] }; 
     let visibilityData = { madrasas: {}, students: {} };
     let generalQuizInfo = {}; 
@@ -172,7 +155,6 @@
 
     async function loadDataFromJSON() {
         try {
-            autoDetectRepoDetails(); // URL-ൽ നിന്ന് യൂസർനെയിമും റെപ്പോയും സ്വയം കണ്ടെത്തുന്നു
             checkDailyReset();
 
             // 1. visibility.json പരിശോധിക്കുന്നു
@@ -192,7 +174,7 @@
             let rawWords = (wordRes && Array.isArray(wordRes.words)) ? wordRes.words : [];
             generalQuizInfo = quizRes.quizInfo || wordRes.quizInfo || {};
 
-            // ഹൈഡ് ചെയ്യാത്ത വാക്കുകൾ മാത്രം എടുത്ത്, ഫയലിലെ കൃത്യമായ ഓർഡറിൽ (ആദ്യം മുതൽ അവസാനം വരെ) സെറ്റ് ചെയ്യുന്നു
+            // Hide/Unhide അനുസരിച്ച് അൺഹൈഡ് ചെയ്ത വാക്കുകൾ മാത്രം എടുക്കുന്നു
             activeWords = rawWords.filter(w => !w.hidden && !w.isHidden);
 
             // 3. master_list.json ലോഡ് ചെയ്യുന്നു
@@ -206,7 +188,7 @@
                 console.log("Master list load error:", e);
             }
 
-            // 4. മദ്രസ ഡ്രോപ്പ്ഡൗൺ തയ്യാറാക്കുന്നു
+            // 4. മദ്രസ ഡ്രോപ്പ്ഡൗൺ തയ്യാറാക്കുന്നു (Hidden മദ്രസകൾ ഒഴിവാക്കുന്നു)
             let select = document.getElementById("madrassaSelect");
             select.innerHTML = '<option value="">-- തിരഞ്ഞെടുക്കുക --</option>';
 
@@ -238,6 +220,7 @@
             selectedMadrasaName = mName;
             let studentList = appData.madrassasMap[mName] || [];
 
+            // Hidden വിദ്യാർത്ഥികളെ ഒഴിവാക്കുന്നു
             let hiddenStudentsForMadrasa = (visibilityData.students && visibilityData.students[mName]) ? visibilityData.students[mName] : {};
             let visibleStudents = studentList.filter(s => !hiddenStudentsForMadrasa[s]);
 
