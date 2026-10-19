@@ -1,4 +1,740 @@
 {
-  "version": 1792385666547,
-  "words": []
+  "version": 1792386532322,
+  "words": [
+    {
+      "mal": "വിശുദ്ധ",
+      "arbiText": "وِۺُدَّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "കഅ്ബ",
+      "arbiText": "كَا്َബَ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "നമ്മുടെ",
+      "arbiText": "نَمُّڊ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഖിബ്‌ലയാണ്",
+      "arbiText": "كھِബۡ‌لَیَاڹۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "പരിശുദ്ധ",
+      "arbiText": "پَڔِۺُدَّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "മക്കയിലാണ്",
+      "arbiText": "مَكَّیِلَاڹۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ലോകത്തിന്റെ",
+      "arbiText": "لٗوكَتِّنْڔ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഭാഗത്തുനിന്നും",
+      "arbiText": "بھَاگَتُّنِنُّمْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അവിടേക്ക്",
+      "arbiText": "اَوِڊي٘كّۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ആളുകൾ",
+      "arbiText": "آۻُكَۻَۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "വരുന്നു",
+      "arbiText": "وَڔُنُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "കഅ്ബയുടെ",
+      "arbiText": "كَا്َബَیُڊ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "പ്രശസ്തി",
+      "arbiText": "پْرَۺَസۡتِ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "യമനിലെ",
+      "arbiText": "یَمَنِل٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അബ്രഹത്ത്",
+      "arbiText": "اَബۡڔَهَتّۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "രാജാവിനെ",
+      "arbiText": "ڔَاجَاوِن٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അസ്വസ്ഥനാക്കി",
+      "arbiText": "اَസْوَسْتَنَاكِّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അയാൾ",
+      "arbiText": "اَیَاۻَۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "പൊളിക്കാൻ",
+      "arbiText": "پٗۻِكَّانَْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "തീരുമാനിച്ചു",
+      "arbiText": "تِیڔُمَانِചُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അതിനുവേണ്ടി",
+      "arbiText": "اَتِنُوي٘ڹْڊِ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "വൻ",
+      "arbiText": "وَنَْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "സൈന്യവുമായി",
+      "arbiText": "സَیْنۡیَوُمَایِ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "മക്കയിലേക്ക്",
+      "arbiText": "مَكَّیِلي٘كّۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "പുറപ്പെട്ടു",
+      "arbiText": "پُرَپّ٘ڊُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഗജവീരന്മാരും",
+      "arbiText": "گَجَوِیڔَنۡمَاڔُمْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ധാരാളം",
+      "arbiText": "دھَاڔَاۻمٛ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ആയുധങ്ങളുമുള്ള",
+      "arbiText": "آیُدھَۼَّۻُمُۻَّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "സൈന്യമാണ്",
+      "arbiText": "സَیْنۡیَمَاڹۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അവർ",
+      "arbiText": "اَوَرَٛ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "മക്കയുടെ",
+      "arbiText": "مَكَّیُڊ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "സമീപമെത്തി",
+      "arbiText": "സَمِیپَم٘تِّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "മക്കക്കാരെ",
+      "arbiText": "مَكَّكَّاڔ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഭയപ്പെടുത്താൻ",
+      "arbiText": "بھَیَپّ٘ڊُتَّانَْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അവിടെ",
+      "arbiText": "اَوِڊ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "മേഞ്ഞു",
+      "arbiText": "مي٘ڿُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "നടന്നിരുന്ന",
+      "arbiText": "نَڊَنِّڔُنَّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഒരു",
+      "arbiText": "اٗڔُ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഒട്ടകം",
+      "arbiText": "اٗڊَّكمٛ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഒട്ടകങ്ങളെ",
+      "arbiText": "اٗڊَّكَۼَّۻ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "പിടിച്ചു",
+      "arbiText": "پِڊِചُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "കൊണ്ടുപോയി",
+      "arbiText": "كٗڹْڊُپٗویِ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അബ്ദുൽ",
+      "arbiText": "اَബۡدُلَْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "മുത്തലിബിന്റെ",
+      "arbiText": "مُتَّلِബِنْڔ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഒട്ടകങ്ങളും",
+      "arbiText": "اٗڊَّكَۼَّۻُمْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അക്കൂട്ടത്തിൽ",
+      "arbiText": "اَكُّوڊَّتِّلَْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഉണ്ടായിരുന്നു",
+      "arbiText": "اُڹْڊَایِڔُنُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "വിവരമറിഞ്ഞ",
+      "arbiText": "وِوَڔَمَرِڿَّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "മുത്തലിബ്",
+      "arbiText": "مُتَّلِബۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അബ്രഹത്തിനെ",
+      "arbiText": "اَബۡڔَهَتِّن٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "കാണാൻ",
+      "arbiText": "كَاڹَانَْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ചെന്നു",
+      "arbiText": "ച٘نُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "എൻറെ",
+      "arbiText": "ا٘نَْر٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഒട്ടകങ്ങൾ",
+      "arbiText": "اٗڊَّكَۼَّۻَۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "തിരിച്ചു",
+      "arbiText": "تِڔِചُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "തരണം",
+      "arbiText": "تَڔَڹمٛ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഒട്ടകങ്ങളാണോ",
+      "arbiText": "اٗڊَّكَۼَّۻَاڹٗو",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "നിങ്ങൾക്ക്",
+      "arbiText": "نِۼَّۻَۡكّۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "വലുത്",
+      "arbiText": "وَلُتۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ഞാൻ",
+      "arbiText": "ڿَانَْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "വന്നതാണ്",
+      "arbiText": "وَنَّتَاڹۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "എന്റേതാണ്",
+      "arbiText": "ا٘نْڔي٘تَاڹۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അതെനിക്ക്",
+      "arbiText": "اَت٘نِكّۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "തരിക",
+      "arbiText": "تَڔِكَ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അല്ലാഹു",
+      "arbiText": "اَلَّاهُ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "തആലയുടെതാണ്",
+      "arbiText": "تَآلَیُڊ٘تَاڹۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അത്",
+      "arbiText": "اَتۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അവൻ",
+      "arbiText": "اَوَنَْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "സംരക്ഷിച്ചുകൊള്ളും",
+      "arbiText": "സمٛڔَكْشِചُّكٗۻُّمْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "തിരിച്ചുകൊടുത്തു",
+      "arbiText": "تِڔِചُّكٗڊُتُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ജനങ്ങളോട്",
+      "arbiText": "جَنَۼَّۻٗوڊۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "പരിസരത്തുനിന്ന്",
+      "arbiText": "پَڔِസَڔَتُّنِنّۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "മാറി",
+      "arbiText": "مَارِ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "താമസിക്കാൻ",
+      "arbiText": "تَامَസِكَّانَْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ആവശ്യപ്പെട്ടു",
+      "arbiText": "آوَۺۡیَپّ٘ڊُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "സമീപത്ത്",
+      "arbiText": "സَمِیپَتّۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "വെച്ച്",
+      "arbiText": "و٘ചّۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അദ്ദേഹം",
+      "arbiText": "اَدۡدي٘همٛ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "പ്രാർത്ഥിച്ചു",
+      "arbiText": "پْرَارَٛتۡتھِചُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ചുറ്റും",
+      "arbiText": "ചُڔُّمْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "കൂടിയവർ",
+      "arbiText": "كُوڊِیَوَرَٛ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ആമീൻ",
+      "arbiText": "آمِینَْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "പറഞ്ഞു",
+      "arbiText": "پَرَڿُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "എല്ലാവരും",
+      "arbiText": "ا٘لَّاوَڔُمْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "സ്ഥലം",
+      "arbiText": "سْتَلمٛ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "വിട്ടു",
+      "arbiText": "وِڊُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "തആല",
+      "arbiText": "تَآلَ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "കൂട്ടം",
+      "arbiText": "كُوڊّمٛ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "കുഞ്ഞു",
+      "arbiText": "كُڿُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "പക്ഷികളെ",
+      "arbiText": "پَكْشِكَۻ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അയച്ചു",
+      "arbiText": "اَیَചُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ചുട്ടുപഴുത്ത",
+      "arbiText": "ചُڊُّپَژُتَّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "കല്ലുകളുമായി",
+      "arbiText": "كَلُّكَۻُمَایِ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അവയെത്തി",
+      "arbiText": "اَوَی٘تِّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "തീക്കല്ലുകൾ",
+      "arbiText": "تِیكَّلُّكَۻَۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "സൈന്യത്തിനു",
+      "arbiText": "സَیْنۡیَتِّنُ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "നേരെ",
+      "arbiText": "ني٘ڔ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "വർഷിച്ചു",
+      "arbiText": "وَرَٛشِചُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "അവരുടെ",
+      "arbiText": "اَوَڔُڊ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ശരീരങ്ങൾ",
+      "arbiText": "ۺَڔِیڔَۼَّۻَۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "ചതഞ്ഞരഞ്ഞതുപോലെയായി",
+      "arbiText": "ചَتَڿَّڔَڿَّتُپٗول٘یَایِ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "തകർക്കാൻ",
+      "arbiText": "تَكَرَٛكَّانَْ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "വന്നവരെ",
+      "arbiText": "وَنَّوَڔ٘",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "നശിപ്പിച്ചു",
+      "arbiText": "نَۺِپِّചُّ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    },
+    {
+      "mal": "സംരക്ഷകനാണ്",
+      "arbiText": "സمٛڔَكْشَكَنَاڹۡ",
+      "audio": "",
+      "writingPaths": null,
+      "hidden": false
+    }
+  ]
 }
