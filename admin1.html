@@ -766,47 +766,48 @@ function stopRecordingBook() { mediaRecorder.stop(); document.getElementById('st
 
 function saveWordZone() { 
     let arabic = document.getElementById('arabicText').value.trim(); 
-    
-    // പഴയ വർക്കിംഗ് കോഡിലെ ശരിയായ ഓഡിയോ ചെക്കിങ് രീതി ഇവിടെ ഉപയോഗിക്കുന്നു
-    if (currentAudioBlobs.length === 0 || currentAudioBlobs.length <= currentZones.length) {
-        return alert("ദയവായി പുതിയ വാക്കിനായി ഓഡിയോ റെക്കോർഡ് ചെയ്യുക!"); 
+    if (currentAudioBlobs.length === 0 || currentAudioBlobs.length <= (currentZones.filter(z => !z.audioSrc).length)) {
+        if(editingPageIndex === null) return alert("ഓഡിയോ റെക്കോർഡ് ചെയ്യുക!"); 
     }
-
     let isTextAlreadyExists = false; 
     if (arabic !== "") { 
-        allPagesMemory.forEach(page => { 
-            if (page.zones && Array.isArray(page.zones)) { 
-                page.zones.forEach(zone => { 
-                    if (zone.text && zone.text.trim() === arabic) isTextAlreadyExists = true; 
-                }); 
-            } 
+        allPagesMemory.forEach((page, pIdx) => { 
+            if(pIdx !== editingPageIndex && page.zones && Array.isArray(page.zones)) {
+                page.zones.forEach(zone => { if (zone.text && zone.text.trim() === arabic) isTextAlreadyExists = true; }); 
+            }
         }); 
-        currentZones.forEach(zone => { 
-            if (zone.text && zone.text.trim() === arabic) isTextAlreadyExists = true; 
-        }); 
+        currentZones.forEach(zone => { if (zone.text && zone.text.trim() === arabic) isTextAlreadyExists = true; }); 
     } 
-    
-    if (isTextAlreadyExists) { 
-        arabic = ""; 
-        alert("⚠️ ഈ വാക്ക് നിലവിലുണ്ട്! അതിനാൽ ഇതിന്റെ ടെക്സ്റ്റ് ഒഴിവാക്കി ഓഡിയോ റെക്കോർഡ് മാത്രം ലിങ്ക് ചെയ്യുന്നു."); 
-    } 
+    if (isTextAlreadyExists) { arabic = ""; alert("⚠️ ഈ വാക്ക് നിലവിലുണ്ട്! ടെക്സ്റ്റ് ഒഴിവാക്കി ഓഡിയോ റെക്കോർഡ് ലിങ്ക് ചെയ്യുന്നു."); } 
 
-    // ഓരോ വാക്കിനും കൃത്യമായ ഓഡിയോ ഇൻഡക്സ് ലഭിക്കുന്ന വിധം push ചെയ്യുന്നു
-    currentZones.push({ 
+    // 🎯 ഇവിടെയാണ് പുതിയ വാക്കിനോടൊപ്പം ആ വരകളും (readingPaths) കൂടെ ചേർക്കുന്നത്:
+    let newZoneObj = { 
         coords: { left: 0, top: 0, width: 15, height: 6 }, 
         text: arabic, 
-        localAudioIndex: currentAudioBlobs.length - 1, 
+        readingPaths: readingPaths.length > 0 ? JSON.parse(JSON.stringify(readingPaths)) : null, 
         writingPaths: savedQuizPathsForZone ? savedQuizPathsForZone : null 
-    }); 
+    };
 
-    document.getElementById('zoneCount').innerText = `(${currentZones.length} വാക്കുകൾ ചേർത്തു)`; 
+    if(currentAudioBlobs.length > 0) {
+        newZoneObj.localAudioIndex = currentAudioBlobs.length - 1;
+    } else if(editingPageIndex !== null) {
+        newZoneObj.audioSrc = ""; 
+    }
+    currentZones.push(newZoneObj); 
+
+    // അടുത്ത വാക്കിനായി വരകൾ വരയ്ക്കുന്ന ബോർഡ് ക്ലിയർ ചെയ്യുന്നു
+    clearReadingDrawBoard();
+
+    document.getElementById('zoneCount').innerText = `(${currentZones.length} വാക്കുകൾ ലഭ്യമാണ്)`; 
     document.getElementById('audioPlayback').style.display = 'none'; 
     document.getElementById('recordStatus').innerText = ""; 
     document.getElementById('arabicText').value = ""; 
     savedQuizPathsForZone = null; 
     document.getElementById('quizStatusText').innerText = ""; 
+    renderZoneEditList();
     alert("🎯 വാക്ക് വിജയകരമായി ലിങ്ക് ചെയ്തു!"); 
 }
+
 
 
 function addNextPageToMemory() { 
