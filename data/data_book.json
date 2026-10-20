@@ -1,5 +1,5 @@
 {
-  "version": 1792495426799,
+  "version": 1792495840118,
   "globalInfo": {
     "class": "",
     "subject": "",
@@ -1288,6 +1288,17 @@
               }
             ]
           ]
+        },
+        {
+          "coords": {
+            "left": 0,
+            "top": 0,
+            "width": 15,
+            "height": 6
+          },
+          "text": "",
+          "audioSrc": "data/audio_1792495837987_p0_z4.mp3",
+          "writingPaths": null
         }
       ],
       "readingPaths": [
