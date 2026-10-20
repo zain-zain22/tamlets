@@ -1,5 +1,5 @@
 {
-  "version": 1792497358349,
+  "version": 1792498415575,
   "globalInfo": {
     "class": "",
     "subject": "",
@@ -709,8 +709,8 @@
             "width": 15,
             "height": 6
           },
-          "text": "",
-          "audioSrc": "",
+          "text": "كَ",
+          "audioSrc": "data/audio_1792498413206_p0_z1.mp3",
           "writingPaths": null
         }
       ],
