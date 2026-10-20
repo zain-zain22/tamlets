@@ -1216,7 +1216,14 @@ async function publishToGitHubDirectly() {
                     zipAudioName = `audio_${Date.now()}_p${p}_z${z}.mp3`; document.getElementById('loadText').innerText = `🎙️ പേജ് ${p + 1} - ഓഡിയോ ${z + 1} അപ്‌ലോഡ് ചെയ്യുന്നു...`; 
                     await uploadToGitHubAPI(`data/${zipAudioName}`, pageItem.audioBlobs[zoneItem.localAudioIndex], token); 
                 } else { zipAudioName = zoneItem.audioSrc ? zoneItem.audioSrc.split('/').pop().split('?')[0] : ""; } 
-                updatedZones.push({ coords: zoneItem.coords, text: zoneItem.text || "", audioSrc: zipAudioName ? `data/${zipAudioName}` : "", writingPaths: zoneItem.writingPaths || null }); 
+                updatedZones.push({ 
+    coords: zoneItem.coords, 
+    text: zoneItem.text || "", 
+    audioSrc: zipAudioName ? `data/${zipAudioName}` : "", 
+    readingPaths: zoneItem.readingPaths || null, // 👈 ഈ വരിയാണ് പുതുതായി ചേർക്കേണ്ടത്
+    writingPaths: zoneItem.writingPaths || null 
+});
+ 
             } 
             pagesJsonArray.push({ image: `data/${zipImgName}`, lesson: pageItem.lesson || 1, zones: updatedZones, readingPaths: pageItem.readingPaths || null, hidden: pageItem.hidden ? true : false }); 
         } 
