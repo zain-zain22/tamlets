@@ -766,49 +766,39 @@ function stopRecordingBook() { mediaRecorder.stop(); document.getElementById('st
 
 function saveWordZone() { 
     let arabic = document.getElementById('arabicText').value.trim(); 
-    if (currentAudioBlobs.length === 0 || currentAudioBlobs.length <= currentZones.length) {
-        return alert("ദയവായി ഈ വാക്കിനുള്ള ഓഡിയോ റെക്കോർഡ് ചെയ്യുക!"); 
+    if (currentAudioBlobs.length === 0 || currentAudioBlobs.length <= (currentZones.filter(z => !z.audioSrc).length)) {
+        if(editingPageIndex === null) return alert("ഓഡിയോ റെക്കോർഡ് ചെയ്യുക!"); 
     }
-    
     let isTextAlreadyExists = false; 
     if (arabic !== "") { 
-        allPagesMemory.forEach(page => { 
-            if (page.zones && Array.isArray(page.zones)) { 
-                page.zones.forEach(zone => { 
-                    if (zone.text && zone.text.trim() === arabic) isTextAlreadyExists = true; 
-                }); 
-            } 
+        allPagesMemory.forEach((page, pIdx) => { 
+            if(pIdx !== editingPageIndex && page.zones && Array.isArray(page.zones)) {
+                page.zones.forEach(zone => { if (zone.text && zone.text.trim() === arabic) isTextAlreadyExists = true; }); 
+            }
         }); 
-        currentZones.forEach(zone => { 
-            if (zone.text && zone.text.trim() === arabic) isTextAlreadyExists = true; 
-        }); 
+        currentZones.forEach(zone => { if (zone.text && zone.text.trim() === arabic) isTextAlreadyExists = true; }); 
     } 
-    
-    if (isTextAlreadyExists) { 
-        arabic = ""; 
-        alert("⚠️ ഈ വാക്ക് നിലവിലുണ്ട്! അതിനാൽ ഇതിന്റെ ടെക്സ്റ്റ് ഒഴിവാക്കി ഓഡിയോ റെക്കോർഡ് മാത്രം ലിങ്ക് ചെയ്യുന്നു."); 
-    } 
+    if (isTextAlreadyExists) { arabic = ""; alert("⚠️ ഈ വാക്ക് നിലവിലുണ്ട്! ടെക്സ്റ്റ് ഒഴിവാക്കി ഓഡിയോ റെക്കോർഡ് ലിങ്ക് ചെയ്യുന്നു."); } 
 
-    // 🎯 ഇവിടെയാണ് ഓരോ വാക്കിനും അതിന്റേതായ വരകൾ (readingPaths) കൂടെ ചേർക്കുന്നത്:
-    let currentWordPaths = readingPaths.length > 0 ? JSON.parse(JSON.stringify(readingPaths)) : null;
+    let newZoneObj = { coords: { left: 0, top: 0, width: 15, height: 6 }, text: arabic, writingPaths: savedQuizPathsForZone ? savedQuizPathsForZone : null };
+    if(currentAudioBlobs.length > 0) {
+        newZoneObj.localAudioIndex = currentAudioBlobs.length - 1;
+    } else if(editingPageIndex !== null) {
+        newZoneObj.audioSrc = ""; 
+    }
+    currentZones.push(newZoneObj); 
 
-    currentZones.push({ 
-        coords: { left: 0, top: 0, width: 15, height: 6 }, 
-        text: arabic, 
-        localAudioIndex: currentAudioBlobs.length - 1, 
-        readingPaths: currentWordPaths, // 👈 ഈ വാക്കിന്റെ മാത്രം നീല വരകൾ
-        writingPaths: savedQuizPathsForZone ? savedQuizPathsForZone : null 
-    }); 
+    // 🎯 ഇവിടെയാണ് മാറ്റം: readingPaths ഡാറ്റ കളയാതെ, സ്ക്രീൻ (SVG board) മാത്രം അടുത്ത വരയ്ക്കായി ക്ലിയർ ചെയ്യുന്നു
+    document.getElementById('pageDrawBoard').innerHTML = ""; 
+    document.getElementById('readingDrawStatus').innerText = "";
 
-    // അടുത്ത വാക്കിനായി വരയ്ക്കുന്ന ബോർഡ് ക്ലിയർ ചെയ്യുന്നു
-    clearReadingDrawBoard();
-
-    document.getElementById('zoneCount').innerText = `(${currentZones.length} വാക്കുകൾ ചേർത്തു)`; 
+    document.getElementById('zoneCount').innerText = `(${currentZones.length} വാക്കുകൾ ലഭ്യമാണ്)`; 
     document.getElementById('audioPlayback').style.display = 'none'; 
     document.getElementById('recordStatus').innerText = ""; 
     document.getElementById('arabicText').value = ""; 
     savedQuizPathsForZone = null; 
     document.getElementById('quizStatusText').innerText = ""; 
+    renderZoneEditList();
     alert("🎯 വാക്ക് വിജയകരമായി ലിങ്ക് ചെയ്തു!"); 
 }
 
