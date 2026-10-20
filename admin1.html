@@ -788,10 +788,6 @@ function saveWordZone() {
     }
     currentZones.push(newZoneObj); 
 
-    // 🎯 ഇവിടെയാണ് മാറ്റം: readingPaths ഡാറ്റ കളയാതെ, സ്ക്രീൻ (SVG board) മാത്രം അടുത്ത വരയ്ക്കായി ക്ലിയർ ചെയ്യുന്നു
-    document.getElementById('pageDrawBoard').innerHTML = ""; 
-    document.getElementById('readingDrawStatus').innerText = "";
-
     document.getElementById('zoneCount').innerText = `(${currentZones.length} വാക്കുകൾ ലഭ്യമാണ്)`; 
     document.getElementById('audioPlayback').style.display = 'none'; 
     document.getElementById('recordStatus').innerText = ""; 
@@ -801,6 +797,7 @@ function saveWordZone() {
     renderZoneEditList();
     alert("🎯 വാക്ക് വിജയകരമായി ലിങ്ക് ചെയ്തു!"); 
 }
+
 
 
 
