@@ -1,5 +1,5 @@
 {
-  "version": 1792498963518,
+  "version": 1792501290551,
   "globalInfo": {
     "class": "",
     "subject": "",
@@ -19,8 +19,8 @@
             "width": 15,
             "height": 6
           },
-          "text": "كرز",
-          "audioSrc": "data/audio_1792498663146_p0_z0.mp3",
+          "text": "",
+          "audioSrc": "data/audio_1792501281830_p0_z0.mp3",
           "writingPaths": null
         },
         {
@@ -30,8 +30,30 @@
             "width": 15,
             "height": 6
           },
-          "text": "ك",
-          "audioSrc": "data/audio_1792498961402_p0_z1.mp3",
+          "text": "",
+          "audioSrc": "data/audio_1792501284072_p0_z1.mp3",
+          "writingPaths": null
+        },
+        {
+          "coords": {
+            "left": 0,
+            "top": 0,
+            "width": 15,
+            "height": 6
+          },
+          "text": "",
+          "audioSrc": "data/audio_1792501285993_p0_z2.mp3",
+          "writingPaths": null
+        },
+        {
+          "coords": {
+            "left": 0,
+            "top": 0,
+            "width": 15,
+            "height": 6
+          },
+          "text": "",
+          "audioSrc": "data/audio_1792501288147_p0_z3.mp3",
           "writingPaths": null
         }
       ],
