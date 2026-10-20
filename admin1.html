@@ -808,6 +808,9 @@ function addNextPageToMemory() {
     if(editingPageIndex !== null) {
         allPagesMemory[editingPageIndex].lesson = lesson;
         allPagesMemory[editingPageIndex].zones = currentZones;
+        if(readingPaths.length > 0) {
+            allPagesMemory[editingPageIndex].readingPaths = readingPaths;
+        }
         if(currentAudioBlobs.length > 0) {
             if(!allPagesMemory[editingPageIndex].audioBlobs) allPagesMemory[editingPageIndex].audioBlobs = [];
             allPagesMemory[editingPageIndex].audioBlobs = allPagesMemory[editingPageIndex].audioBlobs.concat(currentAudioBlobs);
@@ -816,12 +819,30 @@ function addNextPageToMemory() {
         editingPageIndex = null;
     } else {
         if(!selectedImageFile || currentZones.length === 0) return alert("ചിത്രവും ഓഡിയോയും ആവശ്യമാണ്!"); 
-        allPagesMemory.push({ isNewPage: true, imageFile: selectedImageFile, lesson: lesson, zones: currentZones, audioBlobs: currentAudioBlobs, readingPaths: readingPaths.length > 0 ? readingPaths : null, hidden: false }); 
+        allPagesMemory.push({ 
+            isNewPage: true, 
+            imageFile: selectedImageFile, 
+            lesson: lesson, 
+            zones: currentZones, 
+            audioBlobs: currentAudioBlobs, 
+            readingPaths: readingPaths.length > 0 ? readingPaths : null, // 👈 പഴയ കോഡിലെ പോലെ പേജ് ലെവലിൽ സേവ് ആകുന്നു
+            hidden: false 
+        }); 
         alert(`ഈ പേജ് പാഠം ${lesson}-ലേക്ക് മാറ്റി!`); 
     }
 
-    currentZones = []; currentAudioBlobs = []; selectedImageFile = null; readingPaths = []; document.getElementById('imageUploader').value = ''; document.getElementById('mappingSection').style.display = 'none'; document.getElementById('zoneCount').innerText = "(0 വാക്കുകൾ ചേർത്തു)"; document.getElementById('zoneEditContainer').style.display = 'none'; clearReadingDrawBoard(); renderExistingPagesList(); 
-} 
+    currentZones = []; 
+    currentAudioBlobs = []; 
+    selectedImageFile = null; 
+    readingPaths = []; 
+    document.getElementById('imageUploader').value = ''; 
+    document.getElementById('mappingSection').style.display = 'none'; 
+    document.getElementById('zoneCount').innerText = "(0 വാക്കുകൾ ചേർത്തു)"; 
+    document.getElementById('zoneEditContainer').style.display = 'none'; 
+    clearReadingDrawBoard(); 
+    renderExistingPagesList(); 
+}
+
 
 function renderExistingQuizList() {
     let container = document.getElementById('existingQuizList'); container.innerHTML = '';
