@@ -1,5 +1,5 @@
 {
-  "version": 1792504727877,
+  "version": 1792514195459,
   "globalInfo": {
     "class": "",
     "subject": "",
@@ -20,7 +20,8 @@
             "height": 6
           },
           "text": "",
-          "audioSrc": "data/audio_1792504721482_p0_z0.mp3",
+          "audioSrc": "data/audio_1792514186263_p0_z0.mp3",
+          "readingPaths": null,
           "writingPaths": null
         },
         {
@@ -31,7 +32,8 @@
             "height": 6
           },
           "text": "",
-          "audioSrc": "data/audio_1792504723321_p0_z1.mp3",
+          "audioSrc": "data/audio_1792514188653_p0_z1.mp3",
+          "readingPaths": null,
           "writingPaths": null
         },
         {
@@ -42,7 +44,20 @@
             "height": 6
           },
           "text": "",
-          "audioSrc": "data/audio_1792504725637_p0_z2.mp3",
+          "audioSrc": "data/audio_1792514190982_p0_z2.mp3",
+          "readingPaths": null,
+          "writingPaths": null
+        },
+        {
+          "coords": {
+            "left": 0,
+            "top": 0,
+            "width": 15,
+            "height": 6
+          },
+          "text": "",
+          "audioSrc": "data/audio_1792514193298_p0_z3.mp3",
+          "readingPaths": null,
           "writingPaths": null
         }
       ],
