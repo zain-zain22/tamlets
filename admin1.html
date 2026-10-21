@@ -600,20 +600,41 @@ function movePageDown(index) {
 
 function editPageFromList(index) {
     editingPageIndex = index;
+
     let page = allPagesMemory[index];
+
     document.getElementById('mappingSection').style.display = 'block';
     document.getElementById('lessonNum').value = page.lesson || 1;
     document.getElementById('bookImg').src = page.image || '';
-    
-    currentZones = JSON.parse(JSON.stringify(page.zones));
-    currentAudioBlobs = []; 
+
+    // നിലവിലുള്ള വാക്കുകൾ ലോഡ് ചെയ്യുക
+    currentZones = JSON.parse(JSON.stringify(page.zones || []));
+
+    // പുതിയ ഓഡിയോ റെക്കോർഡിങ്ങുകൾക്കുള്ള താൽക്കാലിക ലിസ്റ്റ്
+    currentAudioBlobs = [];
+
+    // പഴയ വരകൾ ക്ലിയർ ചെയ്യുക
     clearReadingDrawBoard();
-    
-    document.getElementById('zoneCount').innerText = `(${currentZones.length} വാക്കുകൾ ലഭ്യമാണ്)`;
-    document.getElementById('btnSavePageFinal').innerText = "💾 ഈ പേജിലെ മാറ്റങ്ങൾ സ്ഥിരപ്പെടുത്തുക";
-    
+
+    // സേവ് ചെയ്ത പഴയ വായനാ വരകൾ വീണ്ടും ലോഡ് ചെയ്യുക
+    readingPaths = Array.isArray(page.readingPaths)
+        ? JSON.parse(JSON.stringify(page.readingPaths))
+        : [];
+
+    // വരകൾ ബോർഡിൽ വീണ്ടും കാണിക്കുക
+    redrawReadingPathsOnBoard();
+
+    document.getElementById('zoneCount').innerText =
+        `(${currentZones.length} വാക്കുകൾ ലഭ്യമാണ്)`;
+
+    document.getElementById('btnSavePageFinal').innerText =
+        "💾 ഈ പേജിലെ മാറ്റങ്ങൾ സ്ഥിരപ്പെടുത്തുക";
+
     renderZoneEditList();
-    document.getElementById('section-book').scrollIntoView({ behavior: 'smooth' });
+
+    document.getElementById('section-book').scrollIntoView({
+        behavior: 'smooth'
+    });
 }
 
 function renderZoneEditList() {
