@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>സൗണ്ട് ബുക്ക് - കുട്ടികളുടെ പാനൽ</title>
+    <title>സൗണ്ട് ബുക്ക് - കുട്ടികളുടെ പാനല്‍</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; margin: 0; padding: 0; user-select: none; }
@@ -14,7 +14,7 @@
         h1 { color: #2c3e50; font-size: 24px; margin-bottom: 5px; text-align: center; }
         h3 { color: #7f8c8d; margin-top: 0; font-size: 16px; }
         .menu-box { background: white; width: 100%; max-width: 400px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; margin-top: 15px; }
-        select { width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 2px solid #bdc3c7; margin-bottom: 15px; background: #fff; outline: none; }
+        select { width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 2px solid #bdc3c7; margin-bottom: 15px; background: #fff; }
         
         button { background: #3498db; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin: 8px 0; box-shadow: 0 3px 6px rgba(0,0,0,0.1); transition: 0.2s; }
         button:active { transform: scale(0.98); }
@@ -93,28 +93,8 @@
     <audio id="audioPlayer" style="display:none;"></audio>
 
     <script>
-        // Default Credentials (ലോക്കൽ ഫയൽ തുറക്കുമ്പോൾ ഉപയോഗിക്കാൻ)
-        let GH_USER = "zain-zain22"; 
-        let GH_REPO = "class-2-duroos-part-2-chater-1"; 
-
-        // URL-ൽ നിന്ന് Auto-Detect ചെയ്യാനുള്ള ഫംഗ്ഷൻ
-        function autoDetectRepoDetails() {
-            const hostname = window.location.hostname; // e.g., zain-zain22.github.io
-            const pathname = window.location.pathname; // e.g., /class-2-duroos-part-2-chater-1/index.html
-
-            if (hostname.includes('.github.io')) {
-                GH_USER = hostname.split('.github.io')[0];
-                
-                const pathParts = pathname.split('/').filter(p => p.length > 0);
-                if (pathParts.length > 0) {
-                    GH_REPO = pathParts[0];
-                }
-            }
-        }
-
         let bookData = { pages: [] };
         let masterList = {};
-        let visibilityData = { madrasas: {}, students: {} };
         let currentStudent = "";
         let currentMadrasa = "";
         
@@ -124,31 +104,20 @@
         let isWordAudioFinished = true;
 
         window.onload = function() {
-            autoDetectRepoDetails(); // ഓട്ടോ ഡിറ്റക്ഷൻ പ്രവൃത്തിപ്പിക്കുന്നു
             loadDataFromBackend();
         };
 
         async function loadDataFromBackend() {
             let cacheBuster = Date.now(); 
             try {
-                // 1. visibility.json ഫെച്ച് ചെയ്യുന്നു
-                try {
-                    let rVis = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/visibility.json?t=${cacheBuster}`);
-                    if(rVis.ok) visibilityData = await rVis.json();
-                } catch(e) {
-                    visibilityData = { madrasas: {}, students: {} };
-                }
-
-                // 2. master_list.json ഫെച്ച് ചെയ്യുന്നു
-                let r1 = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/master_list.json?t=${cacheBuster}`);
+                let r1 = await fetch(`./data/master_list.json?t=${cacheBuster}`);
                 if(r1.ok) {
                     masterList = await r1.json();
                 } else {
                     console.error("master_list.json ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല");
                 }
                 
-                // 3. data_book.json ഫെച്ച് ചെയ്യുന്നു
-                let r2 = await fetch(`https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/data_book.json?t=${cacheBuster}`);
+                let r2 = await fetch(`./data/data_book.json?t=${cacheBuster}`);
                 if(r2.ok) {
                     bookData = await r2.json();
                 } else {
@@ -167,16 +136,14 @@
             let mSel = document.getElementById('madrasaSelect');
             mSel.innerHTML = "";
             
-            let activeMadrasas = Object.keys(masterList).filter(m => !visibilityData.madrasas || !visibilityData.madrasas[m]);
-
-            if (activeMadrasas.length === 0) {
+            if (Object.keys(masterList).length === 0) {
                 let opt = document.createElement('option');
                 opt.innerText = "ഡാറ്റ ലഭ്യമല്ല";
                 mSel.appendChild(opt);
                 return;
             }
 
-            activeMadrasas.sort().forEach(m => {
+            Object.keys(masterList).sort().forEach(m => {
                 let opt = document.createElement('option');
                 opt.value = m; opt.innerText = m; mSel.appendChild(opt);
             });
@@ -188,14 +155,9 @@
             let sSel = document.getElementById('studentSelect');
             sSel.innerHTML = "";
             if(!m || !masterList[m]) return;
-
-            let hiddenStudents = (visibilityData.students && visibilityData.students[m]) ? visibilityData.students[m] : {};
-
             masterList[m].sort().forEach(s => {
-                if(!hiddenStudents[s]) {
-                    let opt = document.createElement('option');
-                    opt.value = s; opt.innerText = s; sSel.appendChild(opt);
-                }
+                let opt = document.createElement('option');
+                opt.value = s; opt.innerText = s; sSel.appendChild(opt);
             });
         }
 
@@ -244,18 +206,23 @@
         }
 
         function startRevisionMode() {
-            // Hide ചെയ്യാത്ത പേജുകൾ മാത്രം എടുക്കുന്നു
-            let visiblePages = bookData.pages ? bookData.pages.filter(p => !p.hidden && !p.isHidden) : [];
+            let visiblePages = bookData.pages ? bookData.pages.filter(p => !p.hidden) : [];
             
             if(visiblePages.length === 0) return alert("പേജുകൾ ലഭ്യമല്ല!");
 
-            // അവസാനത്തെ 10 പേജുകൾ മാത്രം എടുക്കുന്നു
-            if (visiblePages.length > 10) {
-                visiblePages = visiblePages.slice(-10);
+            let allLessons = [];
+            visiblePages.forEach(p => {
+                if (p.lesson && !allLessons.includes(p.lesson)) {
+                    allLessons.push(p.lesson);
+                }
+            });
+
+            if (allLessons.length > 5) {
+                let latest5Lessons = allLessons.slice(-5);
+                visiblePages = visiblePages.filter(p => latest5Lessons.includes(p.lesson));
             }
 
-            // ക്രമം മാറാതെ യഥാർത്ഥ ഓർഡറിൽ ലിസ്റ്റ് സെറ്റ് ചെയ്യുന്നു
-            revisionPagesList = visiblePages; 
+            revisionPagesList = visiblePages.reverse(); 
             
             if(revisionPagesList.length === 0) return alert("പേജുകൾ ലഭ്യമല്ല!");
             currentRevIdx = 0;
@@ -266,15 +233,11 @@
         function loadRevisionPage() {
             let page = revisionPagesList[currentRevIdx];
             document.getElementById('revisionProgressText').innerText = `പേജ്: ${currentRevIdx + 1} / ${revisionPagesList.length}`;
-            
-            let imgPath = page.image ? page.image.trim() : '';
-            if(!imgPath.startsWith('http') && !imgPath.startsWith('data/')) imgPath = 'data/' + imgPath;
-            
-            document.getElementById('revisionBookImg').src = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/${imgPath}?t=${Date.now()}`;
+            document.getElementById('revisionBookImg').src = page.image + "?t=" + Date.now();
             
             currentZoneIdx = -1; 
             isWordAudioFinished = true;
-            document.getElementById('playbackEngine').innerHTML = ""; 
+            document.getElementById('playbackEngine').innerHTML = ""; // പേജ് മാറുമ്പോൾ പഴയത് ക്ലിയർ ചെയ്യാൻ
             disableNextWordButton(false);
         }
 
@@ -295,6 +258,7 @@
         function stepToNextWord() {
             if(!isWordAudioFinished) return;
             
+            // 🔄 ഇവിടെയാണ് മാറ്റം: പുതിയ വാക്ക് ക്ലിക്ക് ചെയ്യുമ്പോൾ മുൻപത്തെ വാക്കിന്റെ വരകൾ പൂർണ്ണമായി മായ്ക്കുന്നു (Clear ആക്കുന്നു)
             document.getElementById('playbackEngine').innerHTML = "";
 
             let page = revisionPagesList[currentRevIdx];
@@ -310,10 +274,7 @@
             disableNextWordButton(true);
             
             let player = document.getElementById('audioPlayer');
-            let aPath = zone.audioSrc ? zone.audioSrc.trim() : '';
-            if(!aPath.startsWith('http') && !aPath.startsWith('data/')) aPath = 'data/' + aPath;
-
-            player.src = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/${aPath}?t=${Date.now()}`;
+            player.src = zone.audioSrc + "?t=" + Date.now();
             player.play().catch(() => {
                 isWordAudioFinished = true;
                 disableNextWordButton(false);
@@ -383,13 +344,15 @@
                 
                 alert("🎉 വലിയൊരു കൈയടി! ഇന്നത്തെ റിവിഷൻ പൂർത്തിയായിരിക്കുന്നു. ഇനി നിനക്ക് ക്വിസ്സ് ഗെയിം കളിക്കാം 🎮");
                 
+                let quizLink = "https://zain-zain22.github.io/sound-book-admin/quize.html"; 
+                
                 let btn = document.getElementById('nextWordBtn');
                 if(btn) {
                     btn.disabled = false;
                     btn.className = "btn-purple";
                     btn.innerText = "🎮 ഇനി ക്വിസ്സ് ഗെയിം കളിക്കാം 🚀";
                     btn.onclick = function() {
-                        goToQuizLink();
+                        window.location.href = quizLink;
                     };
                 }
                 
@@ -398,7 +361,7 @@
         }
 
         function goToQuizLink() {
-            window.location.href = "quze.html";
+            window.location.href = "https://zain-zain22.github.io/sound-book-admin/quize.html";
         }
 
         function quitRevision() {
