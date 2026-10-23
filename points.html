@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>സ്മാർട്ട് പഠന സ്ലൈഡുകൾ & സർട്ടിഫിക്കറ്റ്</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body { 
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
+    margin: 0; 
+    padding: 20px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+  }
+  
+  .panel-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 650px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    padding: 35px;
+    text-align: center;
+    position: relative;
+    border-top: 8px solid #e74c3c;
+    animation: fadeIn 0.4s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .badge-title {
+    background: #fdf2f2;
+    color: #e74c3c;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .slide-counter {
+    font-size: 14px;
+    color: #7f8c8d;
+    font-weight: 600;
+  }
+
+  .progress-bar-container {
+    background: #edf2f7;
+    height: 10px;
+    border-radius: 5px;
+    margin-bottom: 25px;
+    overflow: hidden;
+  }
+  .progress-bar { 
+    background: linear-gradient(90deg, #e74c3c, #f39c12); 
+    height: 100%; 
+    width: 0%; 
+    transition: width 0.4s ease; 
+    border-radius: 5px;
+  }
+
+  .slide-box {
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #2c3e50;
+    line-height: 1.8;
+    padding: 25px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    font-weight: 600;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  }
+
+  .audio-status-box {
+    background: #f1f5f9;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #475569;
+    font-weight: 500;
+  }
+
+  .audio-status-box i {
+    color: #3b82f6;
+    font-size: 18px;
+  }
+
+  .btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    width: 100%;
+  }
+  .btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+  }
+  .btn:disabled {
+    background: #cbd5e1 !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+  .btn-next { background: #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+
+  /* Certificate Styling */
+  #certificateArea {
+    display: none;
+    background: #fff;
+    border: 8px solid #f59e0b;
+    padding: 40px 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  }
+  .cert-icon { font-size: 50px; color: #f59e0b; margin-bottom: 10px; }
+  .cert-title { font-size: 30px; color: #b45309; font-weight: bold; margin-bottom: 8px; }
+  .cert-sub { font-size: 16px; color: #475569; margin-bottom: 25px; line-height: 1.5; }
+  .student-input { 
+    padding: 14px; 
+    font-size: 16px; 
+    border: 2px solid #cbd5e1; 
+    border-radius: 10px; 
+    width: 100%; 
+    max-width: 400px; 
+    margin-bottom: 20px; 
+    text-align: center; 
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .student-input:focus { border-color: #3b82f6; }
+
+  .final-cert-box {
+    display: none;
+    margin-top: 30px;
+    border: 4px double #b45309;
+    padding: 30px;
+    background: #fffdf4;
+    border-radius: 10px;
+  }
+</style>
+</head>
+<body>
+
+<!-- സ്ലൈഡ് പാനൽ -->
+<div class="panel-card" id="presentationArea">
+  <div class="header-flex">
+    <span class="badge-title"><i class="fa-solid fa-book-open"></i> പ്രധാന പോയിന്റുകൾ</span>
+    <span class="slide-counter" id="slideCounter">Slide 0/0</span>
+  </div>
+
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="slide-box" id="slideText">
+    ലഭ്യമായ പോയിന്റുകൾ ലോഡ് ചെയ്യുന്നു...
+  </div>
+
+  <div class="audio-status-box" id="audioStatus">
+    <i class="fa-solid fa-volume-high fa-bounce"></i> 
+    <span id="statusText">ഓഡിയോ പ്ലേ ചെയ്യുന്നു...</span>
+  </div>
+
+  <audio id="slideAudio" style="display:none;"></audio>
+
+  <button class="btn btn-next" id="nextBtn" onclick="nextSlide()" disabled>
+    അടുത്ത പോയിന്റ് <i class="fa-solid fa-arrow-right"></i>
+  </button>
+</div>
+
+<!-- സർട്ടിഫിക്കറ്റ് പാനൽ -->
+<div class="panel-card" id="certificateArea">
+  <div class="cert-icon"><i class="fa-solid fa-award"></i></div>
+  <div class="cert-title">പഠന സർട്ടിഫിക്കറ്റ്</div>
+  <div class="cert-sub">അഭിനന്ദനങ്ങൾ! ഈ പാഠത്തിലെ മുഴുവൻ പ്രധാന പോയിന്റുകളും നിങ്ങൾ ശ്രദ്ധാപൂർവ്വം കേട്ട് പഠിച്ചു തീർത്തിരിക്കുന്നു.</div>
+  
+  <input type="text" class="student-input" id="studentNameInput" placeholder="കുട്ടിയുടെ മുഴുവൻ പേര് ഇവിടെ എഴുതുക">
+  <br>
+  <button class="btn" onclick="generateCertificate()">📜 സർട്ടിഫിക്കറ്റ് ലഭ്യമാക്കൂ</button>
+
+  <div class="final-cert-box" id="finalCertPrint">
+    <h2 style="color:#b45309; margin-top:0; font-family: serif;">CERTIFICATE OF COMPLETION</h2>
+    <p style="font-size: 15px; color: #475569;">ഈ കോഴ്‌സിലെ മുഴുവൻ പഠന പോയിന്റുകളും വിജയകരമായി പൂർത്തീകരിച്ചിരിക്കുന്നു എന്ന് സാക്ഷ്യപ്പെടുത്തുന്നു:</p>
+    <h1 style="color:#1e293b; border-bottom: 2px solid #cbd5e1; display: inline-block; padding: 0 20px 5px 20px; margin: 10px 0;" id="certStudentName"></h1>
+    <p style="color: #10b981; font-weight: bold; margin-top: 15px;"><i class="fa-solid fa-circle-check"></i> Verified & Completed Successfully</p>
+    <button class="btn" style="background:#475569; margin-top:15px; width: auto; padding: 10px 25px;" onclick="window.print()">🖨️ പ്രിന്റ് / ഡൗൺലോഡ് ചെയ്യുക</button>
+  </div>
+</div>
+
+<script>
+let pointsData = [];
+let currentIndex = 0;
+
+const slideText = document.getElementById('slideText');
+const slideAudio = document.getElementById('slideAudio');
+const nextBtn = document.getElementById('nextBtn');
+const statusText = document.getElementById('statusText');
+const progressBar = document.getElementById('progressBar');
+const slideCounter = document.getElementById('slideCounter');
+
+async function loadPoints() {
+  try {
+    let res = await fetch('data/data_points.json?t=' + Date.now());
+    if(res.ok) {
+      let data = await res.json();
+      pointsData = (data.points || []).filter(p => !p.hidden);
+      
+      if(pointsData.length > 0) {
+        showSlide(0);
+      } else {
+        slideText.innerText = "പ്രദർശിപ്പിക്കാൻ പോയിന്റുകൾ ഒന്നുമില്ല!";
+        statusText.parentElement.style.display = 'none';
+        nextBtn.style.display = 'none';
+      }
+    } else {
+      slideText.innerText = "ഡാറ്റ ലോഡ് ചെയ്യാൻ സാധിച്ചില്ല!";
+    }
+  } catch(e) {
+    slideText.innerText = "കണക്ഷൻ പിഴവ്: ഡാറ്റ ലഭ്യമായില്ല.";
+  }
+}
+
+function showSlide(index) {
+  currentIndex = index;
+  let item = pointsData[index];
+
+  slideText.innerText = item.text;
+  slideCounter.innerText = `Slide ${index + 1} / ${pointsData.length}`;
+  progressBar.style.width = `${((index + 1) / pointsData.length) * 100}%`;
+  
+  nextBtn.disabled = true;
+  statusText.innerText = "ഓഡിയോ കേട്ട് തീരുന്നത് വരെ കാത്തിരിക്കുക...";
+
+  if(item.audio) {
+    slideAudio.src = item.audio;
+    slideAudio.play().catch(e => {
+      statusText.innerText = "ഓഡിയോ പ്ലേ ചെയ്യാൻ ബട്ടൺ അമർത്തുക അല്ലെങ്കിൽ ടാപ്പ് ചെയ്യുക.";
+      nextBtn.disabled = false;
+    });
+
+    slideAudio.onended = function() {
+      statusText.innerText = "✅ ഓഡിയോ കേട്ട് കഴിഞ്ഞു! അടുത്തതിലേക്ക് പോകാം.";
+      nextBtn.disabled = false;
+    };
+  } else {
+    statusText.innerText = "ഈ പോയിന്റിന് വോയ്സ് ലഭ്യമല്ല.";
+    nextBtn.disabled = false;
+  }
+}
+
+function nextSlide() {
+  slideAudio.pause();
+  if(currentIndex < pointsData.length - 1) {
+    showSlide(currentIndex + 1);
+  } else {
+    document.getElementById('presentationArea').style.display = 'none';
+    document.getElementById('certificateArea').style.display = 'block';
+  }
+}
+
+function generateCertificate() {
+  let name = document.getElementById('studentNameInput').value.trim();
+  if(!name) return alert("ദയവായി കുട്ടിയുടെ പേര് നൽകുക!");
+  
+  document.getElementById('certStudentName').innerText = name;
+  document.getElementById('studentNameInput').style.display = 'none';
+  document.querySelector('#certificateArea .btn').style.display = 'none';
+  document.getElementById('finalCertPrint').style.display = 'block';
+}
+
+window.onload = loadPoints;
+</script>
+
+</body>
+</html>
