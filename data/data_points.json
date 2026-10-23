@@ -1,11 +1,10 @@
 {
-  "version": 1792604004966,
-  "pointsInfo": {
-    "class": "",
-    "subject": "",
-    "part": "",
-    "chapter": "",
-    "lessonName": ""
-  },
-  "points": []
+  "version": 1792763209617,
+  "points": [
+    {
+      "text": "ആദ്യത്തെ മനുഷ്യൻ ആദം നബിയാണ്",
+      "hidden": false,
+      "audio": "data/point_1792763207057_0.mp4"
+    }
+  ]
 }
