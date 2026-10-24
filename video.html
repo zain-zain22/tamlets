@@ -18,14 +18,13 @@
     overflow: auto; 
   }
   
-  /* തിരിക്കുമ്പോൾ മുകളിലും താഴെയും വശങ്ങളിലും കൃത്യമായ ഫ്രീ സ്പേസ് നൽകി സെന്റർ ചെയ്യാൻ */
   body.page-rotated {
     width: 100vh;
     height: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px; /* മുകളിലും താഴെയും ഫ്രീ സ്പേസ് */
+    padding: 40px;
   }
 
   .panel-card {
@@ -43,7 +42,6 @@
     transform-origin: center center;
   }
 
-  /* പേജ് തിരിയുമ്പോൾ കാർഡ് കൃത്യം നടുവിലായി വരാൻ */
   body.page-rotated .panel-card {
     transform: rotate(90deg);
     transform-origin: center center;
@@ -109,18 +107,22 @@
     z-index: 10;
   }
 
+  /* ബട്ടണുകൾ ഒരേ നിരയിൽ (Horizontal) അടുത്തടുത്ത് നൽകാൻ */
   .side-controls {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
   }
 
   .btn-control {
     background: #2ecc71;
     color: white;
     border: none;
-    padding: 14px 22px;
-    font-size: 16px;
+    padding: 12px 20px;
+    font-size: 15px;
     font-weight: bold;
     border-radius: 10px;
     cursor: pointer;
@@ -131,6 +133,7 @@
     justify-content: center;
     gap: 8px;
     white-space: nowrap;
+    flex: 1;
   }
 
   .btn-control:hover {
@@ -209,6 +212,7 @@
       <div id="player"></div>
     </div>
     
+    <!-- പ്ലേയും തിരിക്കുക ബട്ടണും ഒരേ നിരയിൽ അടുത്തടുത്ത് -->
     <div class="side-controls">
       <button class="btn-control" id="playPauseBtn" onclick="togglePlayPause()">
         <i class="fa-solid fa-play"></i> പ്ലേ
@@ -220,7 +224,7 @@
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> 'തിരിക്കുക' ബട്ടൺ അമർത്തുമ്പോൾ ആവശ്യത്തിന് ഫ്രീ സ്പേസോടെ പ്ലെയർ കൃത്യം സെന്ററിൽ തന്നെ വരുന്നതാണ്.
+    <i class="fa-solid fa-shield-halved"></i> പ്ലേയും തിരിക്കുക ബട്ടണുകളും ഒരേ നിരയിൽ നൽകിയിരിക്കുന്നു. സൂം ഔട്ട് ചെയ്ത് സുഗമമായി ഉപയോഗించാം.
   </div>
 </div>
 
