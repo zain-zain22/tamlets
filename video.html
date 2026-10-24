@@ -68,7 +68,6 @@
     flex-grow: 1;
   }
 
-  /* ഫുൾ സ്ക്രീൻ ആകുമ്പോൾ വീഡിയോ ഫുൾ സ്ക്രീൻ ആകാൻ */
   .video-wrapper:fullscreen {
     max-width: 100%;
     width: 100vw;
@@ -105,7 +104,6 @@
     z-index: 10;
   }
 
-  /* ഫുൾ സ്ക്രീനിനുള്ളിലും പുറത്തും ഒരുപോലെ വർക്ക് ചെയ്യുന്ന ഫ്ലോട്ടിംഗ് കൺട്രോളുകൾ */
   .side-controls {
     display: flex;
     flex-direction: column;
@@ -144,22 +142,23 @@
     box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
   }
 
-  /* ഫുൾ സ്ക്രീൻ മോഡിൽ കാണുന്ന ഫ്ലോട്ടിംഗ് പ്ലേ/പോസ് ബട്ടൺ */
-  .floating-fullscreen-btn {
+  /* സ്ക്രീനിൽ എവിടേക്കും നീക്കി വെക്കാവുന്ന ഫ്ലോട്ടിംഗ് ഡ്രാഗബിൾ ബട്ടൺ */
+  .draggable-floating-btn {
     display: none;
     position: fixed;
-    bottom: 20px;
+    top: 20px;
     right: 20px;
-    z-index: 9999;
+    z-index: 99999;
     background: #e74c3c;
     color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 30px;
+    border: 2px solid white;
+    padding: 14px 24px;
+    border-radius: 35px;
     font-size: 16px;
     font-weight: bold;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.6);
     cursor: pointer;
+    touch-action: none; /* മൊബൈലിൽ വിരൽ വെച്ച് നീക്കാൻ എളുപ്പമാക്കാൻ */
   }
 
   .info-box {
@@ -235,12 +234,12 @@
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> ഫുൾ സ്ക്രീൻ മോഡിലായാലും താഴെ വരുന്ന **ഫ്ലോട്ടിംഗ് ബട്ടൺ** വഴി വീഡിയോ പ്ലേ/പോസ് ചെയ്യാവുന്നതാണ്.
+    <i class="fa-solid fa-shield-halved"></i> ഫുൾ സ്ക്രീൻ സമയത്ത് സ്ക്രീനിൽ വരുന്ന **ചുവപ്പ്/പച്ച ബട്ടൺ** വിരൽ കൊണ്ട് തൊട്ട് സ്ക്രീനിൽ എവിടേക്ക് വേണമെങ്കിലും നീക്കി വെക്കാവുന്നതാണ്.
   </div>
 </div>
 
-<!-- ഫുൾ സ്ക്രീൻ സമയത്ത് മാത്രം സ്ക്രീനിൽ കാണുന്ന ബട്ടൺ -->
-<button class="floating-fullscreen-btn" id="floatingBtn" onclick="togglePlayPause()">
+<!-- സ്ക്രീനിൽ എവിടേക്കും നീക്കാവുന്ന ഫ്ലോട്ടിംഗ് ബട്ടൺ -->
+<button class="draggable-floating-btn" id="floatingBtn" onclick="togglePlayPause()">
   <i class="fa-solid fa-pause"></i> പോസ് ചെയ്യുക
 </button>
 
@@ -338,17 +337,58 @@ function makeFullScreen() {
   }
 }
 
-// ഫുൾ സ്ക്രീൻ മാറുന്നത് നിരീക്ഷിക്കാനുള്ള കോഡ്
 document.addEventListener('fullscreenchange', handleFullscreenChange);
 document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 
 function handleFullscreenChange() {
   let floatBtn = document.getElementById('floatingBtn');
   if (document.fullscreenElement || document.webkitFullscreenElement) {
-    floatBtn.style.display = 'block'; // ഫുൾ സ്ക്രീൻ ആകുമ്പോൾ ബട്ടൺ കാണിക്കും
+    floatBtn.style.display = 'block'; 
   } else {
-    floatBtn.style.display = 'none'; // ഫുൾ സ്ക്രീൻ ഒഴിവാക്കിയാൽ ബട്ടൺ പോകും
+    floatBtn.style.display = 'none'; 
   }
+}
+
+// ബട്ടൺ സ്ക്രീനിൽ എവിടേക്കും ഡ്രാഗ് ചെയ്ത് മാറ്റാനുള്ള കോഡ് (Touch & Mouse Support)
+const floatBtn = document.getElementById('floatingBtn');
+let isDragging = false;
+let startX, startY, initialX, initialY;
+
+floatBtn.addEventListener('touchstart', dragStart, {passive: true});
+floatBtn.addEventListener('touchmove', drag, {passive: true});
+floatBtn.addEventListener('touchend', dragEnd);
+
+floatBtn.addEventListener('mousedown', dragStart);
+document.addEventListener('mousemove', drag);
+document.addEventListener('mouseup', dragEnd);
+
+function dragStart(e) {
+  isDragging = true;
+  let clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+  let clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+  
+  startX = clientX;
+  startY = clientY;
+  initialX = floatBtn.offsetLeft;
+  initialY = floatBtn.offsetTop;
+}
+
+function drag(e) {
+  if (!isDragging) return;
+  let clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+  let clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+  let dx = clientX - startX;
+  let dy = clientY - startY;
+
+  floatBtn.style.left = (initialX + dx) + 'px';
+  floatBtn.style.top = (initialY + dy) + 'px';
+  floatBtn.style.right = 'auto';
+  floatBtn.style.bottom = 'auto';
+}
+
+function dragEnd() {
+  isDragging = false;
 }
 
 function onPlayerStateChange(event) {
