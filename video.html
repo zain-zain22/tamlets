@@ -10,7 +10,7 @@
   body { 
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
     margin: 0; 
-    padding: 0; 
+    padding: 20px; 
     min-height: 100vh; 
     display: flex; 
     justify-content: center; 
@@ -18,15 +18,10 @@
     overflow: auto; 
   }
   
-  /* പേജ് തിരിക്കുമ്പോൾ കൃത്യം സെന്ററിൽ വരാനുള്ള കോഡ് */
+  /* തിരിക്കുമ്പോൾ സെന്ററിൽ നിൽക്കാനും സൂം/സ്ക്രോൾ സുഗമമാക്കാനും ഉള്ള കോഡ് */
   body.page-rotated {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(90deg);
     width: 100vh;
     height: 100vw;
-    overflow: auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -43,6 +38,14 @@
     border-top: 6px solid #3498db;
     position: relative;
     margin: auto;
+    transition: transform 0.3s ease;
+    transform-origin: center center;
+  }
+
+  /* പേജ് തിരിയുമ്പോൾ കാർഡ് കറക്റ്റ് സെന്ററിൽ ലാൻഡ്സ്കേപ്പിൽ തിരിയാൻ */
+  body.page-rotated .panel-card {
+    transform: rotate(90deg);
+    transform-origin: center center;
   }
 
   .lesson-title {
@@ -215,7 +218,7 @@
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> 'തിരിക്കുക' ബട്ടൺ അമർത്തുമ്പോൾ പേജ് സ്ക്രീനിന്റെ കൃത്യം നടുവിലായി (Center) തിരിയുന്നതാണ്.
+    <i class="fa-solid fa-shield-halved"></i> 'തിരിക്കുക' ബട്ടൺ അമർത്തിയ ശേഷം സ്ക്രീൻ സെന്ററിൽ നിന്ന് തന്നെ സൂം ഔട്ട് ചെയ്ത് ആവശ്യാനുസരണം ക്രമീകരിക്കാം.
   </div>
 </div>
 
