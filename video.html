@@ -59,13 +59,30 @@
     position: relative;
     width: 100%;
     max-width: 780px;
-    padding-bottom: 50%;
+    padding-bottom: 56.25%; /* 16:9 അനുപാതം കൃത്യമായി വരാൻ */
     height: 0;
     background: #000;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     flex-grow: 1;
+  }
+
+  /* ഫുൾ സ്ക്രീൻ മോഡിലാകുമ്പോൾ വീഡിയോ പൂർണ്ണമായും സ്ക്രീൻ നിറയാൻ */
+  .video-wrapper:fullscreen {
+    max-width: 100%;
+    width: 100vw;
+    height: 100vh;
+    padding-bottom: 0;
+    border-radius: 0;
+  }
+
+  .video-wrapper:-webkit-full-screen {
+    max-width: 100%;
+    width: 100vw;
+    height: 100vh;
+    padding-bottom: 0;
+    border-radius: 0;
   }
 
   .video-wrapper iframe {
@@ -88,7 +105,6 @@
     z-index: 10;
   }
 
-  /* സൈഡ് കണ്ട്രോൾസ് ബോക്സ് */
   .side-controls {
     display: flex;
     flex-direction: column;
@@ -122,7 +138,6 @@
     box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
   }
 
-  /* ഫുൾ സ്ക്രീൻ ബട്ടൺ സ്റ്റൈൽ */
   .btn-fullscreen {
     background: #3498db;
     box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
@@ -138,7 +153,6 @@
     border: 1px solid #e2e8f0;
   }
 
-  /* വെരിഫിക്കേഷൻ പോപ്പ്അപ്പ് */
   .verify-modal {
     display: none;
     position: absolute;
@@ -176,7 +190,6 @@
 <body>
 
 <div class="panel-card" id="mainCard">
-  <!-- വെരിഫിക്കേഷൻ പോപ്പ്അപ്പ് -->
   <div class="verify-modal" id="verifyModal">
     <h3>🙋‍♂️ നിങ്ങൾ ഇവിടെത്തന്നെയുണ്ടോ?</h3>
     <p style="color:#ddd; font-size:15px; margin-bottom:15px;">പഠനം തുടരുന്നതിനായി താഴെ ക്ലിക്ക് ചെയ്യുക:</p>
@@ -192,7 +205,6 @@
       <div id="player"></div>
     </div>
     
-    <!-- സൈഡിലായി നൽകിയ പ്ലേ/പോസ് ബട്ടണും ഫുൾസ്ക്രീൻ ബട്ടണും -->
     <div class="side-controls">
       <button class="btn-control" id="playPauseBtn" onclick="togglePlayPause()">
         <i class="fa-solid fa-play"></i> പ്ലേ
@@ -204,11 +216,10 @@
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> സ്ക്രീൻ റൊട്ടേഷൻ ലോക്ക് ആയിരുന്നാലും **'ഫുൾ സ്ക്രീൻ'** ബട്ടൺ അമർത്തി വലുതായി കാണാവുന്നതാണ്.
+    <i class="fa-solid fa-shield-halved"></i> **'ഫുൾ സ്ക്രീൻ'** ബട്ടൺ അമർത്തിയാൽ ഫോൺ തിരിക്കാതെ തന്നെ വീഡിയോ വലുതായി ലാൻഡ്സ്കേപ്പ് മോഡിലേക്ക് തിരിയുന്നതാണ്.
   </div>
 </div>
 
-<!-- YouTube IFrame Player API -->
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
@@ -287,15 +298,23 @@ function togglePlayPause() {
   }
 }
 
-// ഫോൺ തിരിക്കാതെ തന്നെ ഫുൾ സ്ക്രീൻ ആക്കാനുള്ള ഫംഗ്ഷൻ
+// ഫുൾ സ്ക്രീൻ ആക്കാനും ഒപ്പം മൊബൈൽ ഓട്ടോമാറ്റിക്കായി ലാൻഡ്സ്കേപ്പ് മോഡിലേക്ക് തിരിക്കാനും ഉള്ള കോഡ്
 function makeFullScreen() {
   let elem = document.getElementById('videoWrapperBox');
+  
   if (elem.requestFullscreen) {
     elem.requestFullscreen();
   } else if (elem.webkitRequestFullscreen) { /* Safari */
     elem.webkitRequestFullscreen();
   } else if (elem.msRequestFullscreen) { /* IE11 */
     elem.msRequestFullscreen();
+  }
+
+  // മൊബൈൽ സ്ക്രീൻ നിർബന്ധമായും ലാൻഡ്സ്കേപ്പ് മോഡിലേക്ക് തിരിക്കാൻ ശ്രമിക്കുന്നു
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock('landscape').catch(function(error) {
+      // ചില ബ്രൗസറുകൾ ഇത് ബ്ലോക്ക് ചെയ്യാറുണ്ട്, അപ്പോൾ എറർ വരുമെങ്കിലും ഫുൾ സ്ക്രീൻ വർക്ക് ചെയ്യും
+    });
   }
 }
 
