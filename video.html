@@ -10,12 +10,13 @@
   body { 
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
     margin: 0; 
-    padding: 10px; 
+    padding: 20px; 
     display: flex; 
     justify-content: center; 
     align-items: center; 
     min-height: 100vh; 
-    overflow-x: hidden;
+    /* ഫോൺ തിരിക്കുമ്പോഴും സൂം ചെയ്ത് നീക്കാൻ പാകത്തിൽ ഓവർഫ്ലോ അനുവദിക്കുന്നു */
+    overflow: auto; 
   }
   
   .panel-card {
@@ -28,51 +29,7 @@
     text-align: center;
     border-top: 6px solid #3498db;
     position: relative;
-    transition: all 0.3s ease;
-  }
-
-  /* ഫുൾ സ്ക്രീൻ / ലാൻഡ്സ്കേപ്പ് മോഡ് ആകുമ്പോൾ സ്ക്രീൻ മുഴുവൻ നിറയാൻ */
-  body.fullscreen-active {
-    background: #000;
-    padding: 0;
-  }
-  body.fullscreen-active .panel-card {
-    width: 100vw;
-    height: 100vh;
-    max-width: 100vw;
-    border-radius: 0;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: #000;
-  }
-  body.fullscreen-active .lesson-title,
-  body.fullscreen-active .lesson-sub,
-  body.fullscreen-active .info-box {
-    display: none;
-  }
-  body.fullscreen-active .video-container-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-  }
-  body.fullscreen-active .video-wrapper {
-    width: 100%;
-    height: 82vh;
-    max-width: 100%;
-    padding-bottom: 0;
-  }
-  body.fullscreen-active .side-controls {
-    flex-direction: row;
-    justify-content: center;
-    width: 100%;
-    gap: 15px;
+    margin: auto;
   }
 
   .lesson-title {
@@ -167,12 +124,6 @@
     box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
   }
 
-  /* ഫുൾ സ്ക്രീൻ ടോഗ്ൾ ബട്ടൺ */
-  .btn-fullscreen-mode {
-    background: #9b59b6;
-    box-shadow: 0 4px 10px rgba(155, 89, 182, 0.3);
-  }
-
   .info-box {
     margin-top: 15px;
     padding: 10px;
@@ -239,14 +190,11 @@
       <button class="btn-control" id="playPauseBtn" onclick="togglePlayPause()">
         <i class="fa-solid fa-play"></i> പ്ലേ
       </button>
-      <button class="btn-control btn-fullscreen-mode" id="fullScreenBtn" onclick="toggleLayoutFullscreen()">
-        <i class="fa-solid fa-expand"></i> ഫുൾ സ്ക്രീൻ
-      </button>
     </div>
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> **'ഫുൾ സ്ക്രീൻ'** ബട്ടൺ അമർത്തിയാൽ ഫോൺ തിരിക്കാതെ തന്നെ സ്ക്രീൻ മുഴുവൻ ലാൻഡ്‌കേപ്പ് മോഡിൽ കൃത്യമായി ഫിറ്റ് ആയി വരുന്നതാണ്.
+    <i class="fa-solid fa-shield-halved"></i> ഫോൺ തിരിച്ച് വെക്കുമ്പോൾ വിരൽ ഉപയോഗിച്ച് സൂം ചെയ്ത് സ്ക്രീനിനൊപ്പം എളുപ്പത്തിൽ നീക്കി വെക്കാവുന്നതാണ്.
   </div>
 </div>
 
@@ -256,7 +204,6 @@
 let player;
 let isPlaying = false;
 let randomPauseTimer = null;
-let isFullscreenMode = false;
 
 async function loadYouTubeLesson() {
   try {
@@ -326,21 +273,6 @@ function togglePlayPause() {
     player.pauseVideo();
   } else {
     player.playVideo();
-  }
-}
-
-// സ്ക്രീൻ ഫുൾ ആക്കാനും ചെറുതാക്കാനും ഉള്ള ഫംഗ്ഷൻ
-function toggleLayoutFullscreen() {
-  isFullscreenMode = !isFullscreenMode;
-  let bodyElem = document.body;
-  let btn = document.getElementById('fullScreenBtn');
-
-  if (isFullscreenMode) {
-    bodyElem.classList.add('fullscreen-active');
-    btn.innerHTML = '<i class="fa-solid fa-compress"></i> ചെറുതാക്കുക';
-  } else {
-    bodyElem.classList.remove('fullscreen-active');
-    btn.innerHTML = '<i class="fa-solid fa-expand"></i> ഫുൾ സ്ക്രീൻ';
   }
 }
 
