@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>പഠന വീഡിയോ - സ്റ്റുഡന്റ് പാനൽ</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body { 
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
+    margin: 0; 
+    padding: 20px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+  }
+  
+  .panel-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 700px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    padding: 25px;
+    text-align: center;
+    border-top: 8px solid #3498db;
+  }
+
+  .lesson-title {
+    font-size: 22px;
+    color: #2c3e50;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .lesson-sub {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+  }
+
+  .video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  }
+
+  .video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .info-box {
+    margin-top: 20px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+  }
+</style>
+</head>
+<body>
+
+<div class="panel-card">
+  <div class="lesson-title" id="lessonHeading">പാഠം ലോഡ് ചെയ്യുന്നു...</div>
+  <div class="lesson-sub" id="lessonSubHeading">വിവരങ്ങൾ ശേഖരിക്കുന്നു</div>
+
+  <div class="video-container" id="videoBox">
+    <iframe id="youtubeIframe" src="" allowfullscreen></iframe>
+  </div>
+
+  <div class="info-box" id="infoText">
+    <i class="fa-solid fa-circle-info"></i> ഈ വീഡിയോ മുഴുവനായി കണ്ട് പാഠഭാഗങ്ങൾ മനസ്സിലാക്കുക.
+  </div>
+</div>
+
+<script>
+// ഗിറ്റ്ഹബ്ബിലെ data_book.json ഫയലിൽ നിന്ന് ഡാറ്റ എടുത്ത് യൂട്യൂബ് പ്ലേ ചെയ്യുക
+async function loadYouTubeLesson() {
+  try {
+    let res = await fetch('data/data_book.json?t=' + Date.now());
+    if(res.ok) {
+      let data = await res.json();
+      let info = data.globalInfo || {};
+      
+      // ഹെഡിങ് സെറ്റ് ചെയ്യുക
+      document.getElementById('lessonHeading').innerText = info.lessonName ? `പാഠം: ${info.lessonName}` : "പഠന വീഡിയോ";
+      document.getElementById('lessonSubHeading').innerText = `${info.subject || ''} | ${info.class || ''} | ${info.chapter || ''}`;
+
+      let ytLink = info.youtubeLink || "";
+      if(ytLink) {
+        let embedUrl = convertToEmbedUrl(ytLink);
+        document.getElementById('youtubeIframe').src = embedUrl;
+      } else {
+        document.getElementById('videoBox').innerHTML = `<p style="color:white; padding-top:20%; font-size:16px;">യൂട്യൂബ് ലിങ്ക് ലഭ്യമല്ല.</p>`;
+      }
+    } else {
+      document.getElementById('lessonHeading').innerText = "ഡാറ്റ ലഭ്യമാകുന്നതിൽ തടസ്സം നേരിട്ടു.";
+    }
+  } catch(e) {
+    document.getElementById('lessonHeading').innerText = "കണക്ഷൻ പിഴവ് സംഭവിച്ചു.";
+  }
+}
+
+// സാധാരണ യൂട്യൂബ് ലിങ്കിനെ എംബെഡ് ലിങ്കാക്കി മാറ്റുന്ന ഫംഗ്ഷൻ
+function convertToEmbedUrl(url) {
+  let videoId = "";
+  if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1].split('?')[0];
+  } else if (url.includes('watch?v=')) {
+    videoId = url.split('watch?v=')[1].split('&')[0];
+  } else if (url.includes('embed/')) {
+    videoId = url.split('embed/')[1].split('?')[0];
+  }
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+}
+
+window.onload = loadYouTubeLesson;
+</script>
+
+</body>
+</html>
