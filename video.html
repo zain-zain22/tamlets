@@ -18,13 +18,14 @@
     overflow: auto; 
   }
   
-  /* തിരിക്കുമ്പോൾ സെന്ററിൽ നിൽക്കാനും സൂം/സ്ക്രോൾ സുഗമമാക്കാനും ഉള്ള കോഡ് */
+  /* തിരിക്കുമ്പോൾ മുകളിലും താഴെയും വശങ്ങളിലും കൃത്യമായ ഫ്രീ സ്പേസ് നൽകി സെന്റർ ചെയ്യാൻ */
   body.page-rotated {
     width: 100vh;
     height: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 40px; /* മുകളിലും താഴെയും ഫ്രീ സ്പേസ് */
   }
 
   .panel-card {
@@ -42,10 +43,11 @@
     transform-origin: center center;
   }
 
-  /* പേജ് തിരിയുമ്പോൾ കാർഡ് കറക്റ്റ് സെന്ററിൽ ലാൻഡ്സ്കേപ്പിൽ തിരിയാൻ */
+  /* പേജ് തിരിയുമ്പോൾ കാർഡ് കൃത്യം നടുവിലായി വരാൻ */
   body.page-rotated .panel-card {
     transform: rotate(90deg);
     transform-origin: center center;
+    margin: auto;
   }
 
   .lesson-title {
@@ -218,7 +220,7 @@
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> 'തിരിക്കുക' ബട്ടൺ അമർത്തിയ ശേഷം സ്ക്രീൻ സെന്ററിൽ നിന്ന് തന്നെ സൂം ഔട്ട് ചെയ്ത് ആവശ്യാനുസരണം ക്രമീകരിക്കാം.
+    <i class="fa-solid fa-shield-halved"></i> 'തിരിക്കുക' ബട്ടൺ അമർത്തുമ്പോൾ ആവശ്യത്തിന് ഫ്രീ സ്പേസോടെ പ്ലെയർ കൃത്യം സെന്ററിൽ തന്നെ വരുന്നതാണ്.
   </div>
 </div>
 
