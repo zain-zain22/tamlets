@@ -136,7 +136,7 @@
     border: 1px solid #e2e8f0;
   }
 
-  /* ഫോൺ തിരിക്കുമ്പോഴോ അല്ലെങ്കിൽ ഫുൾ സ്ക്രീൻ ബട്ടൺ അമർത്തുമ്പോഴോ ഉള്ള വെബ്സൈറ്റ് ഫുൾ സ്ക്രീൻ മോഡ് */
+  /* ഫുൾ സ്ക്രീൻ മോഡ് - ലാൻഡ്സ്കേപ്പ് രീതിയിൽ സ്ക്രീൻ നിറയാൻ */
   body.fullscreen-mode {
     padding: 0;
     background: #000;
@@ -147,20 +147,32 @@
     height: 100vh;
     border-radius: 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row; /* ലാൻഡ്സ്കേപ്പിൽ സൈഡിൽ ബട്ടൺ വരാൻ */
+    align-items: center;
     justify-content: center;
-    padding: 10px;
+    padding: 15px;
+    gap: 20px;
   }
   body.fullscreen-mode .lesson-title, 
   body.fullscreen-mode .lesson-sub, 
   body.fullscreen-mode .info-box {
-    display: none; /* വീഡിയോയും ബട്ടണും മാത്രം വലുതായി കാണാൻ */
+    display: none; 
+  }
+  body.fullscreen-mode .video-container-wrapper {
+    width: 100%;
+    height: 100%;
+    align-items: center;
   }
   body.fullscreen-mode .video-wrapper {
     max-width: 100%;
-    padding-bottom: 56.25%;
-    height: auto;
+    width: 100%;
+    height: 100%;
+    padding-bottom: 0;
     flex-grow: 1;
+  }
+  body.fullscreen-mode .side-controls {
+    flex-direction: column;
+    justify-content: center;
   }
 
   .verify-modal {
@@ -215,7 +227,6 @@
       <div id="player"></div>
     </div>
     
-    <!-- പ്ലേ/പോസും ഒപ്പം ഫുൾ സ്ക്രീൻ ബട്ടണും -->
     <div class="side-controls">
       <button class="btn-control" id="playPauseBtn" onclick="togglePlayPause()">
         <i class="fa-solid fa-play"></i> പ്ലേ
@@ -227,7 +238,7 @@
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> **'ഫുൾ സ്ക്രീൻ'** ബട്ടൺ അമർത്തിയാൽ വെബ്‌സൈറ്റിനുള്ളിൽ തന്നെ വീഡിയോയും പ്ലേ/പോസ് ബട്ടണും ഒന്നിച്ച് വലുതായി കാണുന്നതാണ്.
+    <i class="fa-solid fa-shield-halved"></i> **'ഫുൾ സ്ക്രീൻ'** അമർത്തുമ്പോൾ സ്ക്രീൻ ഓട്ടോമാറ്റിക്കായി ലാൻഡ്സ്കേപ്പ് മോഡിലേക്ക് തിരിഞ്ഞ് കൂടുതൽ വലുതായി കാണിക്കും.
   </div>
 </div>
 
@@ -310,7 +321,7 @@ function togglePlayPause() {
   }
 }
 
-// ബ്രൗസർ ഫുൾസ്ക്രീൻ ഒഴിവാക്കി, വെബ്‌സൈറ്റിനുള്ളിൽ തന്നെ ഫുൾ സ്ക്രീൻ ടോഗ്ൾ ചെയ്യുന്ന രീതി
+// ഫുൾ സ്ക്രീൻ ആക്കുമ്പോൾ ഒപ്പം സ്ക്രീൻ ലാൻഡ്സ്കേപ്പിലേക്ക് തിരിക്കാൻ ശ്രമിക്കുന്ന കോഡ്
 function toggleCustomFullScreen() {
   isCustomFullscreen = !isCustomFullscreen;
   let bodyElem = document.body;
@@ -319,9 +330,18 @@ function toggleCustomFullScreen() {
   if (isCustomFullscreen) {
     bodyElem.classList.add('fullscreen-mode');
     btn.innerHTML = '<i class="fa-solid fa-compress"></i> ചെറുതാക്കുക';
+
+    // മൊബൈൽ ഒറിയന്റേഷൻ ലാൻഡ്സ്കേപ്പിലേക്ക് ലോക്ക് ചെയ്യാൻ ശ്രമിക്കുന്നു
+    if (screen.orientation && screen.orientation.lock) {
+      screen.orientation.lock('landscape').catch(function(error) {});
+    }
   } else {
     bodyElem.classList.remove('fullscreen-mode');
     btn.innerHTML = '<i class="fa-solid fa-expand"></i> ഫുൾ സ്ക്രീൻ';
+
+    if (screen.orientation && screen.orientation.unlock) {
+      screen.orientation.unlock();
+    }
   }
 }
 
