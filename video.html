@@ -59,7 +59,7 @@
     position: relative;
     width: 100%;
     max-width: 780px;
-    padding-bottom: 56.25%; /* 16:9 അനുപാതം കൃത്യമായി വരാൻ */
+    padding-bottom: 56.25%;
     height: 0;
     background: #000;
     border-radius: 12px;
@@ -68,7 +68,7 @@
     flex-grow: 1;
   }
 
-  /* ഫുൾ സ്ക്രീൻ മോഡിലാകുമ്പോൾ വീഡിയോ പൂർണ്ണമായും സ്ക്രീൻ നിറയാൻ */
+  /* ഫുൾ സ്ക്രീൻ ആകുമ്പോൾ വീഡിയോ ഫുൾ സ്ക്രീൻ ആകാൻ */
   .video-wrapper:fullscreen {
     max-width: 100%;
     width: 100vw;
@@ -105,6 +105,7 @@
     z-index: 10;
   }
 
+  /* ഫുൾ സ്ക്രീനിനുള്ളിലും പുറത്തും ഒരുപോലെ വർക്ക് ചെയ്യുന്ന ഫ്ലോട്ടിംഗ് കൺട്രോളുകൾ */
   .side-controls {
     display: flex;
     flex-direction: column;
@@ -141,6 +142,24 @@
   .btn-fullscreen {
     background: #3498db;
     box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+  }
+
+  /* ഫുൾ സ്ക്രീൻ മോഡിൽ കാണുന്ന ഫ്ലോട്ടിംഗ് പ്ലേ/പോസ് ബട്ടൺ */
+  .floating-fullscreen-btn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    cursor: pointer;
   }
 
   .info-box {
@@ -216,9 +235,14 @@
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> **'ഫുൾ സ്ക്രീൻ'** ബട്ടൺ അമർത്തിയാൽ ഫോൺ തിരിക്കാതെ തന്നെ വീഡിയോ വലുതായി ലാൻഡ്സ്കേപ്പ് മോഡിലേക്ക് തിരിയുന്നതാണ്.
+    <i class="fa-solid fa-shield-halved"></i> ഫുൾ സ്ക്രീൻ മോഡിലായാലും താഴെ വരുന്ന **ഫ്ലോട്ടിംഗ് ബട്ടൺ** വഴി വീഡിയോ പ്ലേ/പോസ് ചെയ്യാവുന്നതാണ്.
   </div>
 </div>
+
+<!-- ഫുൾ സ്ക്രീൻ സമയത്ത് മാത്രം സ്ക്രീനിൽ കാണുന്ന ബട്ടൺ -->
+<button class="floating-fullscreen-btn" id="floatingBtn" onclick="togglePlayPause()">
+  <i class="fa-solid fa-pause"></i> പോസ് ചെയ്യുക
+</button>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -298,37 +322,52 @@ function togglePlayPause() {
   }
 }
 
-// ഫുൾ സ്ക്രീൻ ആക്കാനും ഒപ്പം മൊബൈൽ ഓട്ടോമാറ്റിക്കായി ലാൻഡ്സ്കേപ്പ് മോഡിലേക്ക് തിരിക്കാനും ഉള്ള കോഡ്
 function makeFullScreen() {
   let elem = document.getElementById('videoWrapperBox');
   
   if (elem.requestFullscreen) {
     elem.requestFullscreen();
-  } else if (elem.webkitRequestFullscreen) { /* Safari */
+  } else if (elem.webkitRequestFullscreen) { 
     elem.webkitRequestFullscreen();
-  } else if (elem.msRequestFullscreen) { /* IE11 */
+  } else if (elem.msRequestFullscreen) { 
     elem.msRequestFullscreen();
   }
 
-  // മൊബൈൽ സ്ക്രീൻ നിർബന്ധമായും ലാൻഡ്സ്കേപ്പ് മോഡിലേക്ക് തിരിക്കാൻ ശ്രമിക്കുന്നു
   if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock('landscape').catch(function(error) {
-      // ചില ബ്രൗസറുകൾ ഇത് ബ്ലോക്ക് ചെയ്യാറുണ്ട്, അപ്പോൾ എറർ വരുമെങ്കിലും ഫുൾ സ്ക്രീൻ വർക്ക് ചെയ്യും
-    });
+    screen.orientation.lock('landscape').catch(function(error) {});
+  }
+}
+
+// ഫുൾ സ്ക്രീൻ മാറുന്നത് നിരീക്ഷിക്കാനുള്ള കോഡ്
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+
+function handleFullscreenChange() {
+  let floatBtn = document.getElementById('floatingBtn');
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    floatBtn.style.display = 'block'; // ഫുൾ സ്ക്രീൻ ആകുമ്പോൾ ബട്ടൺ കാണിക്കും
+  } else {
+    floatBtn.style.display = 'none'; // ഫുൾ സ്ക്രീൻ ഒഴിവാക്കിയാൽ ബട്ടൺ പോകും
   }
 }
 
 function onPlayerStateChange(event) {
   let btn = document.getElementById('playPauseBtn');
+  let floatBtn = document.getElementById('floatingBtn');
+
   if (event.data == YT.PlayerState.PLAYING) {
     isPlaying = true;
     btn.innerHTML = '<i class="fa-solid fa-pause"></i> പോസ്';
     btn.classList.add('btn-pause');
+    floatBtn.innerHTML = '<i class="fa-solid fa-pause"></i> പോസ് ചെയ്യുക';
+    floatBtn.style.background = '#e74c3c';
     scheduleRandomPause();
   } else {
     isPlaying = false;
     btn.innerHTML = '<i class="fa-solid fa-play"></i> പ്ലേ';
     btn.classList.remove('btn-pause');
+    floatBtn.innerHTML = '<i class="fa-solid fa-play"></i> പ്ലേ ചെയ്യുക';
+    floatBtn.style.background = '#2ecc71';
     clearTimeout(randomPauseTimer);
   }
 }
