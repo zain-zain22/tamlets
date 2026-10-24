@@ -2,7 +2,7 @@
 <html lang="ml">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>പഠന വീഡിയോ - സ്റ്റുഡന്റ് പാനൽ</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -15,8 +15,21 @@
     justify-content: center; 
     align-items: center; 
     min-height: 100vh; 
+    transition: transform 0.3s ease;
   }
   
+  /* പേജ് മൊത്തത്തിൽ തിരിക്കാനുള്ള ക്ലാസ് */
+  body.rotated-page {
+    transform: rotate(90deg);
+    transform-origin: center center;
+    width: 100vh;
+    height: 100vw;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+
   .panel-card {
     background: #ffffff;
     width: 100%;
@@ -121,9 +134,10 @@
     box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
   }
 
-  .btn-fullscreen {
-    background: #3498db;
-    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+  /* റൊട്ടേറ്റ് ബട്ടൺ സ്റ്റൈൽ */
+  .btn-rotate {
+    background: #9b59b6;
+    box-shadow: 0 4px 10px rgba(155, 89, 182, 0.3);
   }
 
   .info-box {
@@ -134,55 +148,6 @@
     font-size: 13px;
     color: #475569;
     border: 1px solid #e2e8f0;
-  }
-
-  /* ഫുൾ സ്ക്രീൻ മോഡ് - ഫോൺ തിരിക്കാതെ തന്നെ സ്ക്രീൻ ഫുൾ ആയി കാണാൻ */
-  body.fullscreen-mode {
-    padding: 0;
-    background: #000;
-    overflow: hidden;
-  }
-  body.fullscreen-mode .panel-card {
-    max-width: 100%;
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    background: #000;
-  }
-  body.fullscreen-mode .lesson-title, 
-  body.fullscreen-mode .lesson-sub, 
-  body.fullscreen-mode .info-box {
-    display: none; 
-  }
-  body.fullscreen-mode .video-container-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-  }
-  body.fullscreen-mode .video-wrapper {
-    max-width: 100%;
-    width: 100%;
-    height: 75vh;
-    padding-bottom: 0;
-  }
-  body.fullscreen-mode .side-controls {
-    flex-direction: row;
-    width: 100%;
-    justify-content: center;
-    gap: 15px;
-  }
-  body.fullscreen-mode .btn-control {
-    padding: 12px 30px;
-    font-size: 16px;
   }
 
   .verify-modal {
@@ -237,18 +202,19 @@
       <div id="player"></div>
     </div>
     
+    <!-- സൈഡിൽ പ്ലേ/പോസും ഒപ്പം പേജ് തിരിക്കാനുള്ള റൊട്ടേറ്റ് ബട്ടണും -->
     <div class="side-controls">
       <button class="btn-control" id="playPauseBtn" onclick="togglePlayPause()">
         <i class="fa-solid fa-play"></i> പ്ലേ
       </button>
-      <button class="btn-control btn-fullscreen" id="fullScreenToggleBtn" onclick="toggleCustomFullScreen()">
-        <i class="fa-solid fa-expand"></i> ഫുൾ സ്ക്രീൻ
+      <button class="btn-control btn-rotate" id="rotateBtn" onclick="togglePageRotation()">
+        <i class="fa-solid fa-rotate"></i> തിരിക്കുക
       </button>
     </div>
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> **'ഫുൾ സ്ക്രീൻ'** അമർത്തുമ്പോൾ ഫോൺ തിരിക്കേണ്ട ആവശ്യമില്ലാതെ തന്നെ വീഡിയോയും പ്ലേ/പോസ് ബട്ടണും സ്ക്രീനിൽ വളരെ വലുതായി കാണുന്നതാണ്.
+    <i class="fa-solid fa-shield-halved"></i> **'തിരിക്കുക'** ബട്ടൺ അമർത്തിയാൽ ഫോൺ തിരിക്കാതെ തന്നെ പേജ് മൊത്തത്തിൽ ലാൻഡ്‌കേപ്പ് മോഡിലേക്ക് തിരിഞ്ഞു കിട്ടുന്നതാണ്.
   </div>
 </div>
 
@@ -258,7 +224,7 @@
 let player;
 let isPlaying = false;
 let randomPauseTimer = null;
-let isCustomFullscreen = false;
+let isRotated = false;
 
 async function loadYouTubeLesson() {
   try {
@@ -331,17 +297,18 @@ function togglePlayPause() {
   }
 }
 
-function toggleCustomFullScreen() {
-  isCustomFullscreen = !isCustomFullscreen;
+// പേജ് മൊത്തത്തിൽ തിരിക്കുന്ന ഫംഗ്ഷൻ
+function togglePageRotation() {
+  isRotated = !isRotated;
   let bodyElem = document.body;
-  let btn = document.getElementById('fullScreenToggleBtn');
+  let rotateBtn = document.getElementById('rotateBtn');
 
-  if (isCustomFullscreen) {
-    bodyElem.classList.add('fullscreen-mode');
-    btn.innerHTML = '<i class="fa-solid fa-compress"></i> ചെറുതാക്കുക';
+  if (isRotated) {
+    body.classList.add('rotated-page'); // പേജ് തിരിക്കുന്നു
+    rotateBtn.innerHTML = '<i class="fa-solid fa-rotate-left"></i> നേരെയാക്കുക';
   } else {
-    bodyElem.classList.remove('fullscreen-mode');
-    btn.innerHTML = '<i class="fa-solid fa-expand"></i> ഫുൾ സ്ക്രീൻ';
+    body.classList.remove('rotated-page'); // പേജ് പഴയപടിയാക്കുന്നു
+    rotateBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> തിരിക്കുക';
   }
 }
 
