@@ -2,7 +2,7 @@
 <html lang="ml">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>പഠന വീഡിയോ - സ്റ്റുഡന്റ് പാനൽ</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -136,10 +136,11 @@
     border: 1px solid #e2e8f0;
   }
 
-  /* ഫുൾ സ്ക്രീൻ മോഡ് - ലാൻഡ്സ്കേപ്പ് രീതിയിൽ സ്ക്രീൻ നിറയാൻ */
+  /* ഫുൾ സ്ക്രീൻ മോഡ് - ഫോൺ തിരിക്കാതെ തന്നെ സ്ക്രീൻ ഫുൾ ആയി കാണാൻ */
   body.fullscreen-mode {
     padding: 0;
     background: #000;
+    overflow: hidden;
   }
   body.fullscreen-mode .panel-card {
     max-width: 100%;
@@ -147,11 +148,11 @@
     height: 100vh;
     border-radius: 0;
     display: flex;
-    flex-direction: row; /* ലാൻഡ്സ്കേപ്പിൽ സൈഡിൽ ബട്ടൺ വരാൻ */
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    padding: 15px;
-    gap: 20px;
+    align-items: center;
+    padding: 10px;
+    background: #000;
   }
   body.fullscreen-mode .lesson-title, 
   body.fullscreen-mode .lesson-sub, 
@@ -161,18 +162,27 @@
   body.fullscreen-mode .video-container-wrapper {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    gap: 15px;
   }
   body.fullscreen-mode .video-wrapper {
     max-width: 100%;
     width: 100%;
-    height: 100%;
+    height: 75vh;
     padding-bottom: 0;
-    flex-grow: 1;
   }
   body.fullscreen-mode .side-controls {
-    flex-direction: column;
+    flex-direction: row;
+    width: 100%;
     justify-content: center;
+    gap: 15px;
+  }
+  body.fullscreen-mode .btn-control {
+    padding: 12px 30px;
+    font-size: 16px;
   }
 
   .verify-modal {
@@ -238,7 +248,7 @@
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> **'ഫുൾ സ്ക്രീൻ'** അമർത്തുമ്പോൾ സ്ക്രീൻ ഓട്ടോമാറ്റിക്കായി ലാൻഡ്സ്കേപ്പ് മോഡിലേക്ക് തിരിഞ്ഞ് കൂടുതൽ വലുതായി കാണിക്കും.
+    <i class="fa-solid fa-shield-halved"></i> **'ഫുൾ സ്ക്രീൻ'** അമർത്തുമ്പോൾ ഫോൺ തിരിക്കേണ്ട ആവശ്യമില്ലാതെ തന്നെ വീഡിയോയും പ്ലേ/പോസ് ബട്ടണും സ്ക്രീനിൽ വളരെ വലുതായി കാണുന്നതാണ്.
   </div>
 </div>
 
@@ -321,7 +331,6 @@ function togglePlayPause() {
   }
 }
 
-// ഫുൾ സ്ക്രീൻ ആക്കുമ്പോൾ ഒപ്പം സ്ക്രീൻ ലാൻഡ്സ്കേപ്പിലേക്ക് തിരിക്കാൻ ശ്രമിക്കുന്ന കോഡ്
 function toggleCustomFullScreen() {
   isCustomFullscreen = !isCustomFullscreen;
   let bodyElem = document.body;
@@ -330,18 +339,9 @@ function toggleCustomFullScreen() {
   if (isCustomFullscreen) {
     bodyElem.classList.add('fullscreen-mode');
     btn.innerHTML = '<i class="fa-solid fa-compress"></i> ചെറുതാക്കുക';
-
-    // മൊബൈൽ ഒറിയന്റേഷൻ ലാൻഡ്സ്കേപ്പിലേക്ക് ലോക്ക് ചെയ്യാൻ ശ്രമിക്കുന്നു
-    if (screen.orientation && screen.orientation.lock) {
-      screen.orientation.lock('landscape').catch(function(error) {});
-    }
   } else {
     bodyElem.classList.remove('fullscreen-mode');
     btn.innerHTML = '<i class="fa-solid fa-expand"></i> ഫുൾ സ്ക്രീൻ';
-
-    if (screen.orientation && screen.orientation.unlock) {
-      screen.orientation.unlock();
-    }
   }
 }
 
