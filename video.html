@@ -68,22 +68,6 @@
     flex-grow: 1;
   }
 
-  .video-wrapper:fullscreen {
-    max-width: 100%;
-    width: 100vw;
-    height: 100vh;
-    padding-bottom: 0;
-    border-radius: 0;
-  }
-
-  .video-wrapper:-webkit-full-screen {
-    max-width: 100%;
-    width: 100vw;
-    height: 100vh;
-    padding-bottom: 0;
-    border-radius: 0;
-  }
-
   .video-wrapper iframe {
     position: absolute;
     top: 0;
@@ -142,25 +126,6 @@
     box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
   }
 
-  /* സ്ക്രീനിൽ എവിടേക്കും നീക്കി വെക്കാവുന്ന ഫ്ലോട്ടിംഗ് ഡ്രാഗബിൾ ബട്ടൺ */
-  .draggable-floating-btn {
-    display: none;
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 99999;
-    background: #e74c3c;
-    color: white;
-    border: 2px solid white;
-    padding: 14px 24px;
-    border-radius: 35px;
-    font-size: 16px;
-    font-weight: bold;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.6);
-    cursor: pointer;
-    touch-action: none; /* മൊബൈലിൽ വിരൽ വെച്ച് നീക്കാൻ എളുപ്പമാക്കാൻ */
-  }
-
   .info-box {
     margin-top: 15px;
     padding: 10px;
@@ -169,6 +134,33 @@
     font-size: 13px;
     color: #475569;
     border: 1px solid #e2e8f0;
+  }
+
+  /* ഫോൺ തിരിക്കുമ്പോഴോ അല്ലെങ്കിൽ ഫുൾ സ്ക്രീൻ ബട്ടൺ അമർത്തുമ്പോഴോ ഉള്ള വെബ്സൈറ്റ് ഫുൾ സ്ക്രീൻ മോഡ് */
+  body.fullscreen-mode {
+    padding: 0;
+    background: #000;
+  }
+  body.fullscreen-mode .panel-card {
+    max-width: 100%;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+  }
+  body.fullscreen-mode .lesson-title, 
+  body.fullscreen-mode .lesson-sub, 
+  body.fullscreen-mode .info-box {
+    display: none; /* വീഡിയോയും ബട്ടണും മാത്രം വലുതായി കാണാൻ */
+  }
+  body.fullscreen-mode .video-wrapper {
+    max-width: 100%;
+    padding-bottom: 56.25%;
+    height: auto;
+    flex-grow: 1;
   }
 
   .verify-modal {
@@ -223,25 +215,21 @@
       <div id="player"></div>
     </div>
     
+    <!-- പ്ലേ/പോസും ഒപ്പം ഫുൾ സ്ക്രീൻ ബട്ടണും -->
     <div class="side-controls">
       <button class="btn-control" id="playPauseBtn" onclick="togglePlayPause()">
         <i class="fa-solid fa-play"></i> പ്ലേ
       </button>
-      <button class="btn-control btn-fullscreen" onclick="makeFullScreen()">
+      <button class="btn-control btn-fullscreen" id="fullScreenToggleBtn" onclick="toggleCustomFullScreen()">
         <i class="fa-solid fa-expand"></i> ഫുൾ സ്ക്രീൻ
       </button>
     </div>
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> ഫുൾ സ്ക്രീൻ സമയത്ത് സ്ക്രീനിൽ വരുന്ന **ചുവപ്പ്/പച്ച ബട്ടൺ** വിരൽ കൊണ്ട് തൊട്ട് സ്ക്രീനിൽ എവിടേക്ക് വേണമെങ്കിലും നീക്കി വെക്കാവുന്നതാണ്.
+    <i class="fa-solid fa-shield-halved"></i> **'ഫുൾ സ്ക്രീൻ'** ബട്ടൺ അമർത്തിയാൽ വെബ്‌സൈറ്റിനുള്ളിൽ തന്നെ വീഡിയോയും പ്ലേ/പോസ് ബട്ടണും ഒന്നിച്ച് വലുതായി കാണുന്നതാണ്.
   </div>
 </div>
-
-<!-- സ്ക്രീനിൽ എവിടേക്കും നീക്കാവുന്ന ഫ്ലോട്ടിംഗ് ബട്ടൺ -->
-<button class="draggable-floating-btn" id="floatingBtn" onclick="togglePlayPause()">
-  <i class="fa-solid fa-pause"></i> പോസ് ചെയ്യുക
-</button>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -249,6 +237,7 @@
 let player;
 let isPlaying = false;
 let randomPauseTimer = null;
+let isCustomFullscreen = false;
 
 async function loadYouTubeLesson() {
   try {
@@ -321,93 +310,32 @@ function togglePlayPause() {
   }
 }
 
-function makeFullScreen() {
-  let elem = document.getElementById('videoWrapperBox');
-  
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.webkitRequestFullscreen) { 
-    elem.webkitRequestFullscreen();
-  } else if (elem.msRequestFullscreen) { 
-    elem.msRequestFullscreen();
-  }
+// ബ്രൗസർ ഫുൾസ്ക്രീൻ ഒഴിവാക്കി, വെബ്‌സൈറ്റിനുള്ളിൽ തന്നെ ഫുൾ സ്ക്രീൻ ടോഗ്ൾ ചെയ്യുന്ന രീതി
+function toggleCustomFullScreen() {
+  isCustomFullscreen = !isCustomFullscreen;
+  let bodyElem = document.body;
+  let btn = document.getElementById('fullScreenToggleBtn');
 
-  if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock('landscape').catch(function(error) {});
-  }
-}
-
-document.addEventListener('fullscreenchange', handleFullscreenChange);
-document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-
-function handleFullscreenChange() {
-  let floatBtn = document.getElementById('floatingBtn');
-  if (document.fullscreenElement || document.webkitFullscreenElement) {
-    floatBtn.style.display = 'block'; 
+  if (isCustomFullscreen) {
+    bodyElem.classList.add('fullscreen-mode');
+    btn.innerHTML = '<i class="fa-solid fa-compress"></i> ചെറുതാക്കുക';
   } else {
-    floatBtn.style.display = 'none'; 
+    bodyElem.classList.remove('fullscreen-mode');
+    btn.innerHTML = '<i class="fa-solid fa-expand"></i> ഫുൾ സ്ക്രീൻ';
   }
-}
-
-// ബട്ടൺ സ്ക്രീനിൽ എവിടേക്കും ഡ്രാഗ് ചെയ്ത് മാറ്റാനുള്ള കോഡ് (Touch & Mouse Support)
-const floatBtn = document.getElementById('floatingBtn');
-let isDragging = false;
-let startX, startY, initialX, initialY;
-
-floatBtn.addEventListener('touchstart', dragStart, {passive: true});
-floatBtn.addEventListener('touchmove', drag, {passive: true});
-floatBtn.addEventListener('touchend', dragEnd);
-
-floatBtn.addEventListener('mousedown', dragStart);
-document.addEventListener('mousemove', drag);
-document.addEventListener('mouseup', dragEnd);
-
-function dragStart(e) {
-  isDragging = true;
-  let clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-  let clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-  
-  startX = clientX;
-  startY = clientY;
-  initialX = floatBtn.offsetLeft;
-  initialY = floatBtn.offsetTop;
-}
-
-function drag(e) {
-  if (!isDragging) return;
-  let clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-  let clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-
-  let dx = clientX - startX;
-  let dy = clientY - startY;
-
-  floatBtn.style.left = (initialX + dx) + 'px';
-  floatBtn.style.top = (initialY + dy) + 'px';
-  floatBtn.style.right = 'auto';
-  floatBtn.style.bottom = 'auto';
-}
-
-function dragEnd() {
-  isDragging = false;
 }
 
 function onPlayerStateChange(event) {
   let btn = document.getElementById('playPauseBtn');
-  let floatBtn = document.getElementById('floatingBtn');
-
   if (event.data == YT.PlayerState.PLAYING) {
     isPlaying = true;
     btn.innerHTML = '<i class="fa-solid fa-pause"></i> പോസ്';
     btn.classList.add('btn-pause');
-    floatBtn.innerHTML = '<i class="fa-solid fa-pause"></i> പോസ് ചെയ്യുക';
-    floatBtn.style.background = '#e74c3c';
     scheduleRandomPause();
   } else {
     isPlaying = false;
     btn.innerHTML = '<i class="fa-solid fa-play"></i> പ്ലേ';
     btn.classList.remove('btn-pause');
-    floatBtn.innerHTML = '<i class="fa-solid fa-play"></i> പ്ലേ ചെയ്യുക';
-    floatBtn.style.background = '#2ecc71';
     clearTimeout(randomPauseTimer);
   }
 }
