@@ -2,6 +2,7 @@
 <html lang="ml">
 <head>
 <meta charset="UTF-8">
+<!-- ഉപയോക്താവിന് സൂം ചെയ്യാനും സ്കെയിൽ ചെയ്യാനുമുള്ള പൂർണ്ണ സ്വാതന്ത്ര്യം നൽകുന്നു -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>പഠന വീഡിയോ - സ്റ്റുഡന്റ് പാനൽ</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,10 +16,20 @@
     justify-content: center; 
     align-items: center; 
     min-height: 100vh; 
-    /* ഫോൺ തിരിക്കുമ്പോഴും സൂം ചെയ്ത് നീക്കാൻ പാകത്തിൽ ഓവർഫ്ലോ അനുവദിക്കുന്നു */
+    /* സ്ക്രീൻ സൂം ചെയ്യാനും നീക്കാനും പാകത്തിൽ ഓവർഫ്ലോ അനുവദിക്കുന്നു */
     overflow: auto; 
+    transition: transform 0.4s ease;
   }
   
+  /* തിരിക്കുക ബട്ടൺ അമർത്തുമ്പോൾ പേജ് മൊത്തത്തിൽ ലാൻഡ്സ്കേപ്പിലേക്ക് തിരിയുന്ന രീതി */
+  body.page-rotated {
+    transform: rotate(90deg);
+    transform-origin: center center;
+    width: 100vh;
+    height: 100vw;
+    overflow: auto;
+  }
+
   .panel-card {
     background: #ffffff;
     width: 100%;
@@ -124,6 +135,12 @@
     box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
   }
 
+  /* തിരിക്കാനുള്ള പ്രത്യേക ബട്ടൺ */
+  .btn-rotate {
+    background: #9b59b6;
+    box-shadow: 0 4px 10px rgba(155, 89, 182, 0.3);
+  }
+
   .info-box {
     margin-top: 15px;
     padding: 10px;
@@ -190,11 +207,15 @@
       <button class="btn-control" id="playPauseBtn" onclick="togglePlayPause()">
         <i class="fa-solid fa-play"></i> പ്ലേ
       </button>
+      <!-- പേജ് തിരിക്കാനുള്ള ബട്ടൺ -->
+      <button class="btn-control btn-rotate" id="rotateBtn" onclick="togglePageRotation()">
+        <i class="fa-solid fa-rotate"></i> തിരിക്കുക
+      </button>
     </div>
   </div>
 
   <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> ഫോൺ തിരിച്ച് വെക്കുമ്പോൾ വിരൽ ഉപയോഗിച്ച് സൂം ചെയ്ത് സ്ക്രീനിനൊപ്പം എളുപ്പത്തിൽ നീക്കി വെക്കാവുന്നതാണ്.
+    <i class="fa-solid fa-shield-halved"></i> 'തിരിക്കുക' ബട്ടൺ വഴി പേജ് ലാൻഡ്‌കേപ്പ് ആക്കിയ ശേഷം, വിരൽ ഉപയോഗിച്ച് ചെറുതാക്കാനും (Zoom Out), വലുതാക്കാനും (Zoom In), സ്ക്രീനിൽ എവിടേക്കും നീക്കാനും കഴിയുന്നതാണ്.
   </div>
 </div>
 
@@ -204,6 +225,7 @@
 let player;
 let isPlaying = false;
 let randomPauseTimer = null;
+let isPageRotated = false;
 
 async function loadYouTubeLesson() {
   try {
@@ -273,6 +295,21 @@ function togglePlayPause() {
     player.pauseVideo();
   } else {
     player.playVideo();
+  }
+}
+
+// പേജ് ലാൻഡ്സ്കേപ്പിലേക്ക് തിരിക്കാനും നേരെയാക്കാനുമുള്ള ഫംഗ്ഷൻ
+function togglePageRotation() {
+  isPageRotated = !isPageRotated;
+  let bodyElem = document.body;
+  let rotateBtn = document.getElementById('rotateBtn');
+
+  if (isPageRotated) {
+    bodyElem.classList.add('page-rotated');
+    rotateBtn.innerHTML = '<i class="fa-solid fa-rotate-left"></i> നേരെയാക്കുക';
+  } else {
+    bodyElem.classList.remove('page-rotated');
+    rotateBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> തിരിക്കുക';
   }
 }
 
