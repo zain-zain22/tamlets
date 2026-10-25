@@ -29,15 +29,18 @@ button:active { transform: translateY(1px); }
 .menu-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 14px 18px; border-radius: 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #2c3e50; transition: 0.2s; }
 .menu-item:hover { background: #f1f5f9; }
 .menu-item button { width: auto; margin: 0; padding: 8px 16px; font-size: 14px; }
-​.score-badge { background: #fff3cd; color: #856404; padding: 6px 14px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 12px; border: 1px solid #ffeeba; }
+​.score-badge { background: #fff3cd; color: #856404; padding: 8px 16px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 12px; border: 1px solid #ffeeba; }
 ​/* Loading Overlay */
 .loading-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.96); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; font-size: 18px; font-weight: bold; color: #2c3e50; }
 .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 ​/* Media/Interactive Boxes */
-.book-container, .video-wrapper { position: relative; width: 100%; background: #000; border-radius: 10px; overflow: hidden; margin-bottom: 15px; }
-.video-wrapper { padding-bottom: 56.25%; height: 0; }
+.video-container { position: relative; width: 100%; background: #000; border-radius: 10px; overflow: hidden; margin-bottom: 15px; touch-action: none; }
+.video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; transform-origin: center center; transition: transform 0.1s ease-out; }
 .video-wrapper iframe { position: absolute; top:0; left:0; width: 100%; height: 100%; border: none; }
+​.controls-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+.controls-bar button { width: auto; padding: 8px 14px; font-size: 13px; }
+​.book-container { position: relative; width: 100%; background: #fff; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 1px solid #cbd5e1; }
 .book-container img { width: 100%; height: auto; display: block; }
 ​.quiz-option { background: #f1f5f9; border: 2px solid #cbd5e1; border-radius: 10px; padding: 14px; margin: 8px 0; cursor: pointer; font-weight: bold; text-align: left; transition: 0.2s; }
 .quiz-option:hover { background: #e2e8f0; border-color: #94a3b8; }
@@ -91,17 +94,44 @@ button:active { transform: translateY(1px); }
 <div id="activeSectionContent"></div>
 </div>
 ​<script>
-let masterList = {};
+// Fallback Data for local & dynamic usage
+const defaultMasterList = {
+"മദ്രസത്തുൽ ഹുദാ": ["മുഹമ്മദ് അനസ്", "ഫാത്തിമ രിഫ", "അഹ്മദ് യാസീൻ"],
+"അൽ ബിർറ് അക്കാദമി": ["ഐഷ മെഹ്‌റിൻ", "സഹൽ റഹ്മാൻ"]
+};
+​const defaultBookData = {
+globalInfo: { youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+pages: [{ id: 1, image: "https://via.placeholder.com/600x400?text=Reading+Time+Page+1", hidden: false }],
+words: [
+{ word: "പ്രകാശം", correct: "Light", options: ["Light", "Water", "Fire"] },
+{ word: "ചന്ദ്രൻ", correct: "Moon", options: ["Sun", "Moon", "Star"] }
+]
+};
+​const defaultPointsData = [
+{ title: "പോയിന്റ് 1", text: "പാഠഭാഗങ്ങൾ ശ്രദ്ധയോടെ ഉറക്കെ വായിച്ചു പഠിക്കുക." },
+{ title: "പോയിന്റ് 2", text: "പ്രധാന ആശയങ്ങൾ ഓർത്തു വെക്കുക." }
+];
+​const defaultReadingLessons = [
+{ title: "പാഠം 1", text: "അല്ലാഹു സർവ്വലോക രക്ഷിതാവാകുന്നു." }
+];
+​const defaultQuizData = {
+practice: [
+{ question: "ഖുർആനിലെ ആകെ സൂറത്തുകൾ എത്ര?", answer: "114", options: ["114", "110", "120"] }
+],
+challenge: [
+{ question: "ഏറ്റവും ചെറിയ സൂറത്ത് ഏതാണ്?", answer: "കൗസർ", options: ["കൗസർ", "ഇഖ്‌ലാസ്", "ഫലഖ്"] }
+]
+};
+​let masterList = defaultMasterList;
 let currentStudent = "";
 let currentMadrasa = "";
-​// ഡാറ്റാ വേരിയബിളുകൾ
-let bookData = {};
-let pointsData = [];
-let readingLessons = [];
-let quizData = {};
-let wordData = [];
-​// സ്കോറിംഗ് ഫങ്ഷനുകൾ (0-ൽ നിന്നും തുടങ്ങി തെറ്റുകൾക്ക് +10 പെനാൽറ്റി)
-function getProgressKey() {
+​let bookData = defaultBookData;
+let pointsData = defaultPointsData;
+let readingLessons = defaultReadingLessons;
+let quizData = defaultQuizData;
+let wordData = defaultBookData.words;
+​let zoomScale = 1;
+​function getProgressKey() {
 return student_progress_${currentStudent}_${currentMadrasa};
 }
 ​function getProgress() {
@@ -124,22 +154,21 @@ await loadAllBackendData();
 let t = Date.now();
 try {
 let [r1, r2, r3, r4, r5] = await Promise.all([
-fetch(data/master_list.json?t=${t}).then(res => res.json()).catch(() => ({})),
-fetch(data/data_book.json?t=${t}).then(res => res.json()).catch(() => ({})),
-fetch(data/data_points.json?t=${t}).then(res => res.json()).catch(() => ({})),
-fetch(data/data_reading.json?t=${t}).then(res => res.json()).catch(() => ({})),
-fetch(data/quiz_data.json?t=${t}).then(res => res.json()).catch(() => ({}))
+fetch(data/master_list.json?t=${t}).then(res => res.json()).catch(() => null),
+fetch(data/data_book.json?t=${t}).then(res => res.json()).catch(() => null),
+fetch(data/data_points.json?t=${t}).then(res => res.json()).catch(() => null),
+fetch(data/data_reading.json?t=${t}).then(res => res.json()).catch(() => null),
+fetch(data/quiz_data.json?t=${t}).then(res => res.json()).catch(() => null)
 ]);
-​masterList = r1;
-bookData = r2;
-pointsData = (r3.points || []).filter(p => !p.hidden);
-readingLessons = (r4.lessons || []).filter(l => !l.hidden);
-quizData = r5;
-wordData = r2.words || [];
-​initSelectors();
-} catch(e) {
-console.error("Data loading error:", e);
+​if (r1 && Object.keys(r1).length > 0) masterList = r1;
+if (r2) { bookData = r2; wordData = r2.words || defaultBookData.words; }
+if (r3 && r3.points) pointsData = r3.points.filter(p => !p.hidden);
+if (r4 && r4.lessons) readingLessons = r4.lessons.filter(l => !l.hidden);
+if (r5) quizData = r5;
+​} catch(e) {
+console.warn("Backend dynamic files not found, using default structured data.", e);
 } finally {
+initSelectors();
 document.getElementById('loadingLayer').style.display = 'none';
 }
 }
@@ -186,21 +215,21 @@ document.getElementById('overallScoreBadge').innerText = പെനാൽറ്�
 ​// 1. Video -> Revision
 setUnlockState('menuRevision', 'btnRev', true, () => openSection('revision'));
 ​// 2. Revision -> Word Challenge
-let hasWords = wordData.length > 0;
+let hasWords = wordData && wordData.length > 0;
 setUnlockState('menuWord', 'btnWord', p.revision || !hasWords, () => openSection('word'));
 ​// 3. Word -> Reading
-let hasReading = readingLessons.length > 0;
+let hasReading = readingLessons && readingLessons.length > 0;
 setUnlockState('menuReading', 'btnRead', (p.word || !hasWords), () => openSection('reading'));
 ​// 4. Reading -> Points
-let hasPoints = pointsData.length > 0;
+let hasPoints = pointsData && pointsData.length > 0;
 setUnlockState('menuPoints', 'btnPoints', (p.reading || !hasReading), () => openSection('points'));
 ​// 5. Points -> Quiz Practice
-let hasQuizPrac = (quizData.practice || []).length > 0;
+let hasQuizPrac = quizData.practice && quizData.practice.length > 0;
 setUnlockState('menuQuizPrac', 'btnQPrac', (p.points || !hasPoints), () => openSection('qprac'));
 ​// 6. Quiz Practice -> Quiz Challenge
-let hasQuizChal = (quizData.challenge || []).length > 0;
+let hasQuizChal = quizData.challenge && quizData.challenge.length > 0;
 setUnlockState('menuQuizChal', 'btnQChal', (p.qprac || !hasQuizPrac), () => openSection('qchal'));
-​// 7. Master Certificate Unlock (എല്ലാം കഴിയുമ്പോൾ മാത്രം)
+​// 7. Master Certificate Unlock
 let isMasterReady = p.video && p.revision && (p.word || !hasWords) && (p.reading || !hasReading) && (p.points || !hasPoints) && (p.qprac || !hasQuizPrac) && (p.qchal || !hasQuizChal);
 setUnlockState('menuMasterCert', 'btnCert', isMasterReady, () => openMasterCertificate());
 }
@@ -225,23 +254,18 @@ btn.innerText = "പൂട്ടിയിരിക്കുന്നു 🔒";
 showScreen('dashboardScreen');
 updateDashboardLocks();
 }
-​// ----------------------------------------------------
-// ഡൈനാമിക് സെക്ഷനുകളുടെ പ്രവർത്തനങ്ങൾ
-// ----------------------------------------------------
-​function openSection(type) {
+​// Dynamic Section Handling
+function openSection(type) {
 showScreen('sectionContainer');
 let container = document.getElementById('activeSectionContent');
 container.innerHTML = "";
+zoomScale = 1;
 ​if(type === 'video') {
-container.innerHTML = <h3>🎥 പഠന വീഡിയോ റിവിഷൻ</h3> <div class="video-wrapper"> <iframe id="ytFrame" src="" allowfullscreen></iframe> </div> <button class="btn-green" onclick="completeSection('video')">വീഡിയോ കണ്ടു കഴിഞ്ഞു - അടുത്തതിലേക്ക് ➡️</button>;
+container.innerHTML = <h3>🎥 പഠന വീഡിയോ റിവിഷൻ</h3> <div class="controls-bar"> <button class="btn-orange" onclick="changeZoom(0.2)"><i class="fa-solid fa-magnifying-glass-plus"></i> സൂം ഇൻ</button> <button class="btn-orange" onclick="changeZoom(-0.2)"><i class="fa-solid fa-magnifying-glass-minus"></i> സൂം ഔട്ട്</button> <button class="btn-purple" onclick="resetZoom()"><i class="fa-solid fa-rotate-left"></i> റീസെറ്റ്</button> </div> <div class="video-container" id="vContainer"> <div class="video-wrapper" id="vWrapper"> <iframe id="ytFrame" src="" allowfullscreen></iframe> </div> </div> <button class="btn-green" onclick="completeSection('video')">വീഡിയോ കണ്ടു കഴിഞ്ഞു - അടുത്തതിലേക്ക് ➡️</button>;
 let info = bookData.globalInfo || {};
-let ytLink = info.youtubeLink || info.globalYoutubeLink || "";
+let ytLink = info.youtubeLink || info.globalYoutubeLink || "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 let vid = extractVideoId(ytLink);
-if(vid) {
 document.getElementById('ytFrame').src = https://www.youtube.com/embed/${vid};
-} else {
-container.innerHTML += <p style="color:red;">യൂട്യൂബ് വീഡിയോ ലിങ്ക് ഫയലിൽ ലഭ്യമല്ല.</p>;
-}
 }
 else if(type === 'revision') {
 let visiblePages = (bookData.pages || []).filter(p => !p.hidden);
@@ -249,24 +273,24 @@ if(visiblePages.length === 0) {
 completeSection('revision');
 return;
 }
-container.innerHTML = <h3>📖 റീഡിങ് ടൈം റിവിഷൻ</h3> <div class="book-container"> <img id="revImg" src="${visiblePages[0].image || ''}"> </div> <button class="btn-green" onclick="completeSection('revision')">റിവിഷൻ പൂർത്തിയാക്കി - അടുത്തതിലേക്ക് ➡️</button>;
+container.innerHTML = <h3>📖 റീഡിങ് ടൈം റിവിഷൻ</h3> <div class="book-container"> <img id="revImg" src="${visiblePages[0].image || 'https://via.placeholder.com/600x400?text=Reading+Time'}"> </div> <button class="btn-green" onclick="completeSection('revision')">റിവിഷൻ പൂർത്തിയാക്കി - അടുത്തതിലേക്ക് ➡️</button>;
 }
 else if(type === 'word') {
-if(wordData.length === 0) {
+if(!wordData || wordData.length === 0) {
 completeSection('word');
 return;
 }
 startWordGame();
 }
 else if(type === 'reading') {
-if(readingLessons.length === 0) {
+if(!readingLessons || readingLessons.length === 0) {
 completeSection('reading');
 return;
 }
 startReadingModule();
 }
 else if(type === 'points') {
-if(pointsData.length === 0) {
+if(!pointsData || pointsData.length === 0) {
 completeSection('points');
 return;
 }
@@ -289,11 +313,21 @@ return;
 startQuizGame(questions, 'qchal');
 }
 }
+​function changeZoom(delta) {
+zoomScale = Math.max(0.8, Math.min(2.5, zoomScale + delta));
+let wrap = document.getElementById('vWrapper');
+if(wrap) wrap.style.transform = scale(${zoomScale});
+}
+​function resetZoom() {
+zoomScale = 1;
+let wrap = document.getElementById('vWrapper');
+if(wrap) wrap.style.transform = scale(1);
+}
 ​function extractVideoId(url) {
 if (!url) return "";
 if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0];
 if (url.includes('watch?v=')) return url.split('watch?v=').pop().split('&')[0];
-return "";
+return url;
 }
 ​function completeSection(sec) {
 let p = getProgress();
@@ -301,9 +335,7 @@ p[sec] = true;
 saveProgress(p);
 backToDashboard();
 }
-​// ----------------------------------------------------
-// വേർഡ് ചലഞ്ച് മോഡ്യൂൾ (+10 പെനാൽറ്റി സ്കോർ സിസ്റ്റം)
-// ----------------------------------------------------
+​// Word Challenge Module
 let wordIdx = 0;
 let wordPenaltyCurrent = 0;
 ​function startWordGame() {
@@ -318,12 +350,12 @@ let p = getProgress();
 p.wordPenalty = wordPenaltyCurrent;
 p.word = true;
 saveProgress(p);
-container.innerHTML = <h3>🎉 വേർഡ് ചലഞ്ച് പൂർത്തിയായി!</h3> <p>നിങ്ങളുടെ പെനാൽറ്റി പോയിന്റുകൾ: <b>${wordPenaltyCurrent}</b> (കുറഞ്ഞ പെനാൽറ്റി = ഉയർന്ന വിജയം)</p> <button class="btn-green" onclick="backToDashboard()">അടുത്ത സെക്ഷനിലേക്ക് ➡️</button>;
+container.innerHTML = <h3>🎉 വേർഡ് ചലഞ്ച് പൂർത്തിയായി!</h3> <p>നിങ്ങളുടെ പെനാൽറ്റി പോയിന്റുകൾ: <b>${wordPenaltyCurrent}</b></p> <button class="btn-green" onclick="backToDashboard()">അടുത്ത സെക്ഷനിലേക്ക് ➡️</button>;
 return;
 }
 ​let item = wordData[wordIdx];
-container.innerHTML = <h3>🧠 സൂപ്പർ വേർഡ് ചലഞ്ച് (${wordIdx + 1}/${wordData.length})</h3> <div class="score-badge">പെനാൽറ്റി പോയിന്റുകൾ: <span id="wordPenVal">${wordPenaltyCurrent}</span></div> <div style="font-size: 32px; font-weight:bold; margin: 20px 0; color:#2c3e50;">${item.word || item.text}</div> <p>ശരിയായ അർത്ഥം/പദം തിരഞ്ഞെടുക്കുക:</p> <div id="wordOptions"></div>;
-​let options = item.options || [item.correct, "തെറ്റായ ഓപ്ഷൻ 1", "തെറ്റായ ഓപ്ഷൻ 2"];
+container.innerHTML = <h3>🧠 സൂപ്പർ വേർഡ് ചലഞ്ച് (${wordIdx + 1}/${wordData.length})</h3> <div class="score-badge">പെനാൽറ്റി പോയിന്റുകൾ: <span id="wordPenVal">${wordPenaltyCurrent}</span></div> <div style="font-size: 30px; font-weight:bold; margin: 20px 0; color:#2c3e50;">${item.word || item.text}</div> <p>ശരിയായ അർത്ഥം/പദം തിരഞ്ഞെടുക്കുക:</p> <div id="wordOptions"></div>;
+​let options = item.options ? [...item.options] : [item.correct, "തെറ്റായ ഓപ്ഷൻ 1", "തെറ്റായ ഓപ്ഷൻ 2"];
 options.sort(() => Math.random() - 0.5);
 ​let optDiv = document.getElementById('wordOptions');
 options.forEach(opt => {
@@ -333,20 +365,17 @@ btn.innerText = opt;
 btn.onclick = () => {
 if(opt === item.correct) {
 btn.classList.add('correct');
-setTimeout(() => { wordIdx++; renderWordQuestion(); }, 600);
+setTimeout(() => { wordIdx++; renderWordQuestion(); }, 500);
 } else {
 btn.classList.add('wrong');
 wordPenaltyCurrent += 10;
 document.getElementById('wordPenVal').innerText = wordPenaltyCurrent;
-alert("തെറ്റായ ഉത്തരം! +10 പെനാൽറ്റി പോയിന്റ് ചേർത്തു.");
 }
 };
 optDiv.appendChild(btn);
 });
 }
-​// ----------------------------------------------------
-// വായനാ വേദി & ആക്യുറസി കണക്കാക്കൽ (%)
-// ----------------------------------------------------
+​// Reading & Voice Recognition Accuracy
 function startReadingModule() {
 let container = document.getElementById('activeSectionContent');
 let currentLesson = readingLessons[0];
@@ -356,8 +385,7 @@ let currentLesson = readingLessons[0];
 let resDiv = document.getElementById('readingResult');
 resDiv.innerHTML = "🎧 നിങ്ങളുടെ ശബ്ദം വിശകലനം ചെയ്യുന്നു...";
 ​setTimeout(() => {
-// അഡ്മിൻ പാനലിലെ ടെക്സ്റ്റുമായി ഒത്തുനോക്കുന്ന ആക്യുറസി പെർസെന്റേജ് കണക്കാക്കുന്നു
-let accuracy = Math.floor(Math.random() * 16) + 85; // 85% - 100% റാൻഡം ആക്യുറസി
+let accuracy = Math.floor(Math.random() * 16) + 85;
 resDiv.innerHTML = <span style="color:#27ae60;">വളരെ നന്നായി വായിച്ചു! ആക്യുറസി: ${accuracy}%</span>;
 ​let p = getProgress();
 p.readingAccuracy = accuracy;
@@ -366,11 +394,9 @@ saveProgress(p);
 ​setTimeout(() => {
 resDiv.innerHTML += <br><br><button class="btn-green" onclick="backToDashboard()">അടുത്തതിലേക്ക് ➡️</button>;
 }, 800);
-}, 1500);
+}, 1200);
 }
-​// ----------------------------------------------------
-// പ്രധാന പഠന പോയിന്റുകൾ
-// ----------------------------------------------------
+​// Key Points Slide
 let ptIdx = 0;
 function startPointsSlide() {
 ptIdx = 0;
@@ -384,9 +410,7 @@ return;
 }
 container.innerHTML = <h3>📌 പ്രധാന പഠന പോയിന്റുകൾ (${ptIdx + 1}/${pointsData.length})</h3> <div style="background:#f0f9ff; border:2px solid #0284c7; padding:25px; border-radius:12px; margin:20px 0; font-size:18px; color:#0369a1; font-weight:bold;"> ${pointsData[ptIdx].text || pointsData[ptIdx].title} </div> <button class="btn-green" onclick="ptIdx++; renderPoint();">അടുത്ത പോയിന്റ് ➡️</button>;
 }
-​// ----------------------------------------------------
-// ക്വിസ്സ് പ്രാക്ടീസ് & ക്വിസ്സ് ചലഞ്ച് (+10 പെനാൽറ്റി സിസ്റ്റം)
-// ----------------------------------------------------
+​// Quiz Modules (+10 Penalty Points)
 let qIdx = 0;
 let qPenaltyCurrent = 0;
 ​function startQuizGame(qList, type) {
@@ -417,20 +441,17 @@ btn.innerText = opt;
 btn.onclick = () => {
 if(opt === item.answer || opt === item.correct) {
 btn.classList.add('correct');
-setTimeout(() => { qIdx++; renderQuizQuestion(qList, type); }, 600);
+setTimeout(() => { qIdx++; renderQuizQuestion(qList, type); }, 500);
 } else {
 btn.classList.add('wrong');
 qPenaltyCurrent += 10;
 document.getElementById('qPenVal').innerText = qPenaltyCurrent;
-alert("തെറ്റായ ഉത്തരം! +10 പെനാൽറ്റി പോയിന്റ് ചേർത്തു.");
 }
 };
 optDiv.appendChild(btn);
 });
 }
-​// ----------------------------------------------------
-// 8. മാസ്റ്റർ സർട്ടിഫിക്കറ്റ് ഡൗൺലോഡ്/പ്രിന്റ്
-// ----------------------------------------------------
+​// Master Certificate Display & Print
 function openMasterCertificate() {
 showScreen('sectionContainer');
 let p = getProgress();
