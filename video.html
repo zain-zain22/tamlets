@@ -107,14 +107,14 @@
     z-index: 10;
   }
 
-  /* ബട്ടണുകൾ ഒരേ നിരയിൽ (Horizontal) അടുത്തടുത്ത് നൽകാൻ */
+  /* ബട്ടണുകൾ ഒരേ നിരയിൽ (Horizontal) അടുത്തടുത്ത് */
   .side-controls {
     display: flex;
     flex-direction: row;
     gap: 10px;
     justify-content: center;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 15px;
   }
 
   .btn-control {
@@ -148,16 +148,6 @@
   .btn-rotate {
     background: #9b59b6;
     box-shadow: 0 4px 10px rgba(155, 89, 182, 0.3);
-  }
-
-  .info-box {
-    margin-top: 15px;
-    padding: 10px;
-    background: #f8fafc;
-    border-radius: 8px;
-    font-size: 13px;
-    color: #475569;
-    border: 1px solid #e2e8f0;
   }
 
   .verify-modal {
@@ -212,19 +202,15 @@
       <div id="player"></div>
     </div>
     
-    <!-- പ്ലേയും തിരിക്കുക ബട്ടണും ഒരേ നിരയിൽ അടുത്തടുത്ത് -->
+    <!-- പ്ലേയും 'വലുതാക്കുക' ബട്ടണും ഒരേ നിരയിൽ -->
     <div class="side-controls">
       <button class="btn-control" id="playPauseBtn" onclick="togglePlayPause()">
         <i class="fa-solid fa-play"></i> പ്ലേ
       </button>
       <button class="btn-control btn-rotate" id="rotateBtn" onclick="togglePageRotation()">
-        <i class="fa-solid fa-rotate"></i> തിരിക്കുക
+        <i class="fa-solid fa-expand"></i> വലുതാക്കുക
       </button>
     </div>
-  </div>
-
-  <div class="info-box">
-    <i class="fa-solid fa-shield-halved"></i> പ്ലേയും തിരിക്കുക ബട്ടണുകളും ഒരേ നിരയിൽ നൽകിയിരിക്കുന്നു. സൂം ഔട്ട് ചെയ്ത് സുഗമമായി ഉപയോഗించാം.
   </div>
 </div>
 
@@ -314,10 +300,10 @@ function togglePageRotation() {
 
   if (isPageRotated) {
     bodyElem.classList.add('page-rotated');
-    rotateBtn.innerHTML = '<i class="fa-solid fa-rotate-left"></i> നേരെയാക്കുക';
+    rotateBtn.innerHTML = '<i class="fa-solid fa-compress"></i> ചെറുതാക്കുക';
   } else {
     bodyElem.classList.remove('page-rotated');
-    rotateBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> തിരിക്കുക';
+    rotateBtn.innerHTML = '<i class="fa-solid fa-expand"></i> വലുതാക്കുക';
   }
 }
 
