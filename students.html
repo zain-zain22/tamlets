@@ -591,18 +591,29 @@
     }
   }
 
-  function onVideoStateChange(event) {
+    function onVideoStateChange(event) {
     let btn = document.getElementById('playPauseBtn');
+    let finishBtn = document.getElementById('videoFinishBtn');
+
     if (event.data == YT.PlayerState.PLAYING) {
       isVideoPlaying = true;
       btn.innerHTML = '<i class="fa-solid fa-pause"></i> പോസ്';
       scheduleRandomVideoPause();
-    } else {
+    } else if (event.data == YT.PlayerState.PAUSED) {
       isVideoPlaying = false;
       btn.innerHTML = '<i class="fa-solid fa-play"></i> പ്ലേ';
       clearTimeout(videoPauseTimer);
+    } else if (event.data == YT.PlayerState.ENDED) {
+      // വീഡിയോ പൂർണ്ണമായും പ്ലേ ചെയ്ത് തീർന്നാൽ മാത്രം ബട്ടൺ അൺലോക്ക് ആകും
+      isVideoPlaying = false;
+      if(finishBtn) {
+        finishBtn.disabled = false;
+        finishBtn.classList.remove('btn-lock');
+        finishBtn.innerHTML = 'വീഡിയോ കണ്ടു കഴിഞ്ഞു - അടുത്തതിലേക്ക് ➡️';
+      }
     }
   }
+
 
   function scheduleRandomVideoPause() {
     clearTimeout(videoPauseTimer);
