@@ -52,6 +52,23 @@ audio { margin-top: 5px; display: none; width: 100%; }
 .mic-btn-live.recording { background-color: #2ecc71; animation: pulseLive 1s infinite; }
 .live-btn-action { width: auto; padding: 4px 8px; font-size: 12px; display: none; }
 @keyframes pulseLive { 0% { transform: scale(1); } 50% { transform: scale(1.06); } 100% { transform: scale(1); } }
+    /* വരകളും ഹാൻഡ്‌റൈറ്റിംഗും വ്യക്തമായി കാണാൻ */
+svg path {
+  stroke: #e74c3c !important;
+  stroke-width: 4px !important;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#pageDrawBoard path {
+  stroke: #2980b9 !important;
+  stroke-width: 3px !important;
+}
+#quizDrawBoard path {
+  stroke: #e74c3c !important;
+  stroke-width: 4px !important;
+}
+
 </style> 
 </head> 
 <body> 
