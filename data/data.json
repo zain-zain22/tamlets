@@ -1,11 +1,24 @@
 {
-  "version": 1793030683598,
+  "version": 1793031479812,
   "words": [
     {
       "mal": "മലയാളം",
       "arbiText": "مَلَياضَمْ",
       "audio": "data/audio_live_1793007207531_r1.mp3",
-      "writingPaths": null,
+      "writingPaths": [
+        [
+          {
+            "x": 828,
+            "y": 385
+          }
+        ],
+        [
+          {
+            "x": 715,
+            "y": 290
+          }
+        ]
+      ],
       "hidden": false
     }
   ]
