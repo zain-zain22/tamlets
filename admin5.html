@@ -745,13 +745,66 @@ function clearQuizDrawBoard() { document.getElementById('quizDrawBoard').innerHT
 
 function initQuizDrawingEngine() { 
     let qboard = document.getElementById('quizDrawBoard');
-    function getCoords(e) { const rect = qboard.getBoundingClientRect(); let clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0; let clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0; return { x: Math.round(((clientX - rect.left) / rect.width) * 1000), y: Math.round(((clientY - rect.top) / rect.height) * 1000) }; } 
-    function start(e) { e.preventDefault(); isQuizDrawing = true; const c = getCoords(e); const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); for(let i=0; i<16; i++) { let p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("transform", `translate(${(i-8)*0.4}, ${-(i-8)})`); p.setAttribute("stroke", "#e74c3c"); p.setAttribute("stroke-width", "2"); p.setAttribute("fill", "none"); p.setAttribute("stroke-linecap", "round"); p.setAttribute("d", `M ${c.x} ${c.y}`); g.appendChild(p); } qboard.appendChild(g); quizPaths.push([{x: c.x, y: c.y}]); } 
-    function move(e) { if(!isQuizDrawing) return; e.preventDefault(); const c = getCoords(e); const g = qboard.lastElementChild; if(!g) return; g.querySelectorAll("path").forEach(p => p.setAttribute("d", p.setAttribute("d") + ` L ${c.x} ${c.y}`)); quizPaths[quizPaths.length - 1].push({x: c.x, y: c.y}); } 
-    function end() { isQuizDrawing = false; } 
-    qboard.addEventListener("mousedown", start); qboard.addEventListener("mousemove", move); window.addEventListener("mouseup", end); 
-    qboard.addEventListener("touchstart", start, {passive:false}); qboard.addEventListener("touchmove", move, {passive:false}); window.addEventListener("touchend", end); 
-} 
+    if(!qboard) return;
+
+    function getCoords(e) { 
+        const rect = qboard.getBoundingClientRect(); 
+        let clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0; 
+        let clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0; 
+        return { 
+            x: Math.round(((clientX - rect.left) / rect.width) * 1000), 
+            y: Math.round(((clientY - rect.top) / rect.height) * 1000) 
+        }; 
+    } 
+
+    function start(e) { 
+        if(e.type === 'touchstart') e.preventDefault(); 
+        isQuizDrawing = true; 
+        const c = getCoords(e); 
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); 
+        
+        let p = document.createElementNS("http://www.w3.org/2000/svg", "path"); 
+        p.setAttribute("stroke", "#e74c3c"); 
+        p.setAttribute("stroke-width", "5"); 
+        p.setAttribute("fill", "none"); 
+        p.setAttribute("stroke-linecap", "round"); 
+        p.setAttribute("stroke-linejoin", "round"); 
+        p.setAttribute("d", `M ${c.x} ${c.y}`); 
+        
+        g.appendChild(p); 
+        qboard.appendChild(g); 
+        quizPaths.push([{x: c.x, y: c.y}]); 
+    } 
+
+    function move(e) { 
+        if(!isQuizDrawing) return; 
+        if(e.type === 'touchmove') e.preventDefault(); 
+        const c = getCoords(e); 
+        const g = qboard.lastElementChild; 
+        if(!g) return; 
+        
+        let p = g.querySelector("path"); 
+        if(p) {
+            let currentD = p.getAttribute("d");
+            p.setAttribute("d", currentD + ` L ${c.x} ${c.y}`); 
+            quizPaths[quizPaths.length - 1].push({x: c.x, y: c.y});
+        }
+    } 
+
+    function end() { 
+        isQuizDrawing = false; 
+    } 
+
+    // പഴയ ഇവന്റ് ലിസണറുകൾ ക്ലിയർ ചെയ്ത് പുതിയത് നൽകുന്നു
+    qboard.onmousedown = start; 
+    qboard.onmousemove = move; 
+    window.onmouseup = end; 
+    
+    qboard.ontouchstart = start; 
+    qboard.ontouchmove = move; 
+    window.ontouchend = end; 
+}
+
 
 function redrawQuizPaths() { 
     let qboard = document.getElementById('quizDrawBoard'); qboard.innerHTML = ""; 
