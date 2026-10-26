@@ -885,53 +885,26 @@
     }
   }
 
-  function initSpeechEngine() {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      speechRecognitionObj = new SpeechRecognition();
-      speechRecognitionObj.continuous = true;
-      speechRecognitionObj.interimResults = true;
-
-      speechRecognitionObj.onresult = function(event) {
-        let interim = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalSpeechTranscript += event.results[i][0].transcript + ' ';
-          } else {
-            interim += event.results[i][0].transcript;
-          }
-        }
-        document.getElementById('spokenTextDisplay').innerText = finalSpeechTranscript + interim;
-      };
+    function onReadingLessonChanged() {
+    let idx = document.getElementById('readingLessonSelect').value;
+    if(idx !== "" && readingLessons[idx]) {
+      currentTargetReadingText = readingLessons[idx].text;
     }
   }
 
-  function toggleSpeechRecognition() {
-    let btn = document.getElementById('micBtn');
-    let text = document.getElementById('micText');
-    if(!isSpeechRecording) {
-      finalSpeechTranscript = "";
-      document.getElementById('spokenTextDisplay').innerText = "ശ്രദ്ധയോടെ വായിക്കുക...";
-      document.getElementById('readingResultBox').style.display = "none";
-      speechRecognitionObj.start();
-      isSpeechRecording = true;
-      btn.classList.add('recording');
-      text.innerText = "🛑 വായന നിർത്താൻ അമർത്തുക";
-    } else {
-      speechRecognitionObj.stop();
-      isSpeechRecording = false;
-      btn.classList.remove('recording');
-      text.innerText = "🎤 പുനരാരംഭിക്കാൻ അമർത്തുക";
-      setTimeout(calculateReadingAccuracy, 800);
+  // വാട്സാപ്പിൽ നിന്ന് പേസ്റ്റ് ചെയ്ത ടെക്സ്റ്റ് വിലയിരുത്താൻ
+  function calculateWhatsappReadingResult() {
+    let pastedText = document.getElementById('whatsappTextInput').value;
+    if(!pastedText.trim()) {
+      alert("ദയവായി വാട്സാപ്പിൽ നിന്ന് ലഭിച്ച ടെക്സ്റ്റ് ഇവിടെ പേസ്റ്റ് ചെയ്യുക!");
+      return;
     }
-  }
 
-  function calculateReadingAccuracy() {
-    let cleanT = str => str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'']/g, "").trim().toLowerCase();
+    let cleanT = str => str.replace(/[.,\/#$%\^&\*;:{}=\-_`~()?"'']/g, "").trim().toLowerCase();
     let targetWords = cleanT(currentTargetReadingText).split(/\s+/);
-    let spokenWords = cleanT(finalSpeechTranscript).split(/\s+/);
+    let spokenWords = cleanT(pastedText).split(/\s+/);
 
-    if(spokenWords.length === 0 || finalSpeechTranscript.trim() === "") return;
+    if(targetWords.length === 0) return;
 
     let match = 0;
     targetWords.forEach(w => { if(spokenWords.includes(w)) match++; });
@@ -942,6 +915,7 @@
     document.getElementById('readingAccuracyVal').innerText = acc + "%";
     document.getElementById('readingResultBox').style.display = "block";
   }
+
 
   function setupPointsModule() {
     currentPointIdx = 0;
