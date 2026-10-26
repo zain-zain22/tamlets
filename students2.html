@@ -809,51 +809,116 @@
     }
   }
 
+    function moveHandToSvgPoint(svgX, svgY, svgElem, containerElem, handElem) {
+    let pt = svgElem.createSVGPoint();
+    pt.x = svgX; pt.y = svgY;
+    
+    let globalMatrix = svgElem.getScreenCTM();
+    if (!globalMatrix) return;
+    
+    let screenPt = pt.matrixTransform(globalMatrix);
+    let containerRect = containerElem.getBoundingClientRect();
+
+    let localX = screenPt.x - containerRect.left;
+    let localY = screenPt.y - containerRect.top;
+
+    handElem.style.left = localX + 'px';
+    handElem.style.top = localY + 'px';
+  }
+
   function startHandwritingAnimation(allPaths) {
     let board = document.getElementById('hwShowBoard');
     let hand = document.getElementById('movingHand');
-    board.innerHTML = ""; hand.style.display = "block";
+    let container = document.getElementById('canvasArea');
+    
+    board.innerHTML = ""; 
+    hand.style.display = "block";
     document.getElementById('hwModal').style.display = 'flex';
 
-    hwIntervalsMemory.forEach(clearInterval); hwIntervalsMemory = [];
-    board.setAttribute("viewBox", "0 0 1000 1000");
+    hwIntervalsMemory.forEach(clearInterval); 
+    hwIntervalsMemory = [];
+
+    let minX = 1000, minY = 1000, maxX = 0, maxY = 0;
+    let hasPoints = false;
+    allPaths.forEach(path => {
+        path.forEach(pt => {
+            if(pt.x < minX) minX = pt.x;
+            if(pt.y < minY) minY = pt.y;
+            if(pt.x > maxX) maxX = pt.x;
+            if(pt.y > maxY) maxY = pt.y;
+            hasPoints = true;
+        });
+    });
+
+    if (hasPoints) {
+        let padding = 80;
+        let width = (maxX - minX) + (padding * 2);
+        let height = (maxY - minY) + (padding * 2);
+        board.setAttribute("viewBox", `${minX - padding} ${minY - padding} ${width} ${height}`);
+    } else {
+        board.setAttribute("viewBox", "0 0 1000 1000");
+    }
 
     let currentPathIndex = 0;
-    function animateSingleStroke(pathPoints) {
-      if(!pathPoints || pathPoints.length === 0) return;
-      let g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      let pathsList = [];
-      for(let i=0; i<12; i++) {
-        let p = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        p.setAttribute("transform", `translate(${(i-6)*0.1}, ${-(i-6)*0.6})`);
-        p.setAttribute("stroke", "#e74c3c"); p.setAttribute("stroke-width", "2"); p.setAttribute("fill", "none");
-        p.setAttribute("d", `M ${pathPoints[0].x} ${pathPoints[0].y}`);
-        g.appendChild(p); pathsList.push(p);
-      }
-      board.appendChild(g);
+    let globalDelay = 150;
 
-      let ptIdx = 1;
-      let speed = Math.max(20, Math.min(60, Math.floor(3000 / pathPoints.length)));
-      let interval = setInterval(() => {
-        if(ptIdx >= pathPoints.length) {
-          clearInterval(interval);
-          currentPathIndex++;
-          if(currentPathIndex < allPaths.length) {
-            animateSingleStroke(allPaths[currentPathIndex]);
-          } else {
-            hand.style.display = "none";
-          }
-          return;
+    function animateSingleStroke(pathPoints) {
+        if(!pathPoints || pathPoints.length === 0) return;
+        
+        let g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        let pathsList = [];
+        
+        for(let i = 0; i < 12; i++) {
+            let p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            p.setAttribute("transform", `translate(${(i - 6) * 0.1}, ${-(i - 6) * 0.6})`);
+            p.setAttribute("stroke", "#e74c3c"); 
+            p.setAttribute("stroke-width", "3");
+            p.setAttribute("fill", "none"); 
+            p.setAttribute("stroke-linecap", "round");
+            p.setAttribute("stroke-linejoin", "round");
+            p.setAttribute("d", `M ${pathPoints[0].x} ${pathPoints[0].y}`);
+            g.appendChild(p); 
+            pathsList.push(p);
         }
-        let currPt = pathPoints[ptIdx];
-        let dStr = ` L ${currPt.x} ${currPt.y}`;
-        pathsList.forEach(p => p.setAttribute("d", p.getAttribute("d") + dStr));
-        ptIdx++;
-      }, speed);
-      hwIntervalsMemory.push(interval);
+        board.appendChild(g);
+
+        let ptIdx = 1;
+        let speed = Math.max(15, Math.min(50, Math.floor(2500 / pathPoints.length)));
+        
+        let strokeTimer = setTimeout(() => {
+            moveHandToSvgPoint(pathPoints[0].x, pathPoints[0].y, board, container, hand);
+            
+            let interval = setInterval(() => {
+                if(ptIdx >= pathPoints.length) {
+                    clearInterval(interval);
+                    currentPathIndex++;
+                    if(currentPathIndex < allPaths.length) {
+                        animateSingleStroke(allPaths[currentPathIndex]);
+                    } else {
+                        setTimeout(() => { hand.style.display = "none"; }, 400);
+                    }
+                    return;
+                }
+                
+                let currPt = pathPoints[ptIdx];
+                let dString = ` L ${currPt.x} ${currPt.y}`;
+                pathsList.forEach(p => p.setAttribute("d", p.getAttribute("d") + dString));
+                
+                moveHandToSvgPoint(currPt.x, currPt.y, board, container, hand);
+                ptIdx++;
+            }, speed);
+            
+            hwIntervalsMemory.push(interval);
+        }, globalDelay);
     }
-    animateSingleStroke(allPaths[0]);
+
+    setTimeout(() => {
+        if (allPaths && allPaths.length > 0) {
+            animateSingleStroke(allPaths[0]);
+        }
+    }, 200);
   }
+
 
   function closeHwModalAndContinue() {
     document.getElementById('hwModal').style.display = 'none';
