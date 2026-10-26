@@ -1,12 +1,56 @@
 {
-  "version": 1793007221671,
+  "version": 1793025383894,
   "quizInfo": {
     "class": "",
     "subject": "",
     "part": "",
     "chapter": "",
-    "lessonName": "",
-    "youtubeLink": "https://youtu.be/nBAdeR9Ngbo?si=GF2NHn_-A5jcKQpY"
+    "lessonName": ""
   },
-  "questions": []
+  "questions": [
+    {
+      "qText": "മുസ്‌ലിംകളുടെ ഖിബ്‌ലയായ വിശുദ്ധ കഅ്ബ സ്ഥിതി ചെയ്യുന്നത് എവിടെയാണ്?",
+      "correctText": "പരിശുദ്ധ മക്ക",
+      "wrong1Text": "യമൻ",
+      "wrong2Text": "മദീന",
+      "qSrc": "",
+      "correctSrc": "",
+      "wrong1Src": "",
+      "wrong2Src": "",
+      "hidden": false
+    },
+    {
+      "qText": "വിശുദ്ധ കഅ്ബയുടെ പ്രശസ്തി കണ്ട് അസ്വസ്ഥനാകുകയും കഅ്ബ പൊളിക്കാൻ തീരുമാനിക്കുകയും ചെയ്ത യമനിലെ രാജാവ് ആരാണ്?",
+      "correctText": "അബ്രഹത്ത്",
+      "wrong1Text": "അബ്ദുൽ മുത്തലിബ്",
+      "wrong2Text": "ഫറോവ",
+      "qSrc": "",
+      "correctSrc": "",
+      "wrong1Src": "",
+      "wrong2Src": "",
+      "hidden": false
+    },
+    {
+      "qText": "കഅ്ബ പൊളിക്കാനായി വൻ സൈന്യവുമായി മക്കയിലേക്ക് പുറപ്പെട്ട അബ്രഹത്തിന്റെ സൈന്യത്തിന്റെ പ്രത്യേകത എന്തായിരുന്നു?",
+      "correctText": "ഗജവീരന്മാരും ധാരാളം ആയുധങ്ങളും",
+      "wrong1Text": "കപ്പൽപട",
+      "wrong2Text": "ചെറിയൊരു സംഘം കുതിരപ്പട",
+      "qSrc": "",
+      "correctSrc": "",
+      "wrong1Src": "",
+      "wrong2Src": "",
+      "hidden": false
+    },
+    {
+      "qText": "അബ്രഹത്തിന്റെ സൈന്യം മക്കയുടെ സമീപമെത്തിയപ്പോൾ മക്കക്കാരെ ഭയപ്പെടുത്താൻ വേണ്ടി അവർ ചെയ്ത പ്രവൃത്തി എന്തായിരുന്നു?",
+      "correctText": "മേഞ്ഞു നടന്നിരുന്ന ഒട്ടകങ്ങളെ പിടിച്ചു കൊണ്ടുപോയി",
+      "wrong1Text": "നഗരത്തിന് തീയിട്ടു",
+      "wrong2Text": "കൃഷി നശിപ്പിച്ചു",
+      "qSrc": "",
+      "correctSrc": "",
+      "wrong1Src": "",
+      "wrong2Src": "",
+      "hidden": false
+    }
+  ]
 }
