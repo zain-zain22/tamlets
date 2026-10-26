@@ -235,19 +235,28 @@
     </div>
   </div>
 
-  <div id="viewReading" class="view-screen">
+    <div id="viewReading" class="view-screen">
     <div class="panel-card" style="border-top-color: #9b59b6;">
       <h3 style="margin-top:0;">🎤 വായനാ വേദി</h3>
       
       <label style="display:block; text-align:left; font-weight:bold; font-size:13px;">📚 പാഠം തിരഞ്ഞെടുക്കുക:</label>
       <select id="readingLessonSelect" onchange="onReadingLessonChanged()"></select>
 
-      <button class="mic-btn" id="micBtn" onclick="toggleSpeechRecognition()">
-        <i class="fa-solid fa-microphone"></i> <span id="micText">വായന തുടങ്ങാൻ മൈക്ക് അമർത്തുക</span>
-      </button>
+      <!-- വാട്സാപ്പിലേക്ക് വോയിസ് അയക്കാനുള്ള ബട്ടൺ -->
+      <a href="https://wa.me/918848939767?text=Voice%20Recording" target="_blank" style="text-decoration: none;">
+          <div style="background-color: #25D366; color: white; padding: 14px; border-radius: 8px; text-align: center; font-weight: bold; margin: 15px 0 10px 0; display: flex; align-items: center; justify-content: center; gap: 10px;">
+              <span>💬 8848939767 നമ്പറിലേക്ക് വോയിസ് അയക്കുക</span>
+          </div>
+      </a>
 
-      <label style="display:block; text-align:left; font-weight:bold; font-size:13px; margin-top:10px;">🎙️ നിങ്ങൾ വായിച്ചത്:</label>
-      <div class="speech-output" id="spokenTextDisplay">മൈക്ക് ഓൺ ചെയ്ത ശേഷം വായിച്ചു തുടങ്ങൂ...</div>
+      <!-- വാട്സാപ്പിൽ നിന്നും ലഭിച്ച ടെക്സ്റ്റ് പേസ്റ്റ് ചെയ്യാനുള്ള ബോക്സ് -->
+      <label style="display:block; text-align:left; font-weight:bold; font-size:13px; margin-top:10px;">📋 വാട്സാപ്പിൽ നിന്നും ലഭിച്ച ടെക്സ്റ്റ് ഇവിടെ പേസ്റ്റ് ചെയ്യുക:</label>
+      <textarea id="whatsappTextInput" rows="4" placeholder="വാട്സാപ്പിൽ തിരികെ ലഭിച്ച ടെക്സ്റ്റ് കോപ്പി ചെയ്ത് ഇവിടെ പേസ്റ്റ് ചെയ്യുക..." style="width: 100%; padding: 12px; margin: 8px 0 15px 0; border-radius: 8px; border: 2px solid #bdc3c7; font-size: 15px; outline: none; background: #fff;"></textarea>
+
+      <!-- ഫലം കണക്കാക്കാനുള്ള ബട്ടൺ -->
+      <button class="btn-green" onclick="calculateWhatsappReadingResult()">
+        🧮 ഫലം കണക്കാക്കുക
+      </button>
 
       <div id="readingResultBox" style="display:none; margin-top:15px; background:#fff3e0; padding:12px; border-radius:8px; border:1px solid #ffe0b2;">
         <h4 style="margin:0 0 5px 0; color:#d35400;">📊 വായനക്കാരുടെ ഫലം</h4>
