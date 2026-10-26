@@ -866,7 +866,7 @@
     }
   }
 
-  function setupReadingModule() {
+    function setupReadingModule() {
     let sel = document.getElementById('readingLessonSelect');
     sel.innerHTML = "";
     readingLessons.forEach((l, idx) => {
@@ -875,9 +875,8 @@
       sel.appendChild(opt);
     });
     onReadingLessonChanged();
-    initSpeechEngine();
-  }
-
+    }
+  
   function onReadingLessonChanged() {
     let idx = document.getElementById('readingLessonSelect').value;
     if(idx !== "" && readingLessons[idx]) {
