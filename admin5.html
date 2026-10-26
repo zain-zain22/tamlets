@@ -1305,6 +1305,49 @@ async function publishToGitHubDirectly() {
         overlay.style.display = 'none';
     }
 }
+      // ക്വിസ്സ് ചോദ്യങ്ങൾക്കും ഉത്തരങ്ങൾക്കും വോയ്സ് റെക്കോർഡ് ചെയ്യാൻ
+  function startRecordingQuiz(type) {
+    currentType = type;
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      let options = { mimeType: 'audio/webm' };
+      if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        options = { mimeType: 'audio/mp4' };
+      }
+      mediaRecorder = new MediaRecorder(stream, options);
+      audioChunks = [];
+      
+      mediaRecorder.addEventListener("dataavailable", event => {
+        audioChunks.push(event.data);
+      });
+      
+      mediaRecorder.addEventListener("stop", () => {
+        const audioBlob = new Blob(audioChunks, { type: options.mimeType });
+        recordedBlobs[currentType] = audioBlob;
+        
+        const audioPlayback = document.getElementById('playback_' + currentType);
+        audioPlayback.src = URL.createObjectURL(audioBlob);
+        audioPlayback.style.display = 'block';
+      });
+      
+      mediaRecorder.start();
+      
+      document.getElementById('startBtn_' + type).style.display = 'none';
+      document.getElementById('stopBtn_' + type).style.display = 'block';
+      document.getElementById('status_' + type).innerText = "🔴 റെക്കോർഡ് ചെയ്യുന്നു...";
+    }).catch(err => {
+      alert("മൈക്ക് പെർമിഷൻ ലഭ്യമല്ല അല്ലെങ്കിൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു!");
+    });
+  }
+
+  function stopRecordingQuiz(type) {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+    }
+    document.getElementById('startBtn_' + type).style.display = 'block';
+    document.getElementById('stopBtn_' + type).style.display = 'none';
+    document.getElementById('status_' + type).innerText = "✅ റെക്കോർഡിംഗ് വിജയകരമായി പൂർത്തിയായി.";
+  }
+
 </script>
 
 </body> 
