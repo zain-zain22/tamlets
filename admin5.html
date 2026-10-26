@@ -358,7 +358,7 @@ let currentHandwritingTarget = 'book';
 let liveHandwritingMemory = {}; 
 
 const initialVowels = { "അ":"اَ","ആ":"آ","ഇ":"اِ","ഈ":"اِی","ഉ":"اُ","ഊ":"اُو","ഋ":"ِرُ","എ":"ا٘","ഏ":"ا٘ے","ഐ":"اَیْ","ഒ":"اٗ","ഓ":"اٗو","ഔ":"ഔْ" };
-const baseConsonants = { "ൻ":"نْ","ൽ":"ൽ","ർ":"رٛ","ൾ":"ۻۡ","ൺ":"ڹۡ","ൿ":"كۡ","ക്ക":"كّ","ഗ്ഗ":"گّ","ങ്ങ":"ۼّ","ച്ച":"ചّ","ജ്ജ":"جّ","ഞ്ഞ":"ڿّ","ട്ട":"ڊّ","ണ്ണ":"ڹّ","ത്ത":"تّ","ദ്ധ":"دّ","ന്ന":"نّ","പ്പ":"پّ","ബ്ബ":"بّ","മ്മ":"مّ","യ്യ":"یّ","ല്ല":"لّ","വ്വ":"وّ","ശ്ശ":"ۺّ","സ്സ":"سّ","ള്ള":"ۻّ","റ്റ":"ڔّ","ന്ത":"നْت","ണ്ട":"ڹْڊ","ങ്ക":"നْگ","ഞ്ച":"ڿْച","മ്പ":"നْب","ന്റ":"നْڔ","സ്ഥ":"سْت","нда":"نْد","ക്ഷ":"كْش","ക്ത":"كْت","സ്ക":"സۡك","ക":"ك","ഖ":"كھ","ഗ":"ഗ","ഘ":"گھ","ങ":"ۼ","ച":"ച","ഛ":"چھ","ജ":"ج","ഝ":"جھ","ഞ":"ڿ","ട":"ڊ","ഠ":"ڊه","ഡ":"ڗ","ഢ":"ڗھ","ണ":"ڹ","ത":"ത","ഥ":"تھ","ദ":"ദ","ധ":"دھ","ന":"ന","പ":"പ","ഫ":"ഫ","ബ":"ബ","ഭ":"بھ","മ":"മ","യ":"യ","ര":"ڔ","ല":"ല","വ":"വ","ശ":"ۺ","ഷ":"ഷ","സ":"സ","ഹ":"ه","ള":"ۻ","ഴ":"ژ","റ":"റ","ക്ര":"كْر","പ്ര":"پْر","ത്ര":"تْر","പ്ല":"പ്ْل","സ്വ":"സْو","ത്വ":"തْവ" };
+const baseConsonants = { "ൻ":"نْ","ൽ":"ൽ","ർ":"رٛ","ൾ":"ۻۡ","ൺ":"ڹۡ","ൿ":"كۡ","ക്ക":"كّ","ഗ്ഗ":"گّ","ങ്ങ":"ۼّ","ച്ച":"ചّ","ജ്ജ":"جّ","ഞ്ഞ":"ڿّ","ട്ട":"ڊّ","ണ്ണ":"ڹّ","ത്ത":"تّ","ദ്ധ":"دّ","ന്ന":"نّ","പ്പ":"پّ","ബ്ബ":"بّ","മ്മ":"مّ","യ്യ":"یّ","ല്ല":"لّ","വ്വ":"وّ","ശ്ശ":"ۺّ","സ്സ":"سّ","ള്ള":"ۻّ","റ്റ":"ڔّ","ന്ത":"നْت","ണ്ട":"ڹْڊ","ങ്ക":"നْگ","ഞ്ച":"ڿْച","മ്പ":"നْب","ന്റ":"നْڔ","സ്ഥ":"سْت","нда":"نْد","ക്ഷ":"كْش","ക്ത":"كْت","സ്ക":"സۡك","ക":"ك","ഖ":"كھ","ഗ":"ഗ","ഘ":"گھ","ങ":"ۼ","ച":"ച","ഛ":"چھ","ജ":"ജ","ഝ":"جھ","ഞ":"ڿ","ട":"ڊ","ഠ":"ڊه","ഡ":"ڗ","ഢ":"ڗھ","ണ":"ڹ","ത":"ത","ഥ":"تھ","ദ":"ദ","ധ":"دھ","ന":"ന","പ":"പ","ഫ":"ഫ","ബ":"ബ","ഭ":"بھ","മ":"മ","യ":"യ","ര":"ڔ","ല":"ല","വ":"വ","ശ":"ۺ","ഷ":"ഷ","സ":"സ","ഹ":"ه","ള":"ۻ","ഴ":"ژ","റ":"റ","ക്ര":"كْر","പ്ര":"پْر","ത്ര":"تْر","പ്ല":"പ്ْل","സ്വ":"സْو","ത്വ":"തْവ" };
 const vowelSigns = { "ാ":"َا","ി":"ِ","ീ":"ِی","ു":"ُ","ൂ":"ُو","െ":"٘","േ":"ي٘","ൈ":"َیْ","ൊ":"ٗ","ോ":"ٗو","ൗ":"َوْ","ൃ":"ِرُ","്":"ۡ","ം":"مٛ","ഃ":"َهْ" };
 const chillusSpecial = { "ം":"مْ" };
 const sortedConsonants = Object.keys(baseConsonants).sort((a,b)=>b.length-a.length);
@@ -716,7 +716,7 @@ function initReadingDrawingEngine() {
     let board = document.getElementById('pageDrawBoard');
     function getCoords(e) { const rect = board.getBoundingClientRect(); let clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0; let clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0; return { x: Math.round(((clientX - rect.left) / rect.width) * 1000), y: Math.round(((clientY - rect.top) / rect.height) * 1000) }; } 
     function start(e) { isReadingDrawing = true; const c = getCoords(e); const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); for(let i=0; i<12; i++) { let p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("transform", `translate(${(i-6)*0.3}, ${-(i-6)})`); p.setAttribute("stroke", "#2980b9"); p.setAttribute("stroke-width", "2"); p.setAttribute("fill", "none"); p.setAttribute("stroke-linecap", "round"); p.setAttribute("d", `M ${c.x} ${c.y}`); g.appendChild(p); } board.appendChild(g); readingPaths.push([{x: c.x, y: c.y}]); } 
-    function move(e) { if(!isReadingDrawing) return; const c = getCoords(e); const g = board.lastElementChild; if(!g) return; g.querySelectorAll("path").forEach(p => p.setAttribute("d", p.getAttribute("d") + ` L ${c.x} ${c.y}`)); readingPaths[readingPaths.length - 1].push({x: c.x, y: c.y}); } 
+    function move(e) { if(!isReadingDrawing) return; const c = getCoords(e); const g = board.lastElementChild; if(!g) return; g.querySelectorAll("path").forEach(p => p.setAttribute("d", p.setAttribute("d") + ` L ${c.x} ${c.y}`)); readingPaths[readingPaths.length - 1].push({x: c.x, y: c.y}); } 
     function end() { if(isReadingDrawing) { isReadingDrawing = false; document.getElementById('readingDrawStatus').innerText = `✏️ വരകൾ ചേർത്തു (${readingPaths.length})`; } } 
     board.addEventListener("mousedown", start); board.addEventListener("mousemove", move); window.addEventListener("mouseup", end); 
     board.addEventListener("touchstart", start, {passive:false}); board.addEventListener("touchmove", move, {passive:false}); window.addEventListener("touchend", end); 
@@ -728,7 +728,7 @@ function initQuizDrawingEngine() {
     let qboard = document.getElementById('quizDrawBoard');
     function getCoords(e) { const rect = qboard.getBoundingClientRect(); let clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0; let clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0; return { x: Math.round(((clientX - rect.left) / rect.width) * 1000), y: Math.round(((clientY - rect.top) / rect.height) * 1000) }; } 
     function start(e) { e.preventDefault(); isQuizDrawing = true; const c = getCoords(e); const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); for(let i=0; i<16; i++) { let p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("transform", `translate(${(i-8)*0.4}, ${-(i-8)})`); p.setAttribute("stroke", "#e74c3c"); p.setAttribute("stroke-width", "2"); p.setAttribute("fill", "none"); p.setAttribute("stroke-linecap", "round"); p.setAttribute("d", `M ${c.x} ${c.y}`); g.appendChild(p); } qboard.appendChild(g); quizPaths.push([{x: c.x, y: c.y}]); } 
-    function move(e) { if(!isQuizDrawing) return; e.preventDefault(); const c = getCoords(e); const g = qboard.lastElementChild; if(!g) return; g.querySelectorAll("path").forEach(p => p.setAttribute("d", p.getAttribute("d") + ` L ${c.x} ${c.y}`)); quizPaths[quizPaths.length - 1].push({x: c.x, y: c.y}); } 
+    function move(e) { if(!isQuizDrawing) return; e.preventDefault(); const c = getCoords(e); const g = qboard.lastElementChild; if(!g) return; g.querySelectorAll("path").forEach(p => p.setAttribute("d", p.setAttribute("d") + ` L ${c.x} ${c.y}`)); quizPaths[quizPaths.length - 1].push({x: c.x, y: c.y}); } 
     function end() { isQuizDrawing = false; } 
     qboard.addEventListener("mousedown", start); qboard.addEventListener("mousemove", move); window.addEventListener("mouseup", end); 
     qboard.addEventListener("touchstart", start, {passive:false}); qboard.addEventListener("touchmove", move, {passive:false}); window.addEventListener("touchend", end); 
@@ -765,6 +765,49 @@ function startRecordingBook() {
 } 
 
 function stopRecordingBook() { mediaRecorder.stop(); document.getElementById('startBtn').style.display = 'block'; document.getElementById('stopBtn').style.display = 'none'; document.getElementById('recordStatus').innerText = "✅ റെക്കോർഡിംഗ് കഴിഞ്ഞു."; } 
+
+// ക്വിസ്സ് ചോദ്യങ്ങൾക്കും ഉത്തരങ്ങൾക്കും വോയ്സ് റെക്കോർഡ് ചെയ്യാൻ പരിഹാരം നൽകിയ ഫങ്ഷനുകൾ:
+function startRecordingQuiz(type) {
+    currentType = type;
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      let options = { mimeType: 'audio/webm' };
+      if (MediaRecorder.isTypeSupported('audio/mp4')) {
+        options = { mimeType: 'audio/mp4' };
+      }
+      mediaRecorder = new MediaRecorder(stream, options);
+      audioChunks = [];
+      
+      mediaRecorder.addEventListener("dataavailable", event => {
+        audioChunks.push(event.data);
+      });
+      
+      mediaRecorder.addEventListener("stop", () => {
+        const audioBlob = new Blob(audioChunks, { type: options.mimeType });
+        recordedBlobs[currentType] = audioBlob;
+        
+        const audioPlayback = document.getElementById('playback_' + currentType);
+        audioPlayback.src = URL.createObjectURL(audioBlob);
+        audioPlayback.style.display = 'block';
+      });
+      
+      mediaRecorder.start();
+      
+      document.getElementById('startBtn_' + type).style.display = 'none';
+      document.getElementById('stopBtn_' + type).style.display = 'block';
+      document.getElementById('status_' + type).innerText = "🔴 റെക്കോർഡ് ചെയ്യുന്നു...";
+    }).catch(err => {
+      alert("മൈക്ക് പെർമിഷൻ ലഭ്യമല്ല അല്ലെങ്കിൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു!");
+    });
+}
+
+function stopRecordingQuiz(type) {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+    }
+    document.getElementById('startBtn_' + type).style.display = 'block';
+    document.getElementById('stopBtn_' + type).style.display = 'none';
+    document.getElementById('status_' + type).innerText = "✅ റെക്കോർഡിംഗ് വിജയകരമായി പൂർത്തിയായി.";
+}
 
 function saveWordZone() { 
     let arabic = document.getElementById('arabicText').value.trim(); 
@@ -971,9 +1014,12 @@ function addQuizToMemory() {
         quizMemory[idx].wrong2Text = wrong2Text;
         quizMemory[idx].isNew = true;
         
-        if(recordedBlobs.q || recordedBlobs.correct || recordedBlobs.wrong1 || recordedBlobs.wrong2) {
-            quizMemory[idx].blobs = { q: recordedBlobs.q, correct: recordedBlobs.correct, wrong1: recordedBlobs.wrong1, wrong2: recordedBlobs.wrong2 };
-        }
+        if(!quizMemory[idx].blobs) quizMemory[idx].blobs = {};
+        ['q', 'correct', 'wrong1', 'wrong2'].forEach(t => {
+            if(recordedBlobs[t]) {
+                quizMemory[idx].blobs[t] = recordedBlobs[t];
+            }
+        });
         alert("🎯 ചോദ്യം വിജയകരമായി പുതുക്കി!");
     } else {
         quizMemory.push({ 
@@ -982,7 +1028,7 @@ function addQuizToMemory() {
             correctText: correctText, 
             wrong1Text: wrong1Text, 
             wrong2Text: wrong2Text, 
-            blobs: (recordedBlobs.q) ? { q: recordedBlobs.q, correct: recordedBlobs.correct, wrong1: recordedBlobs.wrong1, wrong2: recordedBlobs.wrong2 } : null,
+            blobs: { q: recordedBlobs.q, correct: recordedBlobs.correct, wrong1: recordedBlobs.wrong1, wrong2: recordedBlobs.wrong2 },
             qSrc: "", correctSrc: "", wrong1Src: "", wrong2Src: ""
         }); 
         alert("🎯 ചോദ്യം ലിസ്റ്റിലേക്ക് മാറ്റി!"); 
@@ -1226,20 +1272,20 @@ async function publishToGitHubDirectly() {
 
         let quizJsonArray = []; 
         for(let i = 0; i < quizMemory.length; i++) { 
-            let item = quizMemory[i]; let audioUrls = {}; 
-            if(item.isNew && item.blobs && item.blobs.q && item.blobs.correct) { 
+            let item = quizMemory[i]; 
+            let audioUrls = { q: item.qSrc || "", correct: item.correctSrc || "", wrong1: item.wrong1Src || "", wrong2: item.wrong2Src || "" }; 
+            
+            if(item.isNew && item.blobs) { 
                 document.getElementById('loadText').innerText = `🎙️ ക്വിസ്സ് ചോദ്യം ${i + 1} ഓഡിയോകൾ അപ്‌ലോഡ് ചെയ്യുന്നു...`; 
                 let types = ['q', 'correct', 'wrong1', 'wrong2']; 
                 for(let t of types) { 
                     if(item.blobs[t]) {
-                        let ext = item.blobs[t].type.includes("mp4") ? "mp4" : "webm"; let fileName = `quiz_${Date.now()}_q${i}_${t}.${ext}`; 
-                        await uploadToGitHubAPI(`data/${fileName}`, item.blobs[t], token); audioUrls[t] = `data/${fileName}`; 
-                    } else {
-                        audioUrls[t] = "";
+                        let ext = item.blobs[t].type && item.blobs[t].type.includes("mp4") ? "mp4" : "webm"; 
+                        let fileName = `quiz_${Date.now()}_q${i}_${t}.${ext}`; 
+                        await uploadToGitHubAPI(`data/${fileName}`, item.blobs[t], token); 
+                        audioUrls[t] = `data/${fileName}`; 
                     }
                 } 
-            } else { 
-                audioUrls = { q: item.qSrc || "", correct: item.correctSrc || "", wrong1: item.wrong1Src || "", wrong2: item.wrong2Src || "" }; 
             } 
             quizJsonArray.push({ qText: item.qText, correctText: item.correctText, wrong1Text: item.wrong1Text, wrong2Text: item.wrong2Text, qSrc: audioUrls.q, correctSrc: audioUrls.correct, wrong1Src: audioUrls.wrong1, wrong2Src: audioUrls.wrong2, hidden: !!item.hidden }); 
         }
@@ -1305,50 +1351,7 @@ async function publishToGitHubDirectly() {
         overlay.style.display = 'none';
     }
 }
-      // ക്വിസ്സ് ചോദ്യങ്ങൾക്കും ഉത്തരങ്ങൾക്കും വോയ്സ് റെക്കോർഡ് ചെയ്യാൻ
-  function startRecordingQuiz(type) {
-    currentType = type;
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-      let options = { mimeType: 'audio/webm' };
-      if (MediaRecorder.isTypeSupported('audio/mp4')) {
-        options = { mimeType: 'audio/mp4' };
-      }
-      mediaRecorder = new MediaRecorder(stream, options);
-      audioChunks = [];
-      
-      mediaRecorder.addEventListener("dataavailable", event => {
-        audioChunks.push(event.data);
-      });
-      
-      mediaRecorder.addEventListener("stop", () => {
-        const audioBlob = new Blob(audioChunks, { type: options.mimeType });
-        recordedBlobs[currentType] = audioBlob;
-        
-        const audioPlayback = document.getElementById('playback_' + currentType);
-        audioPlayback.src = URL.createObjectURL(audioBlob);
-        audioPlayback.style.display = 'block';
-      });
-      
-      mediaRecorder.start();
-      
-      document.getElementById('startBtn_' + type).style.display = 'none';
-      document.getElementById('stopBtn_' + type).style.display = 'block';
-      document.getElementById('status_' + type).innerText = "🔴 റെക്കോർഡ് ചെയ്യുന്നു...";
-    }).catch(err => {
-      alert("മൈക്ക് പെർമിഷൻ ലഭ്യമല്ല അല്ലെങ്കിൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു!");
-    });
-  }
-
-  function stopRecordingQuiz(type) {
-    if (mediaRecorder && mediaRecorder.state === "recording") {
-      mediaRecorder.stop();
-    }
-    document.getElementById('startBtn_' + type).style.display = 'block';
-    document.getElementById('stopBtn_' + type).style.display = 'none';
-    document.getElementById('status_' + type).innerText = "✅ റെക്കോർഡിംഗ് വിജയകരമായി പൂർത്തിയായി.";
-  }
-
 </script>
 
 </body> 
-                                                                                                                </html>
+</html>
