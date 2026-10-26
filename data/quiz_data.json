@@ -1,11 +1,12 @@
 {
-  "version": 1793025383894,
+  "version": 1793030681606,
   "quizInfo": {
-    "class": "",
-    "subject": "",
-    "part": "",
-    "chapter": "",
-    "lessonName": ""
+    "class": "Class 2",
+    "subject": "Duroos",
+    "part": "Part 2",
+    "chapter": "ചാപ്റ്റർ 4",
+    "lessonName": "",
+    "youtubeLink": "https://youtu.be/nBAdeR9Ngbo?si=wrKTPPjyRK8AJPFj"
   },
   "questions": [
     {
@@ -13,10 +14,10 @@
       "correctText": "പരിശുദ്ധ മക്ക",
       "wrong1Text": "യമൻ",
       "wrong2Text": "മദീന",
-      "qSrc": "",
-      "correctSrc": "",
-      "wrong1Src": "",
-      "wrong2Src": "",
+      "qSrc": "data/quiz_1793030672330_q0_q.mp4",
+      "correctSrc": "data/quiz_1793030675288_q0_correct.mp4",
+      "wrong1Src": "data/quiz_1793030677364_q0_wrong1.mp4",
+      "wrong2Src": "data/quiz_1793030679446_q0_wrong2.mp4",
       "hidden": false
     },
     {
